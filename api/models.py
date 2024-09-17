@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.hashers import make_password, check_password
 
 class Role(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -14,6 +15,14 @@ class Usuario(models.Model):
 
     def __str__(self):
         return self.correo
+
+    # Método para encriptar la contraseña al guardar
+    def set_password(self, raw_password):
+        self.contrasenia = make_password(raw_password)
+
+    # Método para verificar la contraseña
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.contrasenia)
 
 
 class DatosPersonalesUsuario(models.Model):

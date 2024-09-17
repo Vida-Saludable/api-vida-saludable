@@ -1,6 +1,8 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import CustomTokenObtainPairSerializer
 
 from .models import (
     Role, Usuario, DatosPersonalesUsuario, Alimentacion, Agua, Esperanza, Sol, Aire, Dormir,
@@ -13,6 +15,9 @@ from .serializers import (
     DatosCorporalesSerializer, DatosHabitosSerializer
 )
 
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
 class RoleViewSet(viewsets.ModelViewSet):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
@@ -24,6 +29,28 @@ class UsuarioViewSet(viewsets.ModelViewSet):
     serializer_class = UsuarioSerializer
     # permission_classes = [IsAuthenticated]
 
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        
+        serializer = self.get_serializer(data=data)
+
+        # Validar los datos del serializer
+        serializer.is_valid(raise_exception=True)
+
+        # Crear una instancia del usuario sin guardar aún en la base de datos
+        usuario = Usuario(
+            correo=serializer.validated_data['correo'],
+            role=serializer.validated_data.get('role')  # role es opcional
+        )
+
+        # Encriptar la contraseña antes de guardarla
+        usuario.set_password(serializer.validated_data['contrasenia'])
+
+        # Guardar el usuario en la base de datos
+        usuario.save()
+
+        # Devolver la respuesta con los datos del usuario creado
+        return Response(UsuarioSerializer(usuario).data, status=status.HTTP_201_CREATED)
 
 
 class DatosPersonalesUsuarioViewSet(viewsets.ModelViewSet):
