@@ -1,0 +1,320 @@
+hola quiero que me ayudes realizar mi proyecto, mi proyecto se tratara de analisar como esta la salud de una persona y determinar cuando una persona va generar enfermedades no transmisible estos creando 2 grupos diferentes de variables como ser indicadores de salud contra habitos de vida de una persona quiero determinar si elos ahabitos de vida de una persona le pueden generar enfermedades no transmisibles en primer lugar estamos haciendo estamos metiendo a todos nuestros pacientes a un proyecto que se llama vida saludable donde se le sacan analisis a todos nuestros paciente los cueales esos seran el grupo de indicadores de salud y los cuales llamamos {datos_iniciales_usuario}  en el transcurso se monitore el dia a dia de cada uno de nuestros pacientes para eso tenemos estas tablas {ejercicio,despertar,dormir,aire,sol,esperanza,agua,alimentacion} en estas tablas se le sacaran los analisis del dia a dia de cada uno de nuestro pacientes y intentaremos determinar si el hecho de cambiar su habitos generan que los pacientes tengan menos riesgo de tener enfermedades no transmisibles y este analisis al final del proyecto se llama {datos_finales_usuario}  primeramente el proyecto busca ver como se encuentra cada 
+ paciente para eso estamos usando esto  {Peso:
+Muy bajo: Si el IMC es inferior a 16.
+Bajo: Si el IMC está entre 16 y 18.4.
+Normal: Si el IMC está entre 18.5 y 24.9.
+Sobrepeso: Si el IMC está entre 25 y 29.9.
+Obesidad: Si el IMC es superior a 30.
+Altura:
+La altura por sí sola no se clasifica como "mala" o "buena". Se considera "buena" o "normal" si el IMC resultante es saludable (18.5 - 24.9). Para niños y adolescentes, la altura se evalúa con respecto a percentiles de crecimiento, y en adultos, generalmente no se clasifica a menos que esté fuera de los rangos normales para el grupo de edad y sexo. IMC (Índice de Masa Corporal)
+
+Fórmula: IMC = peso (kg) / (altura (m) ^ 2)
+Rangos:
+Bajo peso: < 18.5
+Normal: 18.5 - 24.9
+Sobrepeso: 25 - 29.9
+Obesidad: ≥ 30
+Presión Arterial Sistólica (mmHg)
+
+Fórmula: No requiere fórmula.
+Rangos:
+Normal: < 120
+Elevada: 120 - 129
+Hipertensión etapa 1: 130 - 139
+Hipertensión etapa 2: ≥ 140
+
+
+Presión Arterial Diastólica (mmHg)
+
+Fórmula: No requiere fórmula.
+Rangos:
+Normal: < 80
+Hipertensión etapa 1: 80 - 89
+Hipertensión etapa 2: ≥ 90
+Radio Abdominal (cm)
+
+Fórmula: Radio Abdominal = circunferencia cintura (cm) / circunferencia cadera (cm)
+Rangos:
+Malo: > 0.85 (mujeres), > 0.90 (hombres)
+Bueno: ≤ 0.85 (mujeres), ≤ 0.90 (hombres)
+Grasa Corporal (%)
+
+Fórmula:
+Hombres: (1.20 × IMC) + (0.23 × edad) - 16.2
+Mujeres: (1.20 × IMC) + (0.23 × edad) - 5.4
+Rangos:
+Malo: > 25% (hombres), > 32% (mujeres)
+Bueno: 18-24% (hombres), 25-31% (mujeres)
+Muy bueno: 14-17% (hombres), 21-24% (mujeres)
+Excelente: 6-13% (hombres), 14-20% (mujeres)
+Grasa Visceral (%)
+
+Fórmula: No requiere fórmula (se mide directamente).
+Rangos:
+Malo: > 13
+Aceptable: 10-12
+Bueno: 7-9
+Muy bueno: < 6
+Frecuencia Cardíaca (latidos/min)
+
+Fórmula: No requiere fórmula.
+Rangos:
+Mala: > 100
+Aceptable: 80-100
+Buena: 60-79
+Muy buena: < 60
+Frecuencia Respiratoria (respiraciones/min)
+
+Fórmula: No requiere fórmula.
+Rangos:
+Mala: > 20
+Aceptable: 16-20
+Buena: 12-15
+Muy buena: < 12
+Colesterol Total (mg/dL)
+
+Fórmula: Colesterol Total = HDL + LDL + (Triglicéridos / 5)
+Rangos:
+Malo: > 240
+Aceptable: 200-239
+Bueno: < 200
+Colesterol HDL (mg/dL)
+
+Fórmula: No requiere fórmula.
+Rangos:
+Malo: < 40 (hombres), < 50 (mujeres)
+Bueno: ≥ 60
+Colesterol LDL (mg/dL)
+
+Fórmula: No requiere fórmula.
+Rangos:
+Malo: ≥ 160
+Aceptable: 130-159
+Bueno: 100-129
+Muy bueno: < 100
+Triglicéridos (mg/dL)
+
+Fórmula: No requiere fórmula.
+Rangos:
+Malo: ≥ 200
+Aceptable: 150-199
+Bueno: < 150
+Glucosa (mg/dL)
+
+Fórmula: No requiere fórmula.
+Rangos:
+Normal: < 100
+Prediabetes: 100-125
+Diabetes: ≥ 126
+Frecuencia Cardíaca en Reposo (latidos/min)
+
+Fórmula: No requiere fórmula.
+Rangos:
+Mala: > 100
+Aceptable: 80-100
+Buena: 60-79
+Muy buena: < 60
+Frecuencia Cardíaca Después de 45 Segundos (latidos/min)
+
+Fórmula: No requiere fórmula.
+Rangos:
+Mala: > 140
+Aceptable: 121-140
+Buena: 100-120
+Muy buena: < 100
+Frecuencia Cardíaca 1 Minuto Después (latidos/min)
+
+Fórmula: No requiere fórmula.
+Rangos:
+Mala: > 100
+Aceptable: 80-100
+Buena: 60-79
+Muy buena: < 60
+Resultado del Test de Ruffier
+
+Fórmula: Resultado = ((F1 + F2 + F3) - 200) / 10
+F1: Frecuencia cardíaca en reposo
+F2: Frecuencia cardíaca después de 45 segundos de esfuerzo
+F3: Frecuencia cardíaca 1 minuto después de esfuerzo
+Rangos:
+Muy malo: > 15
+Malo: 11-14
+Aceptable: 6-10
+Bueno: 0-5
+Excelente: < 0} esas son las primeras formulas para determinar como esta cada paciente o como esta cada grupo de pacientes por ejemplos analisaremos segun esto como esta un paciente pero este paciente pertenecera a un proyecto, osea el analisis se hara de manera individual y de manera grupa de todos lso involucrados en el proyecto actualmente esta es nuestra base de datos {-- Tabla de roles
+CREATE TABLE role (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- Tabla de usuarios con relación a roles
+CREATE TABLE usuario (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    phone VARCHAR(100),
+    email VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    role_id INT,
+    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE SET NULL
+);
+
+-- Tabla de proyectos
+CREATE TABLE proyecto (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    descripcion TEXT,
+    fecha_inicio DATE NOT NULL,
+    fecha_fin DATE
+);
+
+-- Tabla de relación entre usuarios y proyectos
+CREATE TABLE usuarios_proyecto (
+    user_id INT NOT NULL,
+    proyecto_id INT NOT NULL,
+    PRIMARY KEY (user_id, proyecto_id),
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (proyecto_id) REFERENCES proyectos(id) ON DELETE CASCADE
+);
+
+-- Tabla de alimentación
+CREATE TABLE alimentacion (
+    id SERIAL PRIMARY KEY,
+    fecha DATE NOT NULL,
+    hora TIME NOT NULL,
+    tipo_alimento VARCHAR(100) NOT NULL, // //  desayuno, almuerzo, cena otro solo esos podran ser elejidos
+    saludable VARCHAR(50),
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+-- Tabla de agua
+CREATE TABLE agua (
+    id SERIAL PRIMARY KEY,
+    fecha DATE NOT NULL,
+    hora TIME NOT NULL,
+    cantidad INT NOT NULL, //solo se medira en mililitros
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+-- Tabla de esperanza
+CREATE TABLE esperanza (
+    id SERIAL PRIMARY KEY,
+    fecha DATE NOT NULL,
+    tipo_practica VARCHAR(50) NOT NULL,  // 1 oracion leer 2 la biblia. solo se pueden esas 2
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+-- Tabla de sol
+CREATE TABLE sol (
+    id SERIAL PRIMARY KEY,
+    fecha DATE NOT NULL,
+    tiempo INT NOT NULL, // se calculara cantidad de minutos
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+-- Tabla de aire
+CREATE TABLE aire (
+    id SERIAL PRIMARY KEY,
+    fecha DATE NOT NULL,
+    tiempo INT NOT NULL, // Cantidad de minutos
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+-- Tabla de sueño
+CREATE TABLE dormir (
+    id SERIAL PRIMARY KEY,
+    fecha DATE NOT NULL,
+    hora TIME NOT NULL,
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+-- Tabla de despertar
+CREATE TABLE despertar (
+    id SERIAL PRIMARY KEY,
+    fecha DATE NOT NULL,
+    hora TIME NOT NULL,
+    estado VARCHAR(20) NOT NULL, // solo se podra ingresar si durmio "bien" o "mal"
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+-- Tabla de ejercicio
+CREATE TABLE ejercicio (
+    id SERIAL PRIMARY KEY,
+    fecha DATE NOT NULL,
+    tipo VARCHAR(50) NOT NULL, // solo se podra ingresar estos datos [caminata lenta, rapida, carrera o ejercicio guiado]
+    tiempo INT NOT NULL, // solo sera en cantidad de minutos
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+
+
+
+ CREATE TABLE datos_iniciales_usuario (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    peso DECIMAL(5, 2),               -- Peso en kg
+    altura DECIMAL(4, 2),             -- Altura en metros
+    imc DECIMAL(4, 2),                -- Índice de Masa Corporal
+    presion_sistolica INT,            -- Presión Arterial Sistólica en mmHg
+    presion_diastolica INT,           -- Presión Arterial Diastólica en mmHg
+    radio_abdominal DECIMAL(5, 2),    -- Radio Abdominal en cm
+    grasa_corporal DECIMAL(5, 2),     -- Grasa Corporal en %
+    grasa_viseral DECIMAL(5, 2),      -- Grasa Visceral en %
+    frecuencia_cardiaca INT,          -- Frecuencia Cardíaca en latidos/min
+    frecuencia_respiratoria INT,      -- Frecuencia Respiratoria en respiraciones/min
+    colesterol_total DECIMAL(5, 2),   -- Colesterol Total en mg/dL
+    colesterol_hdl DECIMAL(5, 2),     -- Colesterol HDL en mg/dL
+    colesterol_ldl DECIMAL(5, 2),     -- Colesterol LDL en mg/dL
+    trigliceridos DECIMAL(5, 2),      -- Triglicéridos en mg/dL
+    glucosa DECIMAL(5, 2),            -- Glucosa en mg/dL
+    frecuencia_cardiaca_en_reposo INT,                           -- Frecuencia cardíaca en reposo
+    frecuencia_cardiaca_despues_de_45_segundos INT,                           -- Frecuencia cardíaca después de 30 sentadillas en 45 segundos
+    frecuencia_cardiaca_1_minuto_despues INT,                           -- Frecuencia cardíaca 1 minuto después de las sentadillas
+    resultado_test_rufier DECIMAL(5, 2),  -- Resultado del Test de Ruffier (opcional)
+    fecha DATE NOT NULL,              -- Fecha de la medición
+    fecha_nacimiento DATE NOT NULL,
+    edad INT -- esta el usuario no lo registrara se calculara directamente basandonos a la fecha de nacimiento 
+
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+
+
+
+ CREATE TABLE datos_finales_usuario (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    peso DECIMAL(5, 2),               -- Peso en kg
+    altura DECIMAL(4, 2),             -- Altura en metros
+    imc DECIMAL(4, 2),                -- Índice de Masa Corporal
+    presion_sistolica INT,            -- Presión Arterial Sistólica en mmHg
+    presion_diastolica INT,           -- Presión Arterial Diastólica en mmHg
+    radio_abdominal DECIMAL(5, 2),    -- Radio Abdominal en cm
+    grasa_corporal DECIMAL(5, 2),     -- Grasa Corporal en %
+    grasa_viseral DECIMAL(5, 2),      -- Grasa Visceral en %
+    frecuencia_cardiaca INT,          -- Frecuencia Cardíaca en latidos/min
+    frecuencia_respiratoria INT,      -- Frecuencia Respiratoria en respiraciones/min
+    colesterol_total DECIMAL(5, 2),   -- Colesterol Total en mg/dL
+    colesterol_hdl DECIMAL(5, 2),     -- Colesterol HDL en mg/dL
+    colesterol_ldl DECIMAL(5, 2),     -- Colesterol LDL en mg/dL
+    trigliceridos DECIMAL(5, 2),      -- Triglicéridos en mg/dL
+    glucosa DECIMAL(5, 2),            -- Glucosa en mg/dL
+    frecuencia_cardiaca_en_reposo INT,                           -- Frecuencia cardíaca en reposo
+    frecuencia_cardiaca_despues_de_45_segundos INT,                           -- Frecuencia cardíaca después de 30 sentadillas en 45 segundos
+    frecuencia_cardiaca_1_minuto_despues INT,                           -- Frecuencia cardíaca 1 minuto después de las sentadillas
+    resultado_test_rufier DECIMAL(5, 2),  -- Resultado del Test de Ruffier (opcional)
+    fecha DATE NOT NULL,              -- Fecha de la medición
+    fecha_nacimiento DATE NOT NULL,
+    edad INT -- esta el usuario no lo registrara se calculara directamente basandonos a la fecha de nacimiento 
+
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+}  
