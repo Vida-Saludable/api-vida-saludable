@@ -35,9 +35,9 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework',
     'api',
-    'auth',
     'habits',
     'health',
+    
     'django_filters',
 ]
 
