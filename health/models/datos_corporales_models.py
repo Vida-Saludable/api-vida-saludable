@@ -1,3 +1,6 @@
+from django.db import models
+
+from users.models.usuario_models import Usuario
 
 
 class DatosCorporales(models.Model):
