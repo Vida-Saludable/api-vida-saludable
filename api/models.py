@@ -1,5 +1,6 @@
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
-from django.contrib.auth.hashers import make_password, check_password
+
 
 class Role(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -7,22 +8,56 @@ class Role(models.Model):
     def __str__(self):
         return self.name
 
+class UsuarioManager(BaseUserManager):
+    def create_user(self, correo, password=None, **extra_fields):
+        if not correo:
+            raise ValueError('El usuario debe tener un correo electrónico')
+        correo = self.normalize_email(correo)
+        usuario = self.model(correo=correo, **extra_fields)
+        usuario.set_password(password)  # Usa set_password para hashear la contraseña
+        usuario.save(using=self._db)
+        return usuario
 
-class Usuario(models.Model):
+    def create_superuser(self, correo, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superusuario debe tener is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superusuario debe tener is_superuser=True.')
+
+        return self.create_user(correo, password, **extra_fields)
+
+class Usuario(AbstractBaseUser, PermissionsMixin):
     correo = models.EmailField(max_length=50, unique=True)
-    contrasenia = models.CharField(max_length=100)
     role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = UsuarioManager()
+
+    USERNAME_FIELD = 'correo'
+    REQUIRED_FIELDS = []
+
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='usuario_set',  # Cambia esto para evitar el conflicto
+        blank=True,
+        help_text='Los grupos a los que pertenece este usuario.',
+        verbose_name='grupos'
+    )
+
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='usuario_permisos_set',  # Cambia esto para evitar el conflicto
+        blank=True,
+        help_text='Permisos específicos para este usuario.',
+        verbose_name='permisos de usuario'
+    )
 
     def __str__(self):
         return self.correo
-
-    # Método para encriptar la contraseña al guardar
-    def set_password(self, raw_password):
-        self.contrasenia = make_password(raw_password)
-
-    # Método para verificar la contraseña
-    def check_password(self, raw_password):
-        return check_password(raw_password, self.contrasenia)
 
 
 class DatosPersonalesUsuario(models.Model):

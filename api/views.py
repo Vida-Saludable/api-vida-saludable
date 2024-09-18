@@ -1,8 +1,6 @@
-from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets
-from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import CustomTokenObtainPairSerializer
+
 
 from .models import (
     Role, Usuario, DatosPersonalesUsuario, Alimentacion, Agua, Esperanza, Sol, Aire, Dormir,
@@ -15,48 +13,39 @@ from .serializers import (
     DatosCorporalesSerializer, DatosHabitosSerializer
 )
 
-class CustomTokenObtainPairView(TokenObtainPairView):
-    serializer_class = CustomTokenObtainPairSerializer
+
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework import generics
+from .models import Usuario
+from .serializers import UsuarioSerializer
+
+
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from .serializers import MyTokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 
 class RoleViewSet(viewsets.ModelViewSet):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
+
 
 
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
-    # permission_classes = [IsAuthenticated]
 
-    def create(self, request, *args, **kwargs):
-        data = request.data
-        
-        serializer = self.get_serializer(data=data)
 
-        # Validar los datos del serializer
-        serializer.is_valid(raise_exception=True)
-
-        # Crear una instancia del usuario sin guardar aún en la base de datos
-        usuario = Usuario(
-            correo=serializer.validated_data['correo'],
-            role=serializer.validated_data.get('role')  # role es opcional
-        )
-
-        # Encriptar la contraseña antes de guardarla
-        usuario.set_password(serializer.validated_data['contrasenia'])
-
-        # Guardar el usuario en la base de datos
-        usuario.save()
-
-        # Devolver la respuesta con los datos del usuario creado
-        return Response(UsuarioSerializer(usuario).data, status=status.HTTP_201_CREATED)
 
 
 class DatosPersonalesUsuarioViewSet(viewsets.ModelViewSet):
     queryset = DatosPersonalesUsuario.objects.all()
     serializer_class = DatosPersonalesUsuarioSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
 class ProyectoViewSet(viewsets.ModelViewSet):
     queryset = Proyecto.objects.all()
@@ -253,3 +242,54 @@ class DatosHabitosViewSet(viewsets.ModelViewSet):
     queryset = DatosHabitos.objects.all()
     serializer_class = DatosHabitosSerializer
     # permission_classes = [IsAuthenticated]
+
+
+
+#################################################################################3
+#auth
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+
+class RegistroUsuarioView(APIView):
+    def post(self, request):
+        serializer = UsuarioSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LoginUsuarioView(APIView):
+    def post(self, request):
+        correo = request.data.get('correo')
+        password = request.data.get('password')
+
+        try:
+            usuario = Usuario.objects.get(correo=correo)
+            print(f"Usuario encontrado: {usuario}")
+        except Usuario.DoesNotExist:
+            return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+        if usuario.check_password(password):
+            print("Contraseña válida")
+            # Cambia aquí para usar la nueva vista de tokens
+            refresh = RefreshToken.for_user(usuario)
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }, status=status.HTTP_200_OK)
+
+        print("Contraseña inválida")
+        return Response({'error': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class LogoutUsuarioView(APIView):
+    def post(self, request):
+        try:
+            refresh_token = request.data.get('refresh')
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)

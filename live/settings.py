@@ -32,7 +32,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework_simplejwt.token_blacklist',
     'rest_framework_simplejwt',
     'rest_framework',
     'api',
@@ -91,21 +90,17 @@ CORS_ALLOWED_ORIGINS = [
 
 
 
-# AUTH_USER_MODEL = 'api.User'
+AUTH_USER_MODEL = 'api.Usuario'
 
 # Configuración de Django REST framework
 REST_FRAMEWORK = {
-     'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    # 'DEFAULT_PERMISSION_CLASSES': (
-    #     'rest_framework.permissions.IsAuthenticated',
-    # ),
 }
-
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
 }
@@ -117,12 +112,12 @@ WSGI_APPLICATION = 'live.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-     'default': {
+   'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'vida_saludable_0uon',
-        'USER': 'vida_saludable_0uon_user',
-        'PASSWORD': '7fTLF3XB6XL9N745siJE94xcT6ybtcGK',
-        'HOST': 'dpg-crksavtumphs73br47j0-a.oregon-postgres.render.com',  # O la dirección IP de tu servidor MySQL
+        'NAME': 'vida_saludable',
+        'USER': 'postgres',
+        'PASSWORD': '123456',
+        'HOST': 'localhost',  # O la dirección IP de tu servidor MySQL
         'PORT': '5432',  # O el puerto que estés utilizando
     }
 }
