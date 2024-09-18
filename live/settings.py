@@ -37,11 +37,7 @@ INSTALLED_APPS = [
     'api',
     'habits',
     'health',
-<<<<<<< HEAD
     'reports',
-=======
-    
->>>>>>> af0a3a661551e346058a3b3d83079c2aac70a65e
     'django_filters',
 ]
 

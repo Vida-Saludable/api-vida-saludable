@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Sum
 
-from api.models import DatosPersonalesUsuario
+from ...users.models.datos_personales_usuario_model import DatosPersonalesUsuario
 
 from ...habits.models.dormir_model import Dormir
 from ...habits.models.despertar_model import Despertar
