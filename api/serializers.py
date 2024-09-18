@@ -4,11 +4,33 @@ from .models import (
     Role, Usuario, DatosPersonalesUsuario, Alimentacion, Agua, Esperanza, Sol, Aire, Dormir,
     Despertar, Ejercicio, Proyecto, UsuarioProyecto, DatosCorporales, DatosHabitos
 )
-from rest_framework import generics
-from rest_framework.response import Response
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from django.contrib.auth.hashers import make_password
 
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    # Definir los campos que se enviarán
+    correo = serializers.EmailField()
+    contrasenia = serializers.CharField(write_only=True)
+
+    @classmethod
+    def get_token(cls, user):
+        # Obtener el token JWT
+        token = super().get_token(user)
+        token['correo'] = user.correo
+        return token
+
+    def validate(self, attrs):
+        # Validar el usuario por correo y contraseña
+        try:
+            user = Usuario.objects.get(correo=attrs['correo'])
+        except Usuario.DoesNotExist:
+            raise serializers.ValidationError('Usuario no encontrado')
+
+        # Verificar la contraseña usando check_password
+        if not user.check_password(attrs['contrasenia']):
+            raise serializers.ValidationError('Contraseña incorrecta')
+
+        # Generar el token JWT si la autenticación es exitosa
+        data = super().validate(attrs)
+        return data
 
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,35 +38,19 @@ class RoleSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+from rest_framework import serializers
+from .models import Usuario
+
 class UsuarioSerializer(serializers.ModelSerializer):
-    contrasenia = serializers.CharField(write_only=True)  # Acepta contrasenia como entrada
+    contrasenia = serializers.CharField(write_only=True)
 
     class Meta:
         model = Usuario
-        fields = ('id', 'correo', 'contrasenia', 'role')
+        fields = ['correo', 'contrasenia', 'role']
+        extra_kwargs = {
+            'contrasenia': {'write_only': True}  # No devolver la contraseña en las respuestas
+        }
 
-    def create(self, validated_data):
-        # Usa set_password para asignar la contraseña correctamente
-        usuario = Usuario(
-            correo=validated_data['correo'],
-            role=validated_data.get('role')
-        )
-        usuario.set_password(validated_data['contrasenia'])  # Hashea la contraseña
-        usuario.save()
-        return usuario
-
-
-# serializers.py
-
-
-
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-        # Puedes agregar más datos al token aquí si lo deseas
-
-        return token
 
 
 class DatosPersonalesUsuarioSerializer(serializers.ModelSerializer):
@@ -155,33 +161,3 @@ class UsuarioWithRoleSerializer(serializers.ModelSerializer):
         if datos_personales:
             return DatosPersonalesUsuarioPersonalizadoSerializer(datos_personales).data
         return None
-
-
-
-
-
-# class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-#     correo = serializers.EmailField(write_only=True)
-#     contrasenia = serializers.CharField(write_only=True)
-
-#     def validate(self, attrs):
-#         try:
-#             # Busca al usuario por el correo
-#             usuario = Usuario.objects.get(correo=attrs['correo'])
-#         except Usuario.DoesNotExist:
-#             raise serializers.ValidationError('Usuario no encontrado.')
-
-#         # Verifica la contraseña
-#         if not usuario.check_password(attrs['contrasenia']):
-#             raise serializers.ValidationError('Contraseña incorrecta.')
-
-#         # Si la autenticación es correcta, genera el token
-#         data = super().validate({
-#             'username': usuario.correo,  # Envío correo como 'username' por compatibilidad con JWT
-#             'password': attrs['contrasenia'],
-#         })
-
-#         # Añade campos adicionales si es necesario
-#         data['usuario_id'] = usuario.id
-#         data['role'] = usuario.role.name if usuario.role else None  # Devuelve el role del usuario
-#         return data
