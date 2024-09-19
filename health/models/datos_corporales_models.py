@@ -1,10 +1,8 @@
 from django.db import models
-<<<<<<< HEAD
 from ...users.models.usuario_models import Usuario
-=======
 
 from users.models.usuario_models import Usuario
->>>>>>> 19712261c84e3cd93c2de2304550f1bfd5f45941
+
 
 
 class DatosCorporales(models.Model):
