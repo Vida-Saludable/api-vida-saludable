@@ -4,8 +4,8 @@ from rest_framework import status
 from django.db.models import Sum, F
 from django.db.models.functions import ExtractWeek, ExtractIsoWeekDay
 
-from ...habits.models.aire_model import Aire
-from ..serializers.reporte_aire_serializer import ReporteAireSerializer
+from habits.models.aire_model import Aire
+from serializers.reporte_aire_serializer import ReporteAireSerializer
 
 
 class ReporteAireView(APIView):

@@ -1,6 +1,6 @@
 from api import serializers
 
-from ..models.datos_habitos_model import DatosHabitos
+from models.datos_habitos_model import DatosHabitos
 
 
 class DatosHabitosSerializer(serializers.ModelSerializer):

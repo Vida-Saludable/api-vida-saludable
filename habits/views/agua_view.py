@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from ..models.agua_model import Agua
-from ..serializers.agua_serializer import AguaSerializer
+from serializers.agua_serializer import AguaSerializer
 
 
 class AguaViewSet(viewsets.ModelViewSet):

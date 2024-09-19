@@ -4,8 +4,8 @@ from rest_framework import status
 from django.db.models import Sum, F
 from django.db.models.functions import ExtractWeek, ExtractIsoWeekDay
 
-from ...habits.models.agua_model import Agua
-from ..serializers.reporte_agua_serializer import ReporteAguaSerializer
+from habits.models.agua_model import Agua
+from serializers.reporte_agua_serializer import ReporteAguaSerializer
 
 class ReporteAguaView(APIView):
     def get(self, request, usuario_id):

@@ -1,5 +1,5 @@
 from api import serializers
-from ..models.alimentacion_model import Alimentacion
+from models.alimentacion_model import Alimentacion
 
 
 class AlimentacionSerializer(serializers.ModelSerializer):

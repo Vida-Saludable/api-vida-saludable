@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Min, Max
 
-from ..models import Alimentacion
+from ...habits.models.alimentacion_model import Alimentacion
 
 class GetDatesByIdView(APIView):
     def get(self, request, *args, **kwargs):

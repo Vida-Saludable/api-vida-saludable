@@ -1,7 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from ..models import DatosCorporales, DatosPersonalesUsuario
+from ...users.models.datos_personales_usuario_model import DatosPersonalesUsuario 
+from ...health.models.datos_corporales_models import DatosCorporales 
 from .analizadorsalud import AnalizadorSalud
 from decimal import Decimal
 

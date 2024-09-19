@@ -1,5 +1,5 @@
 from api import serializers
-from api.models import DatosPersonalesUsuario
+from models.datos_personales_usuario_model import DatosPersonalesUsuario
 
 
 class DatosPersonalesUsuarioSerializer(serializers.ModelSerializer):

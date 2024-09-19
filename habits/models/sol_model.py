@@ -1,6 +1,6 @@
 from django.db import models
 
-from api.models import Usuario
+from users.models.usuario_models import Usuario
 
 class Sol(models.Model):
     fecha = models.DateField()

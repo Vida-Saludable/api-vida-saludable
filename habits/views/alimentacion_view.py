@@ -2,8 +2,8 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from ..models.alimentacion_model import Alimentacion
-from ..serializers.alimentacion_serializer import AlimentacionSerializer
+from models.alimentacion_model import Alimentacion
+from serializers.alimentacion_serializer import AlimentacionSerializer
 
 
 class AlimentacionViewSet(viewsets.ModelViewSet):

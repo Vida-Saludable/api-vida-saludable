@@ -2,8 +2,8 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from ..models.despertar_model import Despertar
-from ..serializers.despertar_serializer import DespertarSerializer
+from models.despertar_model import Despertar
+from serializers.despertar_serializer import DespertarSerializer
 
 
 class DespertarViewSet(viewsets.ModelViewSet):

@@ -3,7 +3,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from ..models import Alimentacion, Agua, Esperanza, Sol, Aire, Dormir, Ejercicio, Despertar
+from ...habits.models.alimentacion_model import Alimentacion
+from ...habits.models.agua_model import Agua
+from ...habits.models.aire_model import Aire
+from ...habits.models.esperanza_model import Esperanza
+from ...habits.models.sol_model import Sol
+from ...habits.models.dormir_model import Dormir
+from ...habits.models.despertar_model import Despertar
+from ...habits.models.ejercicio_model import Ejercicio
 from .analizadorhabitos import AnalizadorHabitosVida
 
 class UserHabitsAllAPIView(APIView):

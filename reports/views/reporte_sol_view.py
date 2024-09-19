@@ -4,8 +4,8 @@ from rest_framework import status
 from django.db.models import Sum, F
 from django.db.models.functions import ExtractWeek, ExtractIsoWeekDay
 
-from ...habits.models.sol_model import Sol
-from ..serializers.reporte_sol_serializer import ReporteSolSerializer
+from habits.models.sol_model import Sol
+from serializers.reporte_sol_serializer import ReporteSolSerializer
 
 
 class ReporteSolView(APIView):

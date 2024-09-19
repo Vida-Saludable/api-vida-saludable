@@ -1,5 +1,5 @@
 from api import serializers
-from ..models.agua_model import Agua
+from models.agua_model import Agua
 
 
 class AguaSerializer(serializers.ModelSerializer):

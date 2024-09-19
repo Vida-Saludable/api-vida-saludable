@@ -1,6 +1,6 @@
 from django.db import models
 
-from api.models import Usuario
+from users.models.usuario_models import Usuario
 
 class DatosHabitos(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)

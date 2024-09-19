@@ -8,18 +8,27 @@ from rest_framework.routers import DefaultRouter
 from django.urls import path
 
 from users.views.usersproject_view import UsersProjectView
-from .views import RegistroUsuarioView, LoginUsuarioView, LogoutUsuarioView
+from views.usuario_view import RegistroUsuarioView
+from auth.views.logout_usuarios_view import LogoutUsuarioView
 from rest_framework_simplejwt.views import TokenRefreshView
-from .views import MyTokenObtainPairView
+from auth.views.login_usuarios_view import MyTokenObtainPairView
 
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from api.habits.viewhabitspatient import  RegistroHabitosView, ReporteAguaView, ReporteAireView, ReporteEjercicioPorcentajeView, ReporteEjercicioTipoView, ReporteEjercicioView, ReporteEsperanzaPorcentajeView, ReporteHorasDormidasView, ReportePorcentajeDescansoView, ReporteSolView
-from .views import (
-    RoleViewSet, UsuarioViewSet, DatosPersonalesUsuarioViewSet, AlimentacionViewSet, AguaViewSet, EsperanzaViewSet, 
-    SolViewSet, AireViewSet, DormirViewSet, DespertarViewSet, EjercicioViewSet, ProyectoViewSet, UsuarioProyectoViewSet, DatosCorporalesViewSet, DatosHabitosViewSet
-)
+# from api.habits.viewhabitspatient import  RegistroHabitosView, ReporteAguaView, ReporteAireView, ReporteEjercicioPorcentajeView, ReporteEjercicioTipoView, ReporteEjercicioView, ReporteEsperanzaPorcentajeView, ReporteHorasDormidasView, ReportePorcentajeDescansoView, ReporteSolView
+# from .views import (
+#     RoleViewSet, UsuarioViewSet, DatosPersonalesUsuarioViewSet, AlimentacionViewSet, AguaViewSet, EsperanzaViewSet, 
+#     SolViewSet, AireViewSet, DormirViewSet, DespertarViewSet, EjercicioViewSet, ProyectoViewSet, UsuarioProyectoViewSet, DatosCorporalesViewSet, DatosHabitosViewSet
+# )
+
+from views.role_view import RoleViewSet
+from views.usuario_view import UsuarioViewSet
+from views.datos_personales_usuario_view import DatosPersonalesUsuarioViewSet
+from views.proyecto_view import ProyectoViewSet
+from views.usuario_proyecto_view import UsuarioProyectoViewSet
+from health.views.datos_corporales_view import DatosCorporalesViewSet
+
 
 
 router = DefaultRouter()

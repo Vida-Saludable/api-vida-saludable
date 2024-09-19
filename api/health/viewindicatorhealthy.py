@@ -3,8 +3,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Avg
 from decimal import Decimal
-from ..models import DatosCorporales, DatosPersonalesUsuario
-from ..serializers import DatosCorporalesSerializer
+from ...users.models.datos_personales_usuario_model import DatosPersonalesUsuario 
+from ...health.models.datos_corporales_models import DatosCorporales 
+from ...health.serializers.datos_corporales_serializer import DatosCorporalesSerializer
 from .analizadorsalud import AnalizadorSalud
 from statistics import mean
 

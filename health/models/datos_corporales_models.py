@@ -1,5 +1,5 @@
 from django.db import models
-from ...users.models.usuario_models import Usuario
+from users.models.usuario_models import Usuario
 
 from users.models.usuario_models import Usuario
 

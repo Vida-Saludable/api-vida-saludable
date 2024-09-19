@@ -1,5 +1,5 @@
 from api import serializers
-from ..models.dormir_model import Dormir
+from models.dormir_model import Dormir
 
 
 class DormirSerializer(serializers.ModelSerializer):

@@ -1,5 +1,5 @@
 from api import serializers
-from ..models.esperanza_model import Esperanza
+from models.esperanza_model import Esperanza
 
 
 class EsperanzaSerializer(serializers.ModelSerializer):

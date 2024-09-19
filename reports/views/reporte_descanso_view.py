@@ -5,9 +5,9 @@ from rest_framework import status
 from django.db.models import Count
 from django.db.models.functions import ExtractIsoWeekDay
 
-from ...habits.models.dormir_model import Dormir
-from ...habits.models.despertar_model import Despertar
-from ..serializers.reporte_descanso_serializer import ReporteHorasDormidasSerializer, ReportePorcentajeDescansoSerializer
+from habits.models.dormir_model import Dormir
+from habits.models.despertar_model import Despertar
+from serializers.reporte_descanso_serializer import ReporteHorasDormidasSerializer, ReportePorcentajeDescansoSerializer
 
 
 class ReporteHorasDormidasView(APIView):

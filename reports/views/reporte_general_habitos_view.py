@@ -5,16 +5,16 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Sum
 
-from ...users.models.datos_personales_usuario_model import DatosPersonalesUsuario
+from users.models.datos_personales_usuario_model import DatosPersonalesUsuario
 
-from ...habits.models.dormir_model import Dormir
-from ...habits.models.despertar_model import Despertar
-from ...habits.models.alimentacion_model import Alimentacion
-from ...habits.models.esperanza_model import Esperanza
-from ...habits.models.ejercicio_model import Ejercicio
-from ...habits.models.aire_model import Aire
-from ...habits.models.agua_model import Agua
-from ...habits.models.sol_model import Sol
+from habits.models.dormir_model import Dormir
+from habits.models.despertar_model import Despertar
+from habits.models.alimentacion_model import Alimentacion
+from habits.models.esperanza_model import Esperanza
+from habits.models.ejercicio_model import Ejercicio
+from habits.models.aire_model import Aire
+from habits.models.agua_model import Agua
+from habits.models.sol_model import Sol
 
 
 class RegistroHabitosView(APIView):

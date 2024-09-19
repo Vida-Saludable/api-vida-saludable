@@ -1,7 +1,18 @@
 from django.contrib import admin
-from .models import Role ,Usuario, Alimentacion, Agua, Esperanza, Sol, Aire, Dormir, Despertar, Ejercicio, DatosPersonalesUsuario, Proyecto, UsuarioProyecto, DatosCorporales, DatosHabitos
+from habits.models.agua_model import Agua
+from habits.models.aire_model import Aire
+from habits.models.alimentacion_model import Alimentacion
+from habits.models.esperanza_model import Esperanza
+from habits.models.ejercicio_model import Ejercicio
+from habits.models.sol_model import Sol
+from habits.models.dormir_model import Dormir
+from habits.models.despertar_model import Despertar
+from habits.models.datos_habitos_model import DatosHabitos
+from users.models.datos_personales_usuario_model import DatosPersonalesUsuario
+from users.models.proyecto_model import Proyecto
+from users.models.usuario_proyecto_model import UsuarioProyecto
+from health.models.datos_corporales_models import DatosCorporales
 
-admin.site.register(Usuario)
 admin.site.register(DatosPersonalesUsuario)
 admin.site.register(Alimentacion)
 admin.site.register(Agua)

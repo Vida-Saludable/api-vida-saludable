@@ -1,5 +1,5 @@
 from api import serializers
-from ..models.aire_model import Aire
+from models.aire_model import Aire
 
 
 class AireSerializer(serializers.ModelSerializer):

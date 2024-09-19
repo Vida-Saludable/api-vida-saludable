@@ -4,7 +4,8 @@ from scipy.stats import pearsonr, spearmanr, kendalltau
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from ..models import DatosCorporales, DatosHabitos
+from ...health.models.datos_corporales_models import DatosCorporales
+from ...habits.models.datos_habitos_model import DatosHabitos
 
 class CorrelationView(APIView):
     def get(self, request, *args, **kwargs):
