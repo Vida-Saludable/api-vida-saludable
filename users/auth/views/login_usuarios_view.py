@@ -3,9 +3,9 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from models.usuario_models import Usuario
+from ...models.usuario_models import Usuario
 
-from core.my_token_obtain_pair_serializer import MyTokenObtainPairSerializer
+from ..core.my_token_obtain_pair_serializer import MyTokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 

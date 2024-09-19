@@ -1,6 +1,6 @@
 
-from api import serializers
-from models.proyecto_model import Proyecto
+from rest_framework import serializers
+from ..models.proyecto_model import Proyecto
 
 
 

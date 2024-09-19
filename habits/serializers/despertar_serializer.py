@@ -1,5 +1,5 @@
-from api import serializers
-from models.despertar_model import Despertar
+from rest_framework import serializers
+from ..models.despertar_model import Despertar
 
 
 class DespertarSerializer(serializers.ModelSerializer):

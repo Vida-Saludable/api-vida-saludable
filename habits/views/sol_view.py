@@ -2,8 +2,8 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from models.sol_model import Sol
-from serializers.sol_serializer import SolSerializer
+from ..models.sol_model import Sol
+from ..serializers.sol_serializer import SolSerializer
 
 
 class SolViewSet(viewsets.ModelViewSet):

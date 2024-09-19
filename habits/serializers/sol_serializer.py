@@ -1,5 +1,5 @@
-from api import serializers
-from models.sol_model import Sol
+from rest_framework import serializers
+from ..models.sol_model import Sol
 
 
 class SolSerializer(serializers.ModelSerializer):

@@ -2,8 +2,8 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from models.esperanza_model import Esperanza
-from serializers.esperanza_serializer import EsperanzaSerializer
+from ..models.esperanza_model import Esperanza
+from ..serializers.esperanza_serializer import EsperanzaSerializer
 
 class EsperanzaViewSet(viewsets.ModelViewSet):
     queryset = Esperanza.objects.all()

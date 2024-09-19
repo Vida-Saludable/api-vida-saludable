@@ -1,6 +1,6 @@
 
-from api import serializers
-from models.datos_personales_usuario_model import DatosPersonalesUsuario
+from rest_framework import serializers
+from ..models.datos_personales_usuario_model import DatosPersonalesUsuario
 from users.models.usuario_models import Usuario
 from users.serializers.datos_personales_usuario_personalizado_serializer import DatosPersonalesUsuarioPersonalizadoSerializer
 

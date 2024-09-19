@@ -2,8 +2,8 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from models.ejercicio_model import Ejercicio
-from serializers.ejercicio_serializer import EjercicioSerializer
+from ..models.ejercicio_model import Ejercicio
+from ..serializers.ejercicio_serializer import EjercicioSerializer
 
 
 class EjercicioViewSet(viewsets.ModelViewSet):

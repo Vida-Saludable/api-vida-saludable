@@ -4,7 +4,7 @@ from rest_framework import status
 from django.db.models import Count
 
 from habits.models.esperanza_model import Esperanza
-from serializers.reporte_esperanza_serializer import ReporteEsperanzaPorcentajeSerializer
+from ..serializers.reporte_esperanza_serializer import ReporteEsperanzaPorcentajeSerializer
 
 
 class ReporteEsperanzaPorcentajeView(APIView):

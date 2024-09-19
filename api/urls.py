@@ -65,12 +65,7 @@
 
 #     #usuarios de un proyecto
 #     path('usuarios-de-proyecto/<int:proyecto_id>/', UsersProjectView.as_view(), name='usuarios-proyecto'),
-#     path('fechas-min-max/<int:usuario_id>/', GetDatesByIdView.as_view(), name='fechas'),
-#         # Autenticación JWT
-#     path('registro/', RegistroUsuarioView.as_view(), name='registro'),
-#     path('login/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
-#     path('logout/', LogoutUsuarioView.as_view(), name='logout'),
-#     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+#     path('fechas-min-max/<int:usuario_id>/', GetDatesByIdView.as_view(), name='fechas'), 
 
 
 # ]

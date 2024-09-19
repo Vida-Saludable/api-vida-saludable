@@ -5,7 +5,7 @@ from django.db.models import Sum, F, Count
 from django.db.models.functions import ExtractWeek, ExtractIsoWeekDay
 
 from habits.models.ejercicio_model import Ejercicio
-from serializers.reporte_ejercicio_serializer import ReporteEjercicioPorcetajeSerializer, ReporteEjercicioSerializer, ReporteEjercicioTipoSerializer
+from ..serializers.reporte_ejercicio_serializer import ReporteEjercicioPorcetajeSerializer, ReporteEjercicioSerializer, ReporteEjercicioTipoSerializer
 
 
 class ReporteEjercicioView(APIView):

@@ -2,8 +2,8 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from models.dormir_model import Dormir
-from serializers.dormir_serializer import DormirSerializer
+from ..models.dormir_model import Dormir
+from ..serializers.dormir_serializer import DormirSerializer
 
 
 class DormirViewSet(viewsets.ModelViewSet):
