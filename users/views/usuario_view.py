@@ -67,6 +67,60 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         except Exception as e:
             # Si hay algún error, se deshacen todas las operaciones
             return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+    def update(self, request, *args, **kwargs):
+        try:
+            # Obtener el usuario que se va a actualizar
+            usuario_id = kwargs.get('pk')  # ID del usuario pasado en la URL
+            usuario = Usuario.objects.get(id=usuario_id)
+
+            # 1. Actualizar los datos del Usuario (sin contraseña)
+            usuario_serializer = self.get_serializer(usuario, data=request.data, partial=True)
+            usuario_serializer.is_valid(raise_exception=True)
+            usuario_serializer.save()  # Se actualiza el usuario
+
+            # 2. Actualizar DatosPersonalesUsuario
+            datos_personales_usuario = DatosPersonalesUsuario.objects.get(usuario=usuario)
+            datos_personales_data = {
+                'nombres_apellidos': request.data.get('nombres_apellidos'),
+                'telefono': request.data.get('telefono'),
+            }
+            datos_personales_serializer = DatosPersonalesUsuarioSerializer(datos_personales_usuario, data=datos_personales_data, partial=True)
+            datos_personales_serializer.is_valid(raise_exception=True)
+            datos_personales_serializer.save()
+
+            # 3. Actualizar o crear UsuarioProyecto
+            proyecto_id = request.data.get('proyecto_id')
+            try:
+                usuario_proyecto = UsuarioProyecto.objects.get(usuario=usuario)
+                # Actualizar la relación del proyecto si ya existe
+                usuario_proyecto_data = {'proyecto': proyecto_id}
+                usuario_proyecto_serializer = UsuarioProyectoSerializer(usuario_proyecto, data=usuario_proyecto_data, partial=True)
+            except UsuarioProyecto.DoesNotExist:
+                # Crear una nueva relación si no existe
+                usuario_proyecto_data = {'usuario': usuario.id, 'proyecto': proyecto_id}
+                usuario_proyecto_serializer = UsuarioProyectoSerializer(data=usuario_proyecto_data)
+
+            usuario_proyecto_serializer.is_valid(raise_exception=True)
+            usuario_proyecto_serializer.save()
+
+            # Respuesta de éxito si todo se actualizó correctamente
+            return Response({
+                'success': True,
+                'message': 'Usuario actualizado correctamente',
+                'data': {
+                    'usuario': usuario_serializer.data,
+                    'datos_personales': datos_personales_serializer.data,
+                    'usuario_proyecto': usuario_proyecto_serializer.data
+                }
+            }, status=status.HTTP_200_OK)
+
+        except Usuario.DoesNotExist:
+            return Response({'success': False, 'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
         
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
