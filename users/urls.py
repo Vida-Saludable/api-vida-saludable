@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from .views.role_view import RoleViewSet
-from .views.usuario_view import UsuarioViewSet
+from .views.usuario_view import ListaUsuariosView, UsuarioViewSet
 from .views.datos_personales_usuario_view import DatosPersonalesUsuarioViewSet
 from .views.proyecto_view import ProyectoViewSet
 from .views.usuario_proyecto_view import UsuarioProyectoViewSet

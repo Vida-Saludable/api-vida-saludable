@@ -1,5 +1,7 @@
 from django.urls import path
 
+from users.views.usuario_view import ListaUsuariosView
+
 # from rest_framework.routers import DefaultRouter
 
 from .views.reporte_aire_view import ReporteAireView
@@ -39,6 +41,8 @@ urlpatterns = [
 
     # Reporte general de registros de habitos de cada persona por dia
     path('registros-diarios/', RegistroHabitosView.as_view(), name='registros-diarios'),
+
+    path('lista-usuarios/', ListaUsuariosView.as_view(), name='lista-usuarios'),
 
 
 ]
