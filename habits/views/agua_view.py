@@ -4,6 +4,7 @@ from rest_framework.response import Response
 
 from ..models.agua_model import Agua
 from ..serializers.agua_serializer import AguaSerializer
+from users.models.datos_personales_usuario_model import DatosPersonalesUsuario
 
 
 class AguaViewSet(viewsets.ModelViewSet):
@@ -18,6 +19,28 @@ class AguaViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response({
             'success': True,
-            'message': 'Se registro exitosamente',
+            'message': 'Se registró exitosamente',
             'data': serializer.data
         }, status=status.HTTP_201_CREATED, headers=headers)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        data = serializer.data
+        
+        # Modificar los datos para agregar nombres_apellidos y telefono del usuario
+        for item in data:
+            usuario_id = item['usuario']  # Obtener el id del usuario
+            datos_personales = DatosPersonalesUsuario.objects.filter(usuario_id=usuario_id).first()
+            if datos_personales:
+                item['usuario'] = datos_personales.nombres_apellidos  # Reemplazar el ID con nombres_apellidos
+                item['telefono'] = datos_personales.telefono  # Agregar el telefono
+            else:
+                item['usuario'] = None
+                item['telefono'] = None
+
+        return Response({
+            'success': True,
+            'message': 'Listado de registros de agua',
+            'data': data
+        })
