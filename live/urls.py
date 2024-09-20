@@ -24,8 +24,8 @@ api_router.registry.extend(habits_router.registry)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(api_router.urls)),
-    path('api/', include('reports.urls')),
-    path('api/', include('health.urls')),
+    path('reports/', include('reports.urls')),
+    path('health/', include('health.urls')),
     path('registro/', RegistroUsuarioView.as_view(), name='registro'),
     path('login/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('logout/', LogoutUsuarioView.as_view(), name='logout'),
