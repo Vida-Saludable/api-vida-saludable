@@ -105,7 +105,7 @@ REST_FRAMEWORK = {
     ),
 }
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -120,10 +120,10 @@ WSGI_APPLICATION = 'live.wsgi.application'
 DATABASES = {
    'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'vida_saludable',
-        'USER': 'postgres',
-        'PASSWORD': 'Juanjose8923510',
-        'HOST': 'localhost',  # O la dirección IP de tu servidor MySQL
+        'NAME': 'vida_saludable_0uon',
+        'USER': 'vida_saludable_0uon_user',
+        'PASSWORD': '7fTLF3XB6XL9N745siJE94xcT6ybtcGK',
+        'HOST': 'dpg-crksavtumphs73br47j0-a.oregon-postgres.render.com',  # O la dirección IP de tu servidor MySQL
         'PORT': '5432',  # O el puerto que estés utilizando
     }
 }
