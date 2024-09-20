@@ -14,18 +14,16 @@ from habits.urls import router as habits_router
 # from health.urls import router as health_router
 
 # Crea un enrutador principal
-# api_router = DefaultRouter()
+api_router = DefaultRouter()
 
 # Combina los enrutadores de users, habits y health en el enrutador principal
-# api_router.registry.extend(users_router.registry)
-# api_router.registry.extend(habits_router.registry)
+api_router.registry.extend(users_router.registry)
+api_router.registry.extend(habits_router.registry)
 # api_router.registry.extend(health_router.registry)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('api/', include(api_router.urls)),
-    path('users/', include('users.urls')),
-    path('habits/', include('habits.urls')),
+    path('api/', include(api_router.urls)),
     path('reports/', include('reports.urls')),
     path('health/', include('health.urls')),
     path('registro/', RegistroUsuarioView.as_view(), name='registro'),
