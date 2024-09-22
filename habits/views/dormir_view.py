@@ -45,6 +45,7 @@ class DormirViewSet(viewsets.ModelViewSet):
                     "total_minutos": 0,
                     "hora_dormir": dormir.hora.strftime("%H:%M:%S"),
                     "hora_despertar": None,  # Inicializar
+                    "estado": None  # Inicializar el estado
                 }
 
             # Obtener registros de despertar para la fecha actual
@@ -67,8 +68,9 @@ class DormirViewSet(viewsets.ModelViewSet):
                     usuario_info[fecha_str]["total_horas"] += int(total_horas)
                     usuario_info[fecha_str]["total_minutos"] += int(total_minutos)
 
-                    # Guardar la última hora de despertar
+                    # Guardar la última hora de despertar y el estado
                     usuario_info[fecha_str]["hora_despertar"] = despertar.hora.strftime("%H:%M:%S")
+                    usuario_info[fecha_str]["estado"] = despertar.estado  # Guardar el estado
 
         # Convertir el diccionario a lista
         for item in usuario_info.values():
@@ -79,3 +81,4 @@ class DormirViewSet(viewsets.ModelViewSet):
             'message': 'Listado de registros de dormir',
             'data': resultados
         })
+
