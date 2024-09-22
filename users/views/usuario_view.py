@@ -32,26 +32,29 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             usuario_serializer.is_valid(raise_exception=True)
             usuario = usuario_serializer.save()  # Guarda el usuario y obtiene el ID
 
-            # 2. Registrar DatosPersonalesUsuario (requiere el ID del usuario registrado)
-            # Obtener los datos personales directamente desde el cuerpo de la solicitud
-            datos_personales = {
-                'nombres_apellidos': request.data.get('nombres_apellidos'),
-                'telefono': request.data.get('telefono'),
-                'usuario': usuario.id  # Asignar el ID del usuario recién creado
-            }
-            datos_personales_serializer = DatosPersonalesUsuarioSerializer(data=datos_personales)
-            datos_personales_serializer.is_valid(raise_exception=True)
-            datos_personales_usuario = datos_personales_serializer.save()
+            # 2. Registrar UsuarioProyecto (requiere el ID del usuario y varios proyectos)
+            proyectos_ids = request.data.get('proyectos_ids', [])  # Obtener la lista de IDs de proyectos
+            
+            # Verificar si se enviaron proyectos
+            if not proyectos_ids:
+                return Response({
+                    'success': False,
+                    'message': 'Debe seleccionar al menos un proyecto.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Asociar al usuario con cada proyecto
+            usuario_proyecto_data = []
+            for proyecto_id in proyectos_ids:
+                usuario_proyecto_data.append({
+                    'usuario': usuario.id,
+                    'proyecto': proyecto_id
+                })
 
-            # 3. Registrar UsuarioProyecto (requiere el ID del usuario y del proyecto)
-            proyecto_id = request.data.get('proyecto_id')
-            usuario_proyecto_data = {
-                'usuario': usuario.id,
-                'proyecto': proyecto_id
-            }
-            usuario_proyecto_serializer = UsuarioProyectoSerializer(data=usuario_proyecto_data)
-            usuario_proyecto_serializer.is_valid(raise_exception=True)
-            usuario_proyecto_serializer.save()
+            # Guardar las asociaciones
+            for data in usuario_proyecto_data:
+                usuario_proyecto_serializer = UsuarioProyectoSerializer(data=data)
+                usuario_proyecto_serializer.is_valid(raise_exception=True)
+                usuario_proyecto_serializer.save()
 
             # Respuesta de éxito si todo se guardó correctamente
             return Response({
@@ -59,14 +62,14 @@ class UsuarioViewSet(viewsets.ModelViewSet):
                 'message': 'Usuario registrado correctamente',
                 'data': {
                     'usuario': usuario_serializer.data,
-                    'datos_personales': datos_personales_serializer.data,
-                    'usuario_proyecto': usuario_proyecto_serializer.data
+                    'usuario_proyectos': usuario_proyecto_data  # Devuelve la lista de asociaciones
                 }
             }, status=status.HTTP_201_CREATED)
 
         except Exception as e:
             # Si hay algún error, se deshacen todas las operaciones
             return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
     
     def update(self, request, *args, **kwargs):
         try:
@@ -79,30 +82,19 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             usuario_serializer.is_valid(raise_exception=True)
             usuario_serializer.save()  # Se actualiza el usuario
 
-            # 2. Actualizar DatosPersonalesUsuario
-            datos_personales_usuario = DatosPersonalesUsuario.objects.get(usuario=usuario)
-            datos_personales_data = {
-                'nombres_apellidos': request.data.get('nombres_apellidos'),
-                'telefono': request.data.get('telefono'),
-            }
-            datos_personales_serializer = DatosPersonalesUsuarioSerializer(datos_personales_usuario, data=datos_personales_data, partial=True)
-            datos_personales_serializer.is_valid(raise_exception=True)
-            datos_personales_serializer.save()
-
-            # 3. Actualizar o crear UsuarioProyecto
-            proyecto_id = request.data.get('proyecto_id')
-            try:
-                usuario_proyecto = UsuarioProyecto.objects.get(usuario=usuario)
-                # Actualizar la relación del proyecto si ya existe
-                usuario_proyecto_data = {'proyecto': proyecto_id}
-                usuario_proyecto_serializer = UsuarioProyectoSerializer(usuario_proyecto, data=usuario_proyecto_data, partial=True)
-            except UsuarioProyecto.DoesNotExist:
-                # Crear una nueva relación si no existe
-                usuario_proyecto_data = {'usuario': usuario.id, 'proyecto': proyecto_id}
-                usuario_proyecto_serializer = UsuarioProyectoSerializer(data=usuario_proyecto_data)
-
-            usuario_proyecto_serializer.is_valid(raise_exception=True)
-            usuario_proyecto_serializer.save()
+            # 2. Actualizar o crear las relaciones UsuarioProyecto
+            proyectos_ids = request.data.get('proyectos_ids', [])
+            
+            if proyectos_ids:
+                # Eliminar relaciones anteriores
+                UsuarioProyecto.objects.filter(usuario=usuario).delete()
+                
+                # Crear nuevas relaciones para cada proyecto
+                for proyecto_id in proyectos_ids:
+                    usuario_proyecto_data = {'usuario': usuario.id, 'proyecto': proyecto_id}
+                    usuario_proyecto_serializer = UsuarioProyectoSerializer(data=usuario_proyecto_data)
+                    usuario_proyecto_serializer.is_valid(raise_exception=True)
+                    usuario_proyecto_serializer.save()
 
             # Respuesta de éxito si todo se actualizó correctamente
             return Response({
@@ -110,8 +102,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
                 'message': 'Usuario actualizado correctamente',
                 'data': {
                     'usuario': usuario_serializer.data,
-                    'datos_personales': datos_personales_serializer.data,
-                    'usuario_proyecto': usuario_proyecto_serializer.data
+                    'proyectos': proyectos_ids  # Devolver los proyectos actualizados
                 }
             }, status=status.HTTP_200_OK)
 
@@ -121,14 +112,15 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+
         
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response({
-            "success": True,
-            "message": "Usuario eliminado correctamente"
-        }, status=status.HTTP_200_OK)
+    # def destroy(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     self.perform_destroy(instance)
+    #     return Response({
+    #         "success": True,
+    #         "message": "Usuario eliminado correctamente"
+    #     }, status=status.HTTP_200_OK)
 
 class RegistroUsuarioView(APIView):
     def post(self, request):
@@ -148,25 +140,21 @@ class ListaUsuariosView(APIView):
         usuarios_data = []
 
         for usuario in usuarios:
-            # Obtener los datos personales del usuario
-            datos_personales = DatosPersonalesUsuario.objects.filter(usuario=usuario).first()
+            # Obtener los proyectos asociados al usuario
+            usuario_proyectos = UsuarioProyecto.objects.filter(usuario=usuario)
+            nombres_proyectos = [proyecto.proyecto.nombre for proyecto in usuario_proyectos] if usuario_proyectos else []
 
-            # Obtener el proyecto asociado al usuario
-            usuario_proyecto = UsuarioProyecto.objects.filter(usuario=usuario).first()
-            nombre_proyecto = usuario_proyecto.proyecto.nombre if usuario_proyecto else None
-
-            # Serializar los datos
+            # Serializar los datos del usuario
             usuario_serializado = UsuarioSerializer(usuario).data
-            datos_personales_serializado = DatosPersonalesUsuarioSerializer(datos_personales).data if datos_personales else {}
 
             # Construir los datos del usuario
             usuario_info = {
                 'id': usuario.id,  # Incluimos el ID del usuario
-                'nombres_apellidos': datos_personales_serializado.get('nombres_apellidos'),
-                'correo': usuario_serializado.get('correo'),
+                'nombre': usuario_serializado.get('nombre'),  # Nombre del usuario directamente del modelo Usuario
+                'correo': usuario_serializado.get('correo'),  # Correo electrónico del usuario
                 'role': usuario.role.name if usuario.role else None,  # Obtener el nombre del rol
-                'proyecto_id': nombre_proyecto,  # Incluir el nombre del proyecto
-                'telefono': datos_personales_serializado.get('telefono')
+                'proyectos': nombres_proyectos,  # Incluir los nombres de los proyectos asociados
+                'telefono': usuario_serializado.get('telefono')  # Teléfono directamente del modelo Usuario
             }
 
             usuarios_data.append(usuario_info)
