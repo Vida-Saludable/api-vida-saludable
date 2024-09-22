@@ -147,7 +147,6 @@ class ListaUsuariosView(APIView):
             # Serializar los datos del usuario
             usuario_serializado = UsuarioSerializer(usuario).data
 
-            # Construir los datos del usuario
             usuario_info = {
                 'id': usuario.id,  # Incluimos el ID del usuario
                 'nombre': usuario_serializado.get('nombre'),  # Nombre del usuario
