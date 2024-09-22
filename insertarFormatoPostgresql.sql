@@ -1,77 +1,79 @@
-INSERT INTO api_role (name) VALUES
+INSERT INTO users_role (name) VALUES
 ('Administrador'),
 ('Desarrollador'),
 ('Diseñador'),
 ('Analista'),
 ('Tester');
 
--- Inserción masiva de 60 registros en la tabla usuarios con nombres y correos aleatorios
-INSERT INTO api_usuario (correo, contrasenia, role_id)
+-- Inserción masiva de 60 registros en la tabla usuarios con todos los campos
+INSERT INTO users_usuario (nombre, correo, password, role_id, is_superuser, is_active, is_staff, last_login)
 VALUES 
-('maria.gonzalez@example.com', 'password_hash1', 1),
-('juan.perez@example.com', 'password_hash2', 2),
-('carmen.rodriguez@example.com', 'password_hash3', 3),
-('luis.lopez@example.com', 'password_hash4', 4),
-('ana.martinez@example.com', 'password_hash5', 5),
-('jose.garcia@example.com', 'password_hash6', 1),
-('luis.hernandez@example.com', 'password_hash7', 2),
-('pedro.sanchez@example.com', 'password_hash8', 3),
-('laura.torres@example.com', 'password_hash9', 4),
-('maria.ramirez@example.com', 'password_hash10', 5),
-('ricardo.fernandez@example.com', 'password_hash11', 1),
-('juan.rivera@example.com', 'password_hash12', 2),
-('claudia.gomez@example.com', 'password_hash13', 3),
-('jorge.vargas@example.com', 'password_hash14', 4),
-('andrea.romero@example.com', 'password_hash15', 5),
-('victor.morales@example.com', 'password_hash16', 1),
-('david.ortiz@example.com', 'password_hash17', 2),
-('carlos.reyes@example.com', 'password_hash18', 3),
-('patricia.flores@example.com', 'password_hash19', 4),
-('natalia.munoz@example.com', 'password_hash20', 5),
-('francisco.gutierrez@example.com', 'password_hash21', 1),
-('susana.rivas@example.com', 'password_hash22', 2),
-('alberto.fernandez@example.com', 'password_hash23', 3),
-('daniel.ruiz@example.com', 'password_hash24', 4),
-('manuel.ramirez@example.com', 'password_hash25', 5),
-('marco.cabrera@example.com', 'password_hash26', 1),
-('lorena.salinas@example.com', 'password_hash27', 2),
-('adriana.medina@example.com', 'password_hash28', 3),
-('fernando.molina@example.com', 'password_hash29', 4),
-('alejandra.castro@example.com', 'password_hash30', 5),
-('sofia.diaz@example.com', 'password_hash31', 1),
-('esteban.mendez@example.com', 'password_hash32', 2),
-('valeria.martinez@example.com', 'password_hash33', 3),
-('emilio.ruiz@example.com', 'password_hash34', 4),
-('carlos.galindo@example.com', 'password_hash35', 5),
-('marta.alvarez@example.com', 'password_hash36', 1),
-('javier.pineda@example.com', 'password_hash37', 2),
-('lucia.moreno@example.com', 'password_hash38', 3),
-('camila.rivas@example.com', 'password_hash39', 4),
-('sebastian.leon@example.com', 'password_hash40', 5),
-('angelica.silva@example.com', 'password_hash41', 1),
-('diego.gonzalez@example.com', 'password_hash42', 2),
-('gabriela.lopez@example.com', 'password_hash43', 3),
-('miguel.martinez@example.com', 'password_hash44', 4),
-('elena.rosales@example.com', 'password_hash45', 5),
-('hugo.mendez@example.com', 'password_hash46', 1),
-('karla.cervantes@example.com', 'password_hash47', 2),
-('renato.benitez@example.com', 'password_hash48', 3),
-('liliana.cortes@example.com', 'password_hash49', 4),
-('eduardo.arias@example.com', 'password_hash50', 5),
-('paula.santos@example.com', 'password_hash51', 1),
-('alejandro.romero@example.com', 'password_hash52', 2),
-('florencia.miranda@example.com', 'password_hash53', 3),
-('victoria.guerrero@example.com', 'password_hash54', 4),
-('sergio.martin@example.com', 'password_hash55', 5),
-('julieta.castillo@example.com', 'password_hash56', 1),
-('raul.ramirez@example.com', 'password_hash57', 2),
-('laura.blanco@example.com', 'password_hash58', 3),
-('antonio.camacho@example.com', 'password_hash59', 4),
-('andres.torres@example.com', 'password_hash60', 5);
+('maria', 'maria.gonzalez@example.com', 'password_hash1', 1, FALSE, TRUE, FALSE, NULL),
+('juan', 'juan.perez@example.com', 'password_hash2', 2, FALSE, TRUE, FALSE, NULL),
+('carmen', 'carmen.rodriguez@example.com', 'password_hash3', 3, FALSE, TRUE, FALSE, NULL),
+('luis', 'luis.lopez@example.com', 'password_hash4', 4, FALSE, TRUE, FALSE, NULL),
+('ana', 'ana.martinez@example.com', 'password_hash5', 5, FALSE, TRUE, FALSE, NULL),
+('jose', 'jose.garcia@example.com', 'password_hash6', 1, FALSE, TRUE, FALSE, NULL),
+('luis', 'luis.hernandez@example.com', 'password_hash7', 2, FALSE, TRUE, FALSE, NULL),
+('pedro', 'pedro.sanchez@example.com', 'password_hash8', 3, FALSE, TRUE, FALSE, NULL),
+('laura', 'laura.torres@example.com', 'password_hash9', 4, FALSE, TRUE, FALSE, NULL),
+('maria', 'maria.ramirez@example.com', 'password_hash10', 5, FALSE, TRUE, FALSE, NULL),
+('ricardo', 'ricardo.fernandez@example.com', 'password_hash11', 1, FALSE, TRUE, FALSE, NULL),
+('juan', 'juan.rivera@example.com', 'password_hash12', 2, FALSE, TRUE, FALSE, NULL),
+('claudia', 'claudia.gomez@example.com', 'password_hash13', 3, FALSE, TRUE, FALSE, NULL),
+('jorge', 'jorge.vargas@example.com', 'password_hash14', 4, FALSE, TRUE, FALSE, NULL),
+('andrea', 'andrea.romero@example.com', 'password_hash15', 5, FALSE, TRUE, FALSE, NULL),
+('victor', 'victor.morales@example.com', 'password_hash16', 1, FALSE, TRUE, FALSE, NULL),
+('david', 'david.ortiz@example.com', 'password_hash17', 2, FALSE, TRUE, FALSE, NULL),
+('carlos', 'carlos.reyes@example.com', 'password_hash18', 3, FALSE, TRUE, FALSE, NULL),
+('patricia', 'patricia.flores@example.com', 'password_hash19', 4, FALSE, TRUE, FALSE, NULL),
+('natalia', 'natalia.munoz@example.com', 'password_hash20', 5, FALSE, TRUE, FALSE, NULL),
+('francisco', 'francisco.gutierrez@example.com', 'password_hash21', 1, FALSE, TRUE, FALSE, NULL),
+('susana', 'susana.rivas@example.com', 'password_hash22', 2, FALSE, TRUE, FALSE, NULL),
+('alberto', 'alberto.fernandez@example.com', 'password_hash23', 3, FALSE, TRUE, FALSE, NULL),
+('daniel', 'daniel.ruiz@example.com', 'password_hash24', 4, FALSE, TRUE, FALSE, NULL),
+('manuel', 'manuel.ramirez@example.com', 'password_hash25', 5, FALSE, TRUE, FALSE, NULL),
+('marco', 'marco.cabrera@example.com', 'password_hash26', 1, FALSE, TRUE, FALSE, NULL),
+('lorena', 'lorena.salinas@example.com', 'password_hash27', 2, FALSE, TRUE, FALSE, NULL),
+('adriana', 'adriana.medina@example.com', 'password_hash28', 3, FALSE, TRUE, FALSE, NULL),
+('fernando', 'fernando.molina@example.com', 'password_hash29', 4, FALSE, TRUE, FALSE, NULL),
+('alejandra', 'alejandra.castro@example.com', 'password_hash30', 5, FALSE, TRUE, FALSE, NULL),
+('sofia', 'sofia.diaz@example.com', 'password_hash31', 1, FALSE, TRUE, FALSE, NULL),
+('esteban', 'esteban.mendez@example.com', 'password_hash32', 2, FALSE, TRUE, FALSE, NULL),
+('valeria', 'valeria.martinez@example.com', 'password_hash33', 3, FALSE, TRUE, FALSE, NULL),
+('emilio', 'emilio.ruiz@example.com', 'password_hash34', 4, FALSE, TRUE, FALSE, NULL),
+('carlos', 'carlos.galindo@example.com', 'password_hash35', 5, FALSE, TRUE, FALSE, NULL),
+('marta', 'marta.alvarez@example.com', 'password_hash36', 1, FALSE, TRUE, FALSE, NULL),
+('javier', 'javier.pineda@example.com', 'password_hash37', 2, FALSE, TRUE, FALSE, NULL),
+('lucia', 'lucia.moreno@example.com', 'password_hash38', 3, FALSE, TRUE, FALSE, NULL),
+('camila', 'camila.rivas@example.com', 'password_hash39', 4, FALSE, TRUE, FALSE, NULL),
+('sebastian', 'sebastian.leon@example.com', 'password_hash40', 5, FALSE, TRUE, FALSE, NULL),
+('angelica', 'angelica.silva@example.com', 'password_hash41', 1, FALSE, TRUE, FALSE, NULL),
+('diego', 'diego.gonzalez@example.com', 'password_hash42', 2, FALSE, TRUE, FALSE, NULL),
+('gabriela', 'gabriela.lopez@example.com', 'password_hash43', 3, FALSE, TRUE, FALSE, NULL),
+('miguel', 'miguel.martinez@example.com', 'password_hash44', 4, FALSE, TRUE, FALSE, NULL),
+('elena', 'elena.rosales@example.com', 'password_hash45', 5, FALSE, TRUE, FALSE, NULL),
+('hugo', 'hugo.mendez@example.com', 'password_hash46', 1, FALSE, TRUE, FALSE, NULL),
+('karla', 'karla.cervantes@example.com', 'password_hash47', 2, FALSE, TRUE, FALSE, NULL),
+('renato', 'renato.benitez@example.com', 'password_hash48', 3, FALSE, TRUE, FALSE, NULL),
+('liliana', 'liliana.cortes@example.com', 'password_hash49', 4, FALSE, TRUE, FALSE, NULL),
+('eduardo', 'eduardo.arias@example.com', 'password_hash50', 5, FALSE, TRUE, FALSE, NULL),
+('paula', 'paula.santos@example.com', 'password_hash51', 1, FALSE, TRUE, FALSE, NULL),
+('alejandro', 'alejandro.romero@example.com', 'password_hash52', 2, FALSE, TRUE, FALSE, NULL),
+('florencia', 'florencia.miranda@example.com', 'password_hash53', 3, FALSE, TRUE, FALSE, NULL),
+('victoria', 'victoria.guerrero@example.com', 'password_hash54', 4, FALSE, TRUE, FALSE, NULL),
+('sergio', 'sergio.martin@example.com', 'password_hash55', 5, FALSE, TRUE, FALSE, NULL),
+('julieta', 'julieta.castillo@example.com', 'password_hash56', 1, FALSE, TRUE, FALSE, NULL),
+('raul', 'raul.ramirez@example.com', 'password_hash57', 2, FALSE, TRUE, FALSE, NULL),
+('laura', 'laura.blanco@example.com', 'password_hash58', 3, FALSE, TRUE, FALSE, NULL),
+('antonio', 'antonio.camacho@example.com', 'password_hash59', 4, FALSE, TRUE, FALSE, NULL),
+('andres', 'andres.torres@example.com', 'password_hash60', 5, FALSE, TRUE, FALSE, NULL);
+
+
 
 
 -- Inserción masiva de 60 registros en la tabla datos_personales_usuarios
-INSERT INTO api_datospersonalesusuario (usuario_id, nombres_apellidos, sexo, edad, estado_civil, fecha_nacimiento, telefono, grado_instruccion, procedencia, religion, fecha)
+INSERT INTO users_datospersonalesusuario (usuario_id, nombres_apellidos, sexo, edad, estado_civil, fecha_nacimiento, telefono, grado_instruccion, procedencia, religion, fecha)
 VALUES 
 (1, 'Maria Gonzalez', 'F', 28, 'Soltera', '1996-03-15', '60012345', 'Licenciatura', 'Santa Cruz', 'Católica', '2024-09-01'),
 (2, 'Juan Perez', 'M', 32, 'Casado', '1992-08-12', '72012345', 'Bachiller', 'La Paz', 'Cristiana', '2024-09-01'),
@@ -136,14 +138,14 @@ VALUES
 
 
 
-INSERT INTO api_proyecto (nombre, descripcion, fecha_inicio, fecha_fin, estado) VALUES
+INSERT INTO users_proyecto (nombre, descripcion, fecha_inicio, fecha_fin, estado) VALUES
 ('Proyecto Alpha', 'Descripción del Proyecto Alpha', '2024-01-15', '2024-06-30',1),
 ('Proyecto Beta', 'Descripción del Proyecto Beta', '2024-02-01', '2024-07-31',0),
 ('Proyecto Gamma', 'Descripción del Proyecto Gamma', '2024-03-01', '2024-08-31',1),
 ('Proyecto Delta', 'Descripción del Proyecto Delta', '2024-04-01', '2024-09-30',1),
 ('Proyecto Epsilon', 'Descripción del Proyecto Epsilon', '2024-05-01', '2024-10-31',0);
 
-INSERT INTO api_usuarioproyecto (usuario_id, proyecto_id) VALUES
+INSERT INTO users_usuarioproyecto (usuario_id, proyecto_id) VALUES
 (1,1),
 (2,2),
 (3,4),
@@ -208,7 +210,7 @@ INSERT INTO api_usuarioproyecto (usuario_id, proyecto_id) VALUES
 
 
 
-INSERT INTO api_alimentacion (fecha, desayuno_hora, almuerzo_hora, cena_hora, desayuno, almuerzo, cena, desayuno_saludable, almuerzo_saludable , cena_saludable, usuario_id) VALUES
+INSERT INTO habits_alimentacion (fecha, desayuno_hora, almuerzo_hora, cena_hora, desayuno, almuerzo, cena, desayuno_saludable, almuerzo_saludable , cena_saludable, usuario_id) VALUES
 -- usuario 1
 ('2024-08-15', '08:00:00', '12:00:00', '19:00:00', 1, 1, 0, 1, 1, 1, 1),
 ('2024-08-16', '08:00:00', '12:00:00', '19:00:00', 0, 1, 1, 1, 1, 0, 1),
@@ -347,7 +349,7 @@ INSERT INTO api_alimentacion (fecha, desayuno_hora, almuerzo_hora, cena_hora, de
 
 
 
-INSERT INTO api_agua (fecha, hora, cantidad, usuario_id) VALUES
+INSERT INTO habits_agua (fecha, hora, cantidad, usuario_id) VALUES
 -- Usuario 1
 ('2024-08-15', '07:00:00', 500, 1),
 ('2024-08-16', '08:00:00', 1500, 1),
@@ -485,7 +487,7 @@ INSERT INTO api_agua (fecha, hora, cantidad, usuario_id) VALUES
 
 
 
-INSERT INTO api_esperanza (fecha, tipo_practica, usuario_id) VALUES
+INSERT INTO habits_esperanza (fecha, tipo_practica, usuario_id) VALUES
 -- usuario 1
 ('2024-08-15', 'oracion', 1),
 ('2024-08-16', 'oracion', 1),
@@ -623,7 +625,7 @@ INSERT INTO api_esperanza (fecha, tipo_practica, usuario_id) VALUES
 ('2024-09-15', 'oracion', 4);
 
 
-INSERT INTO api_sol (fecha, tiempo, usuario_id) VALUES
+INSERT INTO habits_sol (fecha, tiempo, usuario_id) VALUES
 -- usuario 1
 ('2024-08-15', 30, 1),
 ('2024-08-16', 50, 1),
@@ -761,7 +763,7 @@ INSERT INTO api_sol (fecha, tiempo, usuario_id) VALUES
 ('2024-09-15', 55, 4);
 
 
-INSERT INTO api_aire (fecha, tiempo, usuario_id) VALUES
+INSERT INTO habits_aire (fecha, tiempo, usuario_id) VALUES
 --usuario 1
 ('2024-08-15', 45, 1),
 ('2024-08-16', 15, 1),
@@ -902,7 +904,7 @@ INSERT INTO api_aire (fecha, tiempo, usuario_id) VALUES
 
 
 -- Insertar datos en la tabla despertar
-INSERT INTO api_dormir (fecha, hora, usuario_id) VALUES
+INSERT INTO habits_dormir (fecha, hora, usuario_id) VALUES
 -- usuario 1
 ('2024-08-15', '22:00:00', 1), 
 ('2024-08-16', '23:30:00', 1), 
@@ -1040,7 +1042,7 @@ INSERT INTO api_dormir (fecha, hora, usuario_id) VALUES
 ('2024-09-15', '22:30:00', 4);
 
 
-INSERT INTO api_despertar (fecha, hora, estado, usuario_id) VALUES
+INSERT INTO habits_despertar (fecha, hora, estado, usuario_id) VALUES
 ('2024-08-15', '06:00:00', 1, 1), 
 ('2024-08-16', '07:00:00', 1, 1), 
 ('2024-08-17', '08:00:00', 0, 1), 
@@ -1181,7 +1183,7 @@ INSERT INTO api_despertar (fecha, hora, estado, usuario_id) VALUES
 
 
 
-INSERT INTO api_ejercicio (fecha, tiempo, tipo, usuario_id) VALUES
+INSERT INTO habits_ejercicio (fecha, tiempo, tipo, usuario_id) VALUES
  -- Datos para user_id 2
     ('2024-08-15', 50, 'lenta', 1),
     ('2024-08-16', 60, 'rápido', 1),
@@ -1324,7 +1326,7 @@ INSERT INTO api_ejercicio (fecha, tiempo, tipo, usuario_id) VALUES
 
 
 
-INSERT INTO api_datoscorporales (usuario_id, peso, altura, imc, presion_sistolica, presion_diastolica, radio_abdominal, grasa_corporal, grasa_visceral, frecuencia_cardiaca, frecuencia_respiratoria, colesterol_total, colesterol_hdl, colesterol_ldl, trigliceridos, glucosa, temperatura, saturacion_oxigeno, porcentaje_musculo, glicemia_basal, frecuencia_cardiaca_en_reposo, frecuencia_cardiaca_despues_de_45_segundos, frecuencia_cardiaca_1_minuto_despues, resultado_test_rufier, fecha, tipo
+INSERT INTO health_datoscorporales (usuario_id, peso, altura, imc, presion_sistolica, presion_diastolica, radio_abdominal, grasa_corporal, grasa_visceral, frecuencia_cardiaca, frecuencia_respiratoria, colesterol_total, colesterol_hdl, colesterol_ldl, trigliceridos, glucosa, temperatura, saturacion_oxigeno, porcentaje_musculo, glicemia_basal, frecuencia_cardiaca_en_reposo, frecuencia_cardiaca_despues_de_45_segundos, frecuencia_cardiaca_1_minuto_despues, resultado_test_rufier, fecha, tipo
 ) VALUES 
 (1,  70.5, 1.75, 23.0, 120, 80,  90.0,  20.0,  10.0,  75, 18, 200.0,  60.0,  130.0,  150.0,  90.0,  36.5, 98, 45.0, 85.0, 70, 85,  75, 12.5, '2024-09-12', 'inicial'),
 (2, 60.50, 1.68, 21.45, 115, 75, 85.00, 18.00, 12.00, 72, 18, 190.00, 55.00, 120.00, 140.00, 85.00, 36.7, 97, 38.00, 78, 118, 95,   90, 13.5,'2024-09-02', 'inicial'),
@@ -1450,7 +1452,7 @@ INSERT INTO api_datoscorporales (usuario_id, peso, altura, imc, presion_sistolic
 
 
 
-INSERT INTO api_datoshabitos (usuario_id, consumo_3_comidas_horario_fijo, consumo_5_porciones_frutas_verduras, consumo_3_porciones_proteinas, ingiero_otros_alimentos, consumo_carbohidratos, 
+INSERT INTO habits_datoshabitos (usuario_id, consumo_3_comidas_horario_fijo, consumo_5_porciones_frutas_verduras, consumo_3_porciones_proteinas, ingiero_otros_alimentos, consumo_carbohidratos, 
   consumo_alimentos_fritos, 
   consumo_alimentos_hechos_en_casa,
    consumo_liquidos_mientras_como,
