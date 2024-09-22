@@ -39,14 +39,14 @@ class EsperanzaViewSet(viewsets.ModelViewSet):
                     "usuario": datos_personales.nombres_apellidos if datos_personales else None,
                     "telefono": datos_personales.telefono if datos_personales else None,
                     "oracion": None,
-                    "leer biblia": None,
+                    "leer_biblia": None,
                 }
 
             # Asignar el tipo de práctica
             if esperanza.tipo_practica == "oracion":
                 usuario_info[fecha_str]["oracion"] = esperanza.tipo_practica
             elif esperanza.tipo_practica == "leer biblia":
-                usuario_info[fecha_str]["leer biblia"] = esperanza.tipo_practica
+                usuario_info[fecha_str]["leer_biblia"] = esperanza.tipo_practica
 
         # Convertir el diccionario a lista
         for item in usuario_info.values():
