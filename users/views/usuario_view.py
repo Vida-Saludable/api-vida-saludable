@@ -150,13 +150,13 @@ class ListaUsuariosView(APIView):
             # Construir los datos del usuario
             usuario_info = {
                 'id': usuario.id,  # Incluimos el ID del usuario
-                'nombre': usuario_serializado.get('nombre'),  # Nombre del usuario directamente del modelo Usuario
+                'nombre': usuario_serializado.get('nombre'),  # Nombre del usuario
                 'correo': usuario_serializado.get('correo'),  # Correo electrónico del usuario
                 'role': usuario.role.name if usuario.role else None,  # Obtener el nombre del rol
-                'proyectos': nombres_proyectos,  # Incluir los nombres de los proyectos asociados
-                'telefono': usuario_serializado.get('telefono')  # Teléfono directamente del modelo Usuario
+                'proyectos': nombres_proyectos  # Incluir los nombres de los proyectos asociados
             }
 
             usuarios_data.append(usuario_info)
 
         return Response(usuarios_data)
+
