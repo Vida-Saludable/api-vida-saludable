@@ -1,73 +1,33 @@
-# from django.urls import path
-# from rest_framework.routers import DefaultRouter
-# from .views import (
-#     RoleViewSet, UsuarioViewSet, DatosPersonalesUsuarioViewSet, AlimentacionViewSet, AguaViewSet, EsperanzaViewSet, 
-#     SolViewSet, AireViewSet, DormirViewSet, DespertarViewSet, EjercicioViewSet, ProyectoViewSet, UsuarioProyectoViewSet, DatosCorporalesViewSet, DatosHabitosViewSet
-# )
-# from .health.viewindicatorhealthy import IndicadoresSaludPorUsuarioView
-# from .health.viewindicatormainwithfinal import HealthIndicatorsComparisonAPIView
+from django.contrib import admin
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
-# from .health.viewindicatorproject import IndicadoresSaludPorProyectoView
-# from .health.viewindicatorscorrelation import CorrelationView
+import reports
+from users.views.usuario_view import RegistroUsuarioView
+from users.auth.views.logout_usuarios_view import LogoutUsuarioView
+from rest_framework_simplejwt.views import TokenRefreshView
+from users.auth.views.login_usuarios_view import LoginUsuarioView, MyTokenObtainPairView
 
-# from .habits.viewhabitsbyuser import HabitosAPIView
-# from .habits.viewdatesofuser import GetDatesByIdView
-# from .viewusersproject import UsersProjectView
-# from .habits.viewhabitsbyuserall import UserHabitsAllAPIView
+# Importa los enrutadores de las aplicaciones
+from users.urls import router as users_router
+from habits.urls import router as habits_router
+# from health.urls import router as health_router
 
-# #autenticacion
-# from django.urls import path
-# from .views import RegistroUsuarioView, LoginUsuarioView, LogoutUsuarioView
-# from rest_framework_simplejwt.views import TokenRefreshView
-# from .views import MyTokenObtainPairView
+# Crea un enrutador principal
+api_router = DefaultRouter()
 
+# Combina los enrutadores de users, habits y health en el enrutador principal
+api_router.registry.extend(users_router.registry)
+api_router.registry.extend(habits_router.registry)
+# api_router.registry.extend(health_router.registry)
 
-# router = DefaultRouter()
-# router.register(r'roles', RoleViewSet)
-# router.register(r'usuarios', UsuarioViewSet)
-# router.register(r'usuarios-personales', DatosPersonalesUsuarioViewSet)
-# router.register(r'alimentaciones', AlimentacionViewSet)
-# router.register(r'aguas', AguaViewSet)
-# router.register(r'esperanzas', EsperanzaViewSet)
-# router.register(r'soles', SolViewSet)
-# router.register(r'aires', AireViewSet)
-# router.register(r'sleeps', DormirViewSet)
-# router.register(r'despertares', DespertarViewSet)
-# router.register(r'ejercicios', EjercicioViewSet)
-# router.register(r'proyectos', ProyectoViewSet)
-# router.register(r'usuario-proyectos', UsuarioProyectoViewSet)
-# router.register(r'datos-corporales', DatosCorporalesViewSet)
-# router.register(r'datos-habitos', DatosHabitosViewSet)
-
-# urlpatterns = [
-
-#     # estado del paciente
-#     path('indicadores-salud-por-usuario/<int:usuario_id>/', IndicadoresSaludPorUsuarioView.as_view(), name='indicadores_salud'),
-
-
-#     path('correlations-health-habits/', CorrelationView.as_view(), name='correlations-health-habits'),
-
-    
-#     # estado del paciente segun el proyecto
-#     path('indicadores-salud-por-proyectos/<int:proyecto_id>/', IndicadoresSaludPorProyectoView.as_view(), name='proyecto-detalle'),
-
-#     ## Seccion seguimiento Usuarios
-#     #comparadores iniciales vs finales
-#     path('indicadores-salud-iniciales-finales/<int:usuario_id>/', HealthIndicatorsComparisonAPIView.as_view(), name='indicadores_salud'),
-
-
-#     #habitos entre fechas
-#     path('indicadores-habitos-por-usuario/<int:usuario_id>/', HabitosAPIView.as_view(), name='indicador-de-habito'),
-
-#    # Seccion seguimiento Usuarios
-#     #todos sus habitos
-#     path('indicadores-habitos-por-usuario-seguimiento/<int:usuario_id>/', UserHabitsAllAPIView.as_view(), name='todos-los-indicadores'),
-
-#     #usuarios de un proyecto
-#     path('usuarios-de-proyecto/<int:proyecto_id>/', UsersProjectView.as_view(), name='usuarios-proyecto'),
-#     path('fechas-min-max/<int:usuario_id>/', GetDatesByIdView.as_view(), name='fechas'), 
-
-
-# ]
-
-# urlpatterns += router.urls
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/', include(api_router.urls)),
+    path('reports/', include('reports.urls')),
+    path('health/', include('health.urls')),
+    path('registro/', RegistroUsuarioView.as_view(), name='registro'),
+    path('login/', LoginUsuarioView.as_view(), name='token_obtain_pair'),
+    path('logout/', LogoutUsuarioView.as_view(), name='logout'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+]

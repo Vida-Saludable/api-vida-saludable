@@ -7,11 +7,12 @@ class UsuarioSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Usuario
-        fields = ('id', 'correo', 'contrasenia', 'role')
+        fields = ('id','nombre', 'correo', 'contrasenia', 'role')
 
     def create(self, validated_data):
         # Usa set_password para asignar la contraseña correctamente
         usuario = Usuario(
+            nombre=validated_data['nombre'],
             correo=validated_data['correo'],
             role=validated_data.get('role')
         )

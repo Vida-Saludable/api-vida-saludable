@@ -56,7 +56,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'live.urls'
+ROOT_URLCONF = 'api.urls'
 
 TEMPLATES = [
     {
@@ -113,19 +113,30 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
 }
 
-WSGI_APPLICATION = 'live.wsgi.application'
+WSGI_APPLICATION = 'api.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# DATABASES = {
+#    'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'vida_saludable_0uon',
+#         'USER': 'vida_saludable_0uon_user',
+#         'PASSWORD': '7fTLF3XB6XL9N745siJE94xcT6ybtcGK',
+#         'HOST': 'dpg-crksavtumphs73br47j0-a.oregon-postgres.render.com',  # O la dirección IP de tu servidor MySQL
+#         'PORT': '5432',  # O el puerto que estés utilizando
+#     }
+# }
+
 DATABASES = {
-   'default': {
+     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'vida_saludable_0uon',
-        'USER': 'vida_saludable_0uon_user',
-        'PASSWORD': '7fTLF3XB6XL9N745siJE94xcT6ybtcGK',
-        'HOST': 'dpg-crksavtumphs73br47j0-a.oregon-postgres.render.com',  # O la dirección IP de tu servidor MySQL
+        'NAME': 'vida_saludable',
+        'USER': 'postgres',
+        'PASSWORD': '123456',
+        'HOST': 'localhost',  # O la dirección IP de tu servidor MySQL
         'PORT': '5432',  # O el puerto que estés utilizando
     }
 }

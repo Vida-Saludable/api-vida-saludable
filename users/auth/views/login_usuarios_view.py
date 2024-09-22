@@ -17,20 +17,25 @@ class LoginUsuarioView(APIView):
 
         try:
             usuario = Usuario.objects.get(correo=correo)
-            print(f"Usuario encontrado: {usuario}")
         except Usuario.DoesNotExist:
             return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
 
         if usuario.check_password(password):
-            print("Contraseña válida")
-            # Cambia aquí para usar la nueva vista de tokens
+            # Generar los tokens
             refresh = RefreshToken.for_user(usuario)
+
+            # Depurando los valores de nombre y correo
+            print(f"Nombre del usuario: {usuario.nombre}")
+            print(f"Correo del usuario: {usuario.correo}")
+
+            # Devolver los tokens junto con el nombre y correo del usuario
             return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
+                'nombre': usuario.nombre,  # Asegúrate de que 'nombre' es un campo válido
+                'correo': usuario.correo
             }, status=status.HTTP_200_OK)
 
-        print("Contraseña inválida")
         return Response({'error': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
     
 
