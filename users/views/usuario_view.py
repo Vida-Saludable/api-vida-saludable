@@ -2,6 +2,8 @@ from rest_framework import viewsets, generics
 from django.db import transaction
 from rest_framework.pagination import PageNumberPagination
 
+from users.models.proyecto_model import Proyecto
+from users.models.role_model import Role
 from users.models.usuario_models import Usuario
 from users.models.datos_personales_usuario_model import DatosPersonalesUsuario
 from users.models.usuario_proyecto_model import UsuarioProyecto
@@ -113,15 +115,6 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-        
-    # def destroy(self, request, *args, **kwargs):
-    #     instance = self.get_object()
-    #     self.perform_destroy(instance)
-    #     return Response({
-    #         "success": True,
-    #         "message": "Usuario eliminado correctamente"
-    #     }, status=status.HTTP_200_OK)
-
 class RegistroUsuarioView(APIView):
     def post(self, request):
         serializer = UsuarioSerializer(data=request.data)
@@ -133,17 +126,13 @@ class RegistroUsuarioView(APIView):
 
 class ListaUsuariosView(APIView):
     def get(self, request, *args, **kwargs):
-        # Obtener todos los usuarios
-        usuarios = Usuario.objects.all()
+        # Filtrar todos los usuarios que no tengan el rol 'Paciente'
+        usuarios = Usuario.objects.exclude(role__name="Paciente")
 
         # Lista de usuarios con los datos requeridos
         usuarios_data = []
 
         for usuario in usuarios:
-            # Obtener los proyectos asociados al usuario
-            usuario_proyectos = UsuarioProyecto.objects.filter(usuario=usuario)
-            nombres_proyectos = [proyecto.proyecto.nombre for proyecto in usuario_proyectos] if usuario_proyectos else []
-
             # Serializar los datos del usuario
             usuario_serializado = UsuarioSerializer(usuario).data
 
@@ -151,11 +140,40 @@ class ListaUsuariosView(APIView):
                 'id': usuario.id,  # Incluimos el ID del usuario
                 'nombre': usuario_serializado.get('nombre'),  # Nombre del usuario
                 'correo': usuario_serializado.get('correo'),  # Correo electrónico del usuario
-                'role': usuario.role.name if usuario.role else None,  # Obtener el nombre del rol
-                'proyectos': nombres_proyectos  # Incluir los nombres de los proyectos asociados
+                'role': usuario.role.name if usuario.role else None  # Obtener el nombre del rol
             }
 
             usuarios_data.append(usuario_info)
 
-        return Response(usuarios_data)
+        return Response(usuarios_data, status=200)
+class ListaPacientesView(APIView):
+    def get(self, request, *args, **kwargs):
+        # Filtrar todos los usuarios que tengan el rol 'Paciente'
+        pacientes = Usuario.objects.filter(role__name="Paciente")
+
+        # Lista de usuarios con los datos requeridos
+        pacientes_data = []
+
+        for paciente in pacientes:
+            # Serializar los datos del paciente
+            paciente_serializado = UsuarioSerializer(paciente).data
+
+            # Obtener los proyectos asociados al paciente
+            usuario_proyectos = UsuarioProyecto.objects.filter(usuario=paciente)
+
+            # Extraer los nombres de los proyectos asociados
+            nombre_proyectos = [usuario_proyecto.proyecto.nombre for usuario_proyecto in usuario_proyectos]
+
+            paciente_info = {
+                'id': paciente.id,  # Incluimos el ID del paciente
+                'nombre': paciente_serializado.get('nombre'),  # Nombre del paciente
+                'correo': paciente_serializado.get('correo'),  # Correo electrónico del paciente
+                'role': paciente.role.name if paciente.role else None,  # Obtener el nombre del rol
+                'proyectos': nombre_proyectos  # Lista de nombres de proyectos asociados
+            }
+
+            pacientes_data.append(paciente_info)
+
+        return Response(pacientes_data, status=200)
+
 
