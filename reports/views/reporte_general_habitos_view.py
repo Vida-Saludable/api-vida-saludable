@@ -15,15 +15,15 @@ from habits.models.ejercicio_model import Ejercicio
 from habits.models.aire_model import Aire
 from habits.models.agua_model import Agua
 from habits.models.sol_model import Sol
+from users.models.usuario_proyecto_model import UsuarioProyecto
 
 
 class RegistroHabitosView(APIView):
     def get(self, request):
         try:
-            # Diccionario para agrupar los datos por usuario y fecha
             resultado_agrupado = defaultdict(lambda: defaultdict(dict))
 
-            # Registros de alimentación (Desayuno, Almuerzo, Cena)
+            # Consulta de alimentación
             registros_alimentacion = Alimentacion.objects.values('fecha', 'usuario_id').annotate(
                 desayuno=Sum('desayuno'),
                 almuerzo=Sum('almuerzo'),
@@ -40,7 +40,7 @@ class RegistroHabitosView(APIView):
                     'cena': registro['cena'],
                 })
 
-            # Registros de Aire (suma de tiempo por fecha)
+            # Consulta de aire
             registros_aire = Aire.objects.values('fecha', 'usuario_id').annotate(
                 tiempo=Sum('tiempo')
             )
@@ -51,7 +51,7 @@ class RegistroHabitosView(APIView):
                     resultado_agrupado[usuario_id][fecha]['aire'] = {}
                 resultado_agrupado[usuario_id][fecha]['aire'].update({'tiempo': registro['tiempo']})
 
-            # Registros de Agua (suma de cantidad por fecha)
+            # Consulta de agua
             registros_agua = Agua.objects.values('fecha', 'usuario_id').annotate(
                 cantidad=Sum('cantidad')
             )
@@ -62,7 +62,7 @@ class RegistroHabitosView(APIView):
                     resultado_agrupado[usuario_id][fecha]['agua'] = {}
                 resultado_agrupado[usuario_id][fecha]['agua'].update({'cantidad': registro['cantidad']})
 
-            # Registros de Ejercicio (suma de tiempo por tipo de ejercicio y fecha)
+            # Consulta de ejercicio
             registros_ejercicio = Ejercicio.objects.values('fecha', 'tipo', 'usuario_id').annotate(
                 tiempo=Sum('tiempo')
             )
@@ -76,7 +76,7 @@ class RegistroHabitosView(APIView):
                     'tiempo': registro['tiempo']
                 })
 
-            # Registros de Esperanza (se devuelven los registros por tipo_practica)
+            # Consulta de esperanza
             registros_esperanza = Esperanza.objects.values('fecha', 'tipo_practica', 'usuario_id')
             for registro in registros_esperanza:
                 usuario_id = registro['usuario_id']
@@ -87,7 +87,7 @@ class RegistroHabitosView(APIView):
                     'tipo_practica': registro['tipo_practica']
                 })
 
-            # Registros de Sol (suma de tiempo por fecha)
+            # Consulta de sol
             registros_sol = Sol.objects.values('fecha', 'usuario_id').annotate(
                 tiempo=Sum('tiempo')
             )
@@ -98,11 +98,10 @@ class RegistroHabitosView(APIView):
                     resultado_agrupado[usuario_id][fecha]['sol'] = {}
                 resultado_agrupado[usuario_id][fecha]['sol'].update({'tiempo': registro['tiempo']})
 
-            # Cálculo de las horas dormidas
+            # Consulta de dormir y despertar
             registros_dormir = Dormir.objects.values('fecha', 'hora', 'usuario_id')
             registros_despertar = Despertar.objects.values('fecha', 'hora', 'usuario_id', 'estado')
 
-            # Agrupar registros de dormir y despertar por usuario y fecha
             for dormir in registros_dormir:
                 usuario_id = dormir['usuario_id']
                 fecha_dormir = dormir['fecha']
@@ -118,12 +117,11 @@ class RegistroHabitosView(APIView):
                     ).order_by('hora').first()
 
                 if despertar:
-                    # Calcular el tiempo dormido
                     hora_dormir = datetime.combine(dormir['fecha'], dormir['hora'])
                     hora_despertar = datetime.combine(despertar['fecha'], despertar['hora'])
 
                     if hora_despertar < hora_dormir:
-                        hora_despertar += timedelta(days=1)  # Ajustar si la hora de despertar es al día siguiente
+                        hora_despertar += timedelta(days=1)
 
                     tiempo_dormido = (hora_despertar - hora_dormir).total_seconds()
                     total_horas = tiempo_dormido // 3600
@@ -138,29 +136,35 @@ class RegistroHabitosView(APIView):
                     resultado_agrupado[usuario_id][fecha_dormir]['descanso']['total_horas'] += int(total_horas)
                     resultado_agrupado[usuario_id][fecha_dormir]['descanso']['total_minutos'] += int(total_minutos)
 
-            # Obtener información adicional del usuario
             datos_personales = DatosPersonalesUsuario.objects.filter(usuario__id__in=resultado_agrupado.keys()).values('usuario_id', 'nombres_apellidos', 'telefono')
 
-            # Crear un diccionario para acceder a los datos del usuario por ID
             datos_personales_dict = {datos['usuario_id']: {'nombres_apellidos': datos['nombres_apellidos'], 'telefono': datos['telefono']} for datos in datos_personales}
 
-            # Convertir el resultado agrupado en una lista
+            # Asociar los proyectos a cada usuario
+            proyectos_usuario = UsuarioProyecto.objects.filter(usuario__id__in=resultado_agrupado.keys()).select_related('proyecto')
+
+            proyectos_dict = defaultdict(list)
+            for proyecto in proyectos_usuario:
+                proyectos_dict[proyecto.usuario_id].append(proyecto.proyecto.nombre)
+
+            # Formatear los resultados finales
             resultado_final = []
             for usuario_id, fechas in resultado_agrupado.items():
                 for fecha, datos in fechas.items():
-                    # Normalizar las horas y minutos
                     if 'descanso' in datos:
                         total_horas = datos['descanso']['total_horas']
                         total_minutos = datos['descanso']['total_minutos']
-                        # Ajustar minutos para que no superen las 60 unidades
                         total_horas += total_minutos // 60
                         total_minutos = total_minutos % 60
                         datos['descanso']['total_horas'] = total_horas
                         datos['descanso']['total_minutos'] = total_minutos
 
-                    # Agregar información del usuario
+                    # Agregar datos del usuario
                     datos_usuario = datos_personales_dict.get(usuario_id, {})
                     datos['usuario'] = datos_usuario
+
+                    # Agregar proyectos asociados al usuario
+                    datos['proyectos'] = proyectos_dict.get(usuario_id, [])
 
                     resultado_final.append({
                         'fecha': fecha,
