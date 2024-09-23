@@ -146,6 +146,7 @@ class ListaUsuariosView(APIView):
             usuarios_data.append(usuario_info)
 
         return Response(usuarios_data, status=200)
+    
 class ListaPacientesView(APIView):
     def get(self, request, *args, **kwargs):
         # Filtrar todos los usuarios que tengan el rol 'Paciente'
@@ -155,42 +156,31 @@ class ListaPacientesView(APIView):
         pacientes_data = []
 
         for paciente in pacientes:
-            # Serializar los datos del paciente
+            # Serializar los datos del usuario
             paciente_serializado = UsuarioSerializer(paciente).data
 
-            # Obtener los proyectos asociados al paciente mediante la relación UsuarioProyecto
+            # Obtener el proyecto asociado al paciente
             usuario_proyectos = UsuarioProyecto.objects.filter(usuario=paciente)
 
-            # Extraer los proyectos relacionados con el paciente
-            proyectos_filtrados = []
-            if usuario_proyectos.exists():
-                proyectos = [usuario_proyecto.proyecto for usuario_proyecto in usuario_proyectos]
-                # Serializar los proyectos
-                serializer = ProyectoSerializer(proyectos, many=True)
-
-                # Filtrar solo los campos deseados (nombre y descripcion)
-                proyectos_filtrados = [
-                    {
-                        "nombre": proyecto["nombre"],
-                        "descripcion": proyecto["descripcion"]
-                    } for proyecto in serializer.data
-                ]
+            # Obtener solo los nombres de los proyectos
+            proyectos_nombres = [usuario_proyecto.proyecto.nombre for usuario_proyecto in usuario_proyectos]
 
             paciente_info = {
-                'id': paciente.id,  # Incluimos el ID del paciente
-                'nombre': paciente_serializado.get('nombre'),  # Nombre del paciente
-                'correo': paciente_serializado.get('correo'),  # Correo electrónico del paciente
+                'id': paciente.id,  # Incluimos el ID del usuario
+                'nombre': paciente_serializado.get('nombre'),  # Nombre del usuario
+                'correo': paciente_serializado.get('correo'),  # Correo electrónico del usuario
                 'role': paciente.role.name if paciente.role else None,  # Obtener el nombre del rol
-                'proyectos': proyectos_filtrados  # Lista de proyectos asociados
+                'proyectos': proyectos_nombres  # Agregar solo los nombres de los proyectos
             }
 
             pacientes_data.append(paciente_info)
 
-        # Crear la respuesta final
+        # Crear la respuesta final con éxito y mensaje
         response_data = {
-            "success": True,
-            "pacientes": pacientes_data
+            'success': True,
+            'message': 'Lista de pacientes obtenida con éxito.',
+            'data': pacientes_data
         }
 
-        return Response(response_data, status=status.HTTP_200_OK)
+        return Response(response_data, status=200)
 

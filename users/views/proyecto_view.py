@@ -99,27 +99,3 @@ class ListaProyectoUsuariosView(APIView):
                 {"error": "Usuario no encontrado"},
                 status=status.HTTP_404_NOT_FOUND
             )
-
-        
-class ListaPacientesView(APIView):
-    def get(self, request, *args, **kwargs):
-        # Filtrar todos los usuarios que tengan el rol 'Paciente'
-        pacientes = Usuario.objects.filter(role__name="Paciente")
-
-        # Lista de usuarios con los datos requeridos
-        pacientes_data = []
-
-        for paciente in pacientes:
-            # Serializar los datos del usuario
-            paciente_serializado = UsuarioSerializer(paciente).data
-
-            paciente_info = {
-                'id': paciente.id,  # Incluimos el ID del usuario
-                'nombre': paciente_serializado.get('nombre'),  # Nombre del usuario
-                'correo': paciente_serializado.get('correo'),  # Correo electrónico del usuario
-                'role': paciente.role.name if paciente.role else None  # Obtener el nombre del rol
-            }
-
-            pacientes_data.append(paciente_info)
-
-        return Response(pacientes_data, status=200)
