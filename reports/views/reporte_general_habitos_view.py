@@ -168,6 +168,10 @@ class RegistroHabitosView(APIView):
                         **datos
                     })
 
-            return Response(resultado_final, status=status.HTTP_200_OK)
+            return Response({
+                "success": True,
+                "message": "Datos recuperados con éxito.",
+                "data": resultado_final
+            }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
