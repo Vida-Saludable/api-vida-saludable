@@ -75,14 +75,31 @@ class ListaProyectoUsuariosView(APIView):
             # Serializar los proyectos
             serializer = ProyectoSerializer(proyectos, many=True)
             
-            # Devolver los proyectos en formato JSON
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            # Filtrar solo los campos deseados (nombre y descripcion)
+            proyectos_filtrados = [
+                {
+                    "nombre": proyecto["nombre"],
+                    "descripcion": proyecto["descripcion"]
+                } for proyecto in serializer.data
+            ]
+            
+            # Crear la respuesta final
+            response_data = {
+                "success": True,
+                "mensaje": "Proyectos obtenidos exitosamente.",
+                "usuario": usuario.nombre,  # Suponiendo que el campo del nombre es 'nombre'
+                "proyectos": proyectos_filtrados
+            }
+            
+            # Devolver la respuesta en formato JSON
+            return Response(response_data, status=status.HTTP_200_OK)
 
         except Usuario.DoesNotExist:
             return Response(
                 {"error": "Usuario no encontrado"},
                 status=status.HTTP_404_NOT_FOUND
             )
+
         
 class ListaPacientesView(APIView):
     def get(self, request, *args, **kwargs):

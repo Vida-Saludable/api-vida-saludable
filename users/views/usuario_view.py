@@ -158,22 +158,39 @@ class ListaPacientesView(APIView):
             # Serializar los datos del paciente
             paciente_serializado = UsuarioSerializer(paciente).data
 
-            # Obtener los proyectos asociados al paciente
+            # Obtener los proyectos asociados al paciente mediante la relación UsuarioProyecto
             usuario_proyectos = UsuarioProyecto.objects.filter(usuario=paciente)
 
-            # Extraer los nombres de los proyectos asociados
-            nombre_proyectos = [usuario_proyecto.proyecto.nombre for usuario_proyecto in usuario_proyectos]
+            # Extraer los proyectos relacionados con el paciente
+            proyectos_filtrados = []
+            if usuario_proyectos.exists():
+                proyectos = [usuario_proyecto.proyecto for usuario_proyecto in usuario_proyectos]
+                # Serializar los proyectos
+                serializer = ProyectoSerializer(proyectos, many=True)
+
+                # Filtrar solo los campos deseados (nombre y descripcion)
+                proyectos_filtrados = [
+                    {
+                        "nombre": proyecto["nombre"],
+                        "descripcion": proyecto["descripcion"]
+                    } for proyecto in serializer.data
+                ]
 
             paciente_info = {
                 'id': paciente.id,  # Incluimos el ID del paciente
                 'nombre': paciente_serializado.get('nombre'),  # Nombre del paciente
                 'correo': paciente_serializado.get('correo'),  # Correo electrónico del paciente
                 'role': paciente.role.name if paciente.role else None,  # Obtener el nombre del rol
-                'proyectos': nombre_proyectos  # Lista de nombres de proyectos asociados
+                'proyectos': proyectos_filtrados  # Lista de proyectos asociados
             }
 
             pacientes_data.append(paciente_info)
 
-        return Response(pacientes_data, status=200)
+        # Crear la respuesta final
+        response_data = {
+            "success": True,
+            "pacientes": pacientes_data
+        }
 
+        return Response(response_data, status=status.HTTP_200_OK)
 
