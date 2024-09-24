@@ -35,10 +35,10 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             usuario = usuario_serializer.save()  # Guarda el usuario y obtiene el ID
 
             # 2. Registrar UsuarioProyecto (requiere el ID del usuario y varios proyectos)
-            proyectos_ids = request.data.get('proyectos_ids', [])  # Obtener la lista de IDs de proyectos
+            proyectos = request.data.get('proyectos', [])  # Obtener la lista de IDs de proyectos
             
             # Verificar si se enviaron proyectos
-            if not proyectos_ids:
+            if not proyectos:
                 return Response({
                     'success': False,
                     'message': 'Debe seleccionar al menos un proyecto.'
@@ -46,7 +46,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             
             # Asociar al usuario con cada proyecto
             usuario_proyecto_data = []
-            for proyecto_id in proyectos_ids:
+            for proyecto_id in proyectos:
                 usuario_proyecto_data.append({
                     'usuario': usuario.id,
                     'proyecto': proyecto_id
@@ -72,7 +72,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             # Si hay algún error, se deshacen todas las operaciones
             return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    
+
     def update(self, request, *args, **kwargs):
         try:
             # Obtener el usuario que se va a actualizar
