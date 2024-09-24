@@ -79,33 +79,20 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             usuario_id = kwargs.get('pk')  # ID del usuario pasado en la URL
             usuario = Usuario.objects.get(id=usuario_id)
 
-            # 1. Actualizar los datos del Usuario (sin contraseña)
-            usuario_serializer = self.get_serializer(usuario, data=request.data, partial=True)
+            # Filtrar solo los campos permitidos para la actualización
+            allowed_fields = ['nombre', 'correo', 'role']  # Campos que se pueden editar
+            filtered_data = {field: request.data[field] for field in allowed_fields if field in request.data}
+
+            # Actualizar los datos del Usuario (solo los campos permitidos)
+            usuario_serializer = self.get_serializer(usuario, data=filtered_data, partial=True)
             usuario_serializer.is_valid(raise_exception=True)
             usuario_serializer.save()  # Se actualiza el usuario
-
-            # 2. Actualizar o crear las relaciones UsuarioProyecto
-            proyectos_ids = request.data.get('proyectos_ids', [])
-            
-            if proyectos_ids:
-                # Eliminar relaciones anteriores
-                UsuarioProyecto.objects.filter(usuario=usuario).delete()
-                
-                # Crear nuevas relaciones para cada proyecto
-                for proyecto_id in proyectos_ids:
-                    usuario_proyecto_data = {'usuario': usuario.id, 'proyecto': proyecto_id}
-                    usuario_proyecto_serializer = UsuarioProyectoSerializer(data=usuario_proyecto_data)
-                    usuario_proyecto_serializer.is_valid(raise_exception=True)
-                    usuario_proyecto_serializer.save()
 
             # Respuesta de éxito si todo se actualizó correctamente
             return Response({
                 'success': True,
                 'message': 'Usuario actualizado correctamente',
-                'data': {
-                    'usuario': usuario_serializer.data,
-                    'proyectos': proyectos_ids  # Devolver los proyectos actualizados
-                }
+                'data': usuario_serializer.data  # Devolver los datos del usuario actualizado
             }, status=status.HTTP_200_OK)
 
         except Usuario.DoesNotExist:
@@ -113,6 +100,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 
         except Exception as e:
             return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class RegistroUsuarioView(APIView):
@@ -128,25 +116,29 @@ class ListaUsuariosView(APIView):
     def get(self, request, *args, **kwargs):
         # Filtrar todos los usuarios que no tengan el rol 'Paciente'
         usuarios = Usuario.objects.exclude(role__name="Paciente")
-
-        # Lista de usuarios con los datos requeridos
         usuarios_data = []
 
         for usuario in usuarios:
             # Serializar los datos del usuario
             usuario_serializado = UsuarioSerializer(usuario).data
+            
+            # Obtener todos los proyectos asociados al usuario mediante la tabla intermedia UsuarioProyecto
+            usuario_proyectos = UsuarioProyecto.objects.filter(usuario=usuario)
+            proyectos_data = [{'id': up.proyecto.id, 'nombre': up.proyecto.nombre} for up in usuario_proyectos]
 
+            # Armar la respuesta con la información del usuario y sus proyectos
             usuario_info = {
-                'id': usuario.id,  # Incluimos el ID del usuario
-                'nombre': usuario_serializado.get('nombre'),  # Nombre del usuario
-                'correo': usuario_serializado.get('correo'),  # Correo electrónico del usuario
-                'role': usuario.role.name if usuario.role else None  # Obtener el nombre del rol
+                'id': usuario.id,
+                'nombre': usuario_serializado.get('nombre'),
+                'correo': usuario_serializado.get('correo'),
+                'role': usuario.role.name if usuario.role else None,
+                'proyectos': proyectos_data  # Añadir la lista de proyectos asociados
             }
 
             usuarios_data.append(usuario_info)
 
         return Response(usuarios_data, status=200)
-    
+
 class ListaPacientesView(APIView):
     def get(self, request, *args, **kwargs):
         # Filtrar todos los usuarios que tengan el rol 'Paciente'
