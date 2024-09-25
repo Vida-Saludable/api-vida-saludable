@@ -20,7 +20,7 @@ class LoginUsuarioView(APIView):
         except Usuario.DoesNotExist:
             return Response({
                 'success': False,
-                'mensaje': 'Usuario no encontrado',
+                'message': 'Usuario no encontrado',
                 'data': {
                     'error': 'Usuario no encontrado'
                 }
@@ -33,7 +33,7 @@ class LoginUsuarioView(APIView):
             # Devolver los tokens junto con el nombre y correo del usuario
             return Response({
                 'success': True,
-                'mensaje': 'Inicio de sesión exitoso',
+                'message': 'Inicio de sesión exitoso',
                 'data': {
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
@@ -44,7 +44,7 @@ class LoginUsuarioView(APIView):
 
         return Response({
             'success': False,
-            'mensaje': 'Credenciales inválidas',
+            'message': 'Credenciales inválidas',
             'data': {
                 'error': 'Credenciales inválidas'
             }
