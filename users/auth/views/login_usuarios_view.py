@@ -18,25 +18,38 @@ class LoginUsuarioView(APIView):
         try:
             usuario = Usuario.objects.get(correo=correo)
         except Usuario.DoesNotExist:
-            return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({
+                'success': False,
+                'mensaje': 'Usuario no encontrado',
+                'data': {
+                    'error': 'Usuario no encontrado'
+                }
+            }, status=status.HTTP_404_NOT_FOUND)
 
         if usuario.check_password(password):
             # Generar los tokens
             refresh = RefreshToken.for_user(usuario)
 
-            # Depurando los valores de nombre y correo
-            print(f"Nombre del usuario: {usuario.nombre}")
-            print(f"Correo del usuario: {usuario.correo}")
-
             # Devolver los tokens junto con el nombre y correo del usuario
             return Response({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-                'nombre': usuario.nombre,  # Asegúrate de que 'nombre' es un campo válido
-                'correo': usuario.correo
+                'success': True,
+                'mensaje': 'Inicio de sesión exitoso',
+                'data': {
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                    'nombre': usuario.nombre,  # Asegúrate de que 'nombre' es un campo válido
+                    'correo': usuario.correo
+                }
             }, status=status.HTTP_200_OK)
 
-        return Response({'error': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({
+            'success': False,
+            'mensaje': 'Credenciales inválidas',
+            'data': {
+                'error': 'Credenciales inválidas'
+            }
+        }, status=status.HTTP_401_UNAUTHORIZED)
+
     
 
 class MyTokenObtainPairView(TokenObtainPairView):
