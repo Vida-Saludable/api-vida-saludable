@@ -30,11 +30,12 @@ class LoginUsuarioView(APIView):
             # Generar los tokens
             refresh = RefreshToken.for_user(usuario)
 
-            # Devolver los tokens junto con el nombre y correo del usuario
+            # Devolver los tokens junto con el nombre, correo e id del usuario
             return Response({
                 'success': True,
                 'message': 'Inicio de sesión exitoso',
                 'data': {
+                    'id': usuario.id,  # Agregando el campo id
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
                     'nombre': usuario.nombre,  # Asegúrate de que 'nombre' es un campo válido
@@ -49,6 +50,7 @@ class LoginUsuarioView(APIView):
                 'error': 'Credenciales inválidas'
             }
         }, status=status.HTTP_401_UNAUTHORIZED)
+
 
     
 
