@@ -11,7 +11,10 @@ class ReporteEsperanzaPorcentajeView(APIView):
     def get(self, request, usuario_id):
         # Verificar si el usuario tiene registros de esperanza
         if not Esperanza.objects.filter(usuario_id=usuario_id).exists():
-            return Response({"detail": "El usuario no tiene registros de esperanza."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({
+                "success": False,
+                "message": "El usuario no tiene registros de esperanza."
+            }, status=status.HTTP_404_NOT_FOUND)
 
         # Obtener todos los registros de esperanza del usuario
         esperanzas = Esperanza.objects.filter(usuario_id=usuario_id)
@@ -45,6 +48,9 @@ class ReporteEsperanzaPorcentajeView(APIView):
             'tipo_lectura': calcular_porcentaje(conteo_esperanzas['lectura biblica'], total_tipo),
         }
 
-        # Serializar los datos y devolver la respuesta
-        serializer = ReporteEsperanzaPorcentajeSerializer(reporte)
-        return Response(serializer.data)
+        # Devolver la respuesta en el formato requerido
+        return Response({
+            "success": True,
+            "message": "Datos procesados correctamente.",
+            "data": reporte
+        }, status=status.HTTP_200_OK)
