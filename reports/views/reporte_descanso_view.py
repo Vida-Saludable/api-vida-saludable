@@ -65,13 +65,17 @@ class ReporteHorasDormidasView(APIView):
             print("Error:", str(e))
             return Response({"detail": "Error al procesar los datos."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
+
 class ReportePorcentajeDescansoView(APIView):
     def get(self, request, usuario_id):
         try:
             registros = Despertar.objects.filter(usuario_id=usuario_id)
             
             if not registros.exists():
-                return Response({"success": False, "message": "No hay registros de despertar para este usuario."}, status=status.HTTP_404_NOT_FOUND)
+                return Response({
+                    "success": False, 
+                    "message": "No hay registros de despertar para este usuario."
+                }, status=status.HTTP_404_NOT_FOUND)
 
             total_registros = registros.count()
             
@@ -85,16 +89,20 @@ class ReportePorcentajeDescansoView(APIView):
             descanso_bien = (estado_1_count / total_registros) * 100
 
             resultado = {
-                "success": True,
-                "message": "Datos procesados correctamente.",
                 "total_registros": total_registros,
                 "descanso_mal": round(descanso_mal, 2),
                 "descanso_bien": round(descanso_bien, 2)
             }
 
-            serializer = ReportePorcentajeDescansoSerializer(resultado)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({
+                "success": True,
+                "message": "Datos procesados correctamente.",
+                "data": resultado
+            }, status=status.HTTP_200_OK)
 
         except Exception as e:
             print("Error:", str(e))
-            return Response({"success": False, "message": "Error al procesar los datos."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({
+                "success": False, 
+                "message": "Error al procesar los datos."
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
