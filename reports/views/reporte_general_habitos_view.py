@@ -15,6 +15,7 @@ from habits.models.ejercicio_model import Ejercicio
 from habits.models.aire_model import Aire
 from habits.models.agua_model import Agua
 from habits.models.sol_model import Sol
+from users.models.usuario_models import Usuario
 from users.models.usuario_proyecto_model import UsuarioProyecto
 
 
@@ -136,6 +137,15 @@ class RegistroHabitosView(APIView):
                     resultado_agrupado[usuario_id][fecha_dormir]['descanso']['total_horas'] += int(total_horas)
                     resultado_agrupado[usuario_id][fecha_dormir]['descanso']['total_minutos'] += int(total_minutos)
 
+            # Obtener todos los usuarios
+            todos_usuarios = Usuario.objects.all().values('id')
+
+            # Inicializar resultados para usuarios sin registros
+            for usuario in todos_usuarios:
+                usuario_id = usuario['id']
+                if usuario_id not in resultado_agrupado:
+                    resultado_agrupado[usuario_id] = defaultdict(dict)
+
             datos_personales = DatosPersonalesUsuario.objects.filter(usuario__id__in=resultado_agrupado.keys()).values('usuario_id', 'nombres_apellidos', 'telefono')
 
             datos_personales_dict = {datos['usuario_id']: {'nombres_apellidos': datos['nombres_apellidos'], 'telefono': datos['telefono']} for datos in datos_personales}
@@ -151,13 +161,21 @@ class RegistroHabitosView(APIView):
             resultado_final = []
             for usuario_id, fechas in resultado_agrupado.items():
                 for fecha, datos in fechas.items():
-                    if 'descanso' in datos:
-                        total_horas = datos['descanso']['total_horas']
-                        total_minutos = datos['descanso']['total_minutos']
-                        total_horas += total_minutos // 60
-                        total_minutos = total_minutos % 60
-                        datos['descanso']['total_horas'] = total_horas
-                        datos['descanso']['total_minutos'] = total_minutos
+                    # Inicializar datos a nulos si no existen
+                    if 'alimentacion' not in datos:
+                        datos['alimentacion'] = {'desayuno': None, 'almuerzo': None, 'cena': None}
+                    if 'aire' not in datos:
+                        datos['aire'] = {'tiempo': None}
+                    if 'agua' not in datos:
+                        datos['agua'] = {'cantidad': None}
+                    if 'ejercicio' not in datos:
+                        datos['ejercicio'] = []
+                    if 'esperanza' not in datos:
+                        datos['esperanza'] = []
+                    if 'sol' not in datos:
+                        datos['sol'] = {'tiempo': None}
+                    if 'descanso' not in datos:
+                        datos['descanso'] = {'total_horas': 0, 'total_minutos': 0}
 
                     # Agregar datos del usuario
                     datos_usuario = datos_personales_dict.get(usuario_id, {})
@@ -179,3 +197,4 @@ class RegistroHabitosView(APIView):
             }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
