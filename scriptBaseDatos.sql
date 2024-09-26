@@ -133,44 +133,81 @@ CREATE TABLE ejercicio (
     FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
-
-
-
-
- CREATE TABLE datos_corporales (
+CREATE TABLE datos_fisicos (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     peso DECIMAL(5, 2),               -- Peso en kg
     altura DECIMAL(4, 2),             -- Altura en metros
     imc DECIMAL(4, 2),                -- Índice de Masa Corporal
-    presion_sistolica INT,            -- Presión Arterial Sistólica en mmHg
-    presion_diastolica INT,           -- Presión Arterial Diastólica en mmHg
     radio_abdominal DECIMAL(5, 2),    -- Radio Abdominal en cm
     grasa_corporal DECIMAL(5, 2),     -- Grasa Corporal en %
     grasa_viseral DECIMAL(5, 2),      -- Grasa Visceral en %
+    porcentaje_musculo NUMERIC(4,1),-------------------
+
+    fecha DATE NOT NULL, -- Fecha de la medición
+    tipo VARCHAR(20) NOT NULL,   -- 'inicial' o 'final' 
+
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+CREATE TABLE signos_vitales (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    presion_sistolica INT,            -- Presión Arterial Sistólica en mmHg
+    presion_diastolica INT,           -- Presión Arterial Diastólica en mmHg
     frecuencia_cardiaca INT,          -- Frecuencia Cardíaca en latidos/min
     frecuencia_respiratoria INT,      -- Frecuencia Respiratoria en respiraciones/min
+    temperatura NUMERIC(3,1), -------------------
+    saturacion_oxigeno INT, -------------------  
+
+    fecha DATE NOT NULL, -- Fecha de la medición
+    tipo VARCHAR(20) NOT NULL,   -- 'inicial' o 'final' 
+
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+CREATE TABLE datos_muestras (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
     colesterol_total DECIMAL(5, 2),   -- Colesterol Total en mg/dL
     colesterol_hdl DECIMAL(5, 2),     -- Colesterol HDL en mg/dL
     colesterol_ldl DECIMAL(5, 2),     -- Colesterol LDL en mg/dL
     trigliceridos DECIMAL(5, 2),      -- Triglicéridos en mg/dL
     glucosa DECIMAL(5, 2),  
-    temperatura NUMERIC(3,1), -------------------
-    saturacion_oxigeno INT, -------------------   
-    porcentaje_musculo NUMERIC(4,1),-------------------
     glicemia_basal NUMERIC(4,1),-------------------       -- Glucosa en mg/dL
-    frecuencia_cardiaca_en_reposo INT,                           -- Frecuencia cardíaca en reposo
-    frecuencia_cardiaca_despues_de_45_segundos INT,                           -- Frecuencia cardíaca después de 30 sentadillas en 45 segundos
-    frecuencia_cardiaca_1_minuto_despues INT,                           -- Frecuencia cardíaca 1 minuto después de las sentadillas
-    resultado_test_rufier DECIMAL(5, 2),  -- Resultado del Test de Ruffier (opcional)
-    fecha DATE NOT NULL, 
-    tipo VARCHAR(20) NOT NULL,   -- 'inicial' o 'final'             -- Fecha de la medición
-    fecha_nacimiento DATE NOT NULL,
-    edad INT -- esta el usuario no lo registrara se calculara directamente basandonos a la fecha de nacimiento 
-    sexo VARCHAR(20) NOT NULL,   
+
+    fecha DATE NOT NULL, -- Fecha de la medición
+    tipo VARCHAR(20) NOT NULL,   -- 'inicial' o 'final' 
 
     FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
+
+CREATE TABLE test_ruffier (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    frecuencia_cardiaca_en_reposo INT,                           -- Frecuencia cardíaca en reposo
+    frecuencia_cardiaca_despues_de_45_segundos INT,                           -- Frecuencia cardíaca después de 30 sentadillas en 45 segundos
+    frecuencia_cardiaca_1_minuto_despues INT,                           -- Frecuencia cardíaca 1 minuto después de las sentadillas
+    resultado_test_ruffier DECIMAL(5, 2),  -- Resultado del Test de Ruffier (opcional)
+
+    fecha DATE NOT NULL, -- Fecha de la medición
+    tipo VARCHAR(20) NOT NULL,   -- 'inicial' o 'final' 
+
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+
+
+--  CREATE TABLE datos_corporales (
+--     id SERIAL PRIMARY KEY,
+--     user_id INT NOT NULL,
+
+
+--     fecha DATE NOT NULL, -- Fecha de la medición
+--     tipo VARCHAR(20) NOT NULL,   -- 'inicial' o 'final'             
+
+--     FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+-- );
 
 
 

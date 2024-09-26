@@ -11,7 +11,10 @@ from habits.models.datos_habitos_model import DatosHabitos
 from users.models.datos_personales_usuario_model import DatosPersonalesUsuario
 from users.models.proyecto_model import Proyecto
 from users.models.usuario_proyecto_model import UsuarioProyecto
-from health.models.datos_corporales_models import DatosCorporales
+from health.models.datos_fisicos_models import DatosFisicos
+from health.models.datos_muestras_models import DatosMuestras
+from health.models.signos_vitales_models import SignosVitales
+from health.models.test_ruffier_models import TestRuffier
 
 admin.site.register(DatosPersonalesUsuario)
 admin.site.register(Alimentacion)
@@ -22,7 +25,10 @@ admin.site.register(Aire)
 admin.site.register(Dormir)
 admin.site.register(Despertar)
 admin.site.register(Ejercicio)
-admin.site.register(DatosCorporales)
+admin.site.register(DatosFisicos)
+admin.site.register(DatosMuestras)
+admin.site.register(SignosVitales)
+admin.site.register(TestRuffier)
 admin.site.register(DatosHabitos)
 admin.site.register(Proyecto)
 admin.site.register(UsuarioProyecto)
