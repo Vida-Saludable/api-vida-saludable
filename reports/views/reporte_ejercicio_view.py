@@ -35,7 +35,14 @@ class ReporteEjercicioPorcentajeView(APIView):
     def get(self, request, usuario_id):
         # Verificar si el usuario tiene ejercicios registrados
         if not Ejercicio.objects.filter(usuario_id=usuario_id).exists():
-            return Response({"detail": "El usuario no tiene registros de ejercicio."}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {
+                    "success": False,
+                    "message": "El usuario no tiene registros de ejercicio.",
+                    "data": None
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         # Obtener todos los ejercicios del usuario
         ejercicios = Ejercicio.objects.filter(usuario_id=usuario_id)
@@ -60,23 +67,30 @@ class ReporteEjercicioPorcentajeView(APIView):
         for tipo in tipo_ejercicios:
             conteo_ejercicios[tipo['tipo']] = tipo['conteo']
 
-        # Calcular los porcentajes de cada tipo de ejercicio
+        # Calcular los porcentajes de cada tipo de ejercicio como enteros
         def calcular_porcentaje(cantidad, total):
-            return round((cantidad / total) * 100, 2) if total > 0 else 0
+            return round((cantidad / total) * 100) if total > 0 else 0
 
-        # Crear el diccionario de resultados
+        # Crear el diccionario de resultados con valores convertidos a enteros
         reporte = {
-            'total_ejercicios': total_ejercicios,
-            'caminata_lenta': calcular_porcentaje(conteo_ejercicios['caminata lenta'], total_ejercicios),
-            'caminata_rapida': calcular_porcentaje(conteo_ejercicios['caminata rapida'], total_ejercicios),
-            'trote': calcular_porcentaje(conteo_ejercicios['trote'], total_ejercicios),
-            'ejercicio_guiado': calcular_porcentaje(conteo_ejercicios['ejercicio guiado'], total_ejercicios),
+            'total_ejercicios': int(total_ejercicios),
+            'caminata_lenta': int(calcular_porcentaje(conteo_ejercicios['caminata lenta'], total_ejercicios)),
+            'caminata_rapida': int(calcular_porcentaje(conteo_ejercicios['caminata rapida'], total_ejercicios)),
+            'trote': int(calcular_porcentaje(conteo_ejercicios['trote'], total_ejercicios)),
+            'ejercicio_guiado': int(calcular_porcentaje(conteo_ejercicios['ejercicio guiado'], total_ejercicios)),
         }
 
-        # Serializar los datos y devolver la respuesta
-        serializer = ReporteEjercicioPorcetajeSerializer(reporte)
-        return Response(serializer.data)
-    
+        # Devolver la respuesta directamente con los datos ya convertidos a enteros
+        return Response(
+            {
+                "success": True,
+                "message": "Datos obtenidos correctamente",
+                "data": reporte
+            },
+            status=status.HTTP_200_OK
+        )
+
+
 class ReporteEjercicioTipoView(APIView):
     def get(self, request, usuario_id, tipo_ejercicio):
         # Verificar si el usuario tiene ejercicios registrados de ese tipo
