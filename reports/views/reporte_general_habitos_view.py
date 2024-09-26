@@ -161,19 +161,34 @@ class RegistroHabitosView(APIView):
             resultado_final = []
             for usuario_id, fechas in resultado_agrupado.items():
                 for fecha, datos in fechas.items():
-                    # Inicializar datos a nulos si no existen
+                    # Inicializar datos a 0 si no existen
                     if 'alimentacion' not in datos:
-                        datos['alimentacion'] = {'desayuno': None, 'almuerzo': None, 'cena': None}
+                        datos['alimentacion'] = {'desayuno': 0, 'almuerzo': 0, 'cena': 0}
+                    else:
+                        # Asegurarse de que si existen, se envíen como 0 si son nulos
+                        datos['alimentacion']['desayuno'] = datos['alimentacion'].get('desayuno', 0) or 0
+                        datos['alimentacion']['almuerzo'] = datos['alimentacion'].get('almuerzo', 0) or 0
+                        datos['alimentacion']['cena'] = datos['alimentacion'].get('cena', 0) or 0
+
                     if 'aire' not in datos:
-                        datos['aire'] = {'tiempo': None}
+                        datos['aire'] = {'tiempo': 0}
+                    else:
+                        datos['aire']['tiempo'] = datos['aire'].get('tiempo', 0) or 0
+
                     if 'agua' not in datos:
-                        datos['agua'] = {'cantidad': None}
+                        datos['agua'] = {'cantidad': 0}
+                    else:
+                        datos['agua']['cantidad'] = datos['agua'].get('cantidad', 0) or 0
+
                     if 'ejercicio' not in datos:
                         datos['ejercicio'] = []
                     if 'esperanza' not in datos:
                         datos['esperanza'] = []
                     if 'sol' not in datos:
-                        datos['sol'] = {'tiempo': None}
+                        datos['sol'] = {'tiempo': 0}
+                    else:
+                        datos['sol']['tiempo'] = datos['sol'].get('tiempo', 0) or 0
+
                     if 'descanso' not in datos:
                         datos['descanso'] = {'total_horas': 0, 'total_minutos': 0}
 
@@ -197,4 +212,5 @@ class RegistroHabitosView(APIView):
             }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
