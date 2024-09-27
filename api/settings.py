@@ -135,7 +135,7 @@ DATABASES = {
 #         'ENGINE': 'django.db.backends.postgresql',
 #         'NAME': 'vida_saludable',
 #         'USER': 'postgres',
-#         'PASSWORD': '123456',
+#         'PASSWORD': 'Juanjose8923510',
 #         'HOST': 'localhost',  # O la dirección IP de tu servidor MySQL
 #         'PORT': '5432',  # O el puerto que estés utilizando
 #     }

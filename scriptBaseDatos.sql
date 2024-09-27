@@ -196,28 +196,40 @@ CREATE TABLE test_ruffier (
     FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
-
-
---  CREATE TABLE datos_corporales (
---     id SERIAL PRIMARY KEY,
---     user_id INT NOT NULL,
-
-
---     fecha DATE NOT NULL, -- Fecha de la medición
---     tipo VARCHAR(20) NOT NULL,   -- 'inicial' o 'final'             
-
---     FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
--- );
-
-
-
-
-
-CREATE TABLE datos_habitos(
+CREATE TABLE datos_habitos_agua(
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
 
-    -- Alimentacion
+    bebo_solo_agua_pura INT,
+    bebo_8_vasos_agua INT,
+    bebidas_con_azucar INT,
+    bebo_agua_al_despertar INT,
+    bebo_agua_antes_comidas INT,
+    bebo_agua_para_dormir INT,
+
+    fecha DATE NOT NULL, -- Fecha de la medición
+    tipo VARCHAR(20) NOT NULL,   -- 'inicial' o 'final' 
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+CREATE TABLE datos_habitos_aire(
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+
+    tecnica_respiraciones_profundas INT,
+    tiempo_tecnica_respiraciones INT,
+    horario_tecnica_respiraciones_manana INT,
+    horario_tecnica_respiraciones_noche INT,
+
+    fecha DATE NOT NULL, -- Fecha de la medición
+    tipo VARCHAR(20) NOT NULL,   -- 'inicial' o 'final' 
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+CREATE TABLE datos_habitos_alimentacion(
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+
     consumo_3_comidas_horario_fijo INT, 
     consumo_5_porciones_frutas_verduras INT,
     consumo_3_porciones_proteinas INT,
@@ -225,14 +237,17 @@ CREATE TABLE datos_habitos(
     consumo_carbohidratos INT,
     consumo_alimentos_fritos INT,
     consumo_alimentos_hechos_en_casa INT,
-
     consumo_liquidos_mientras_como INT,
-    bebo_solo_agua_pura INT,
-    bebo_8_vasos_agua INT,
-    bebidas_con_azucar INT,
-    bebo_agua_al_despertar INT,
-    bebo_agua_antes_comidas INT,
-    bebo_agua_para_dormir INT,
+
+    fecha DATE NOT NULL, -- Fecha de la medición
+    tipo VARCHAR(20) NOT NULL,   -- 'inicial' o 'final' 
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+CREATE TABLE datos_habitos_temperancia(
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+
     consumo_bebidas_alcoholicas INT,
     eventos_sociales_alcohol INT,
     consumo_sustancias_estimulantes INT,
@@ -247,31 +262,66 @@ CREATE TABLE datos_habitos(
     tiempo_libre_redes_sociales INT,
     satisfecho_relaciones_sociales INT,
     apoyo_familia_decisiones INT,
+
+    fecha DATE NOT NULL, -- Fecha de la medición
+    tipo VARCHAR(20) NOT NULL,   -- 'inicial' o 'final' 
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+CREATE TABLE datos_habitos_ejercicio(
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+
     realizo_actividad_deportiva INT,
     ejercicio_fisico_diario INT,
     practico_deporte_tiempo_libre INT,
     dedicacion_30_minutos_ejercicio INT,
     ejercicio_carrera_bicicleta INT,
+
+    fecha DATE NOT NULL, -- Fecha de la medición
+    tipo VARCHAR(20) NOT NULL,   -- 'inicial' o 'final' 
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+CREATE TABLE datos_habitos_descanso(
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+
     duermo_7_8_horas INT,
     despertar_durante_noche INT,
     dificultad_sueno_reparador INT,
     horario_sueno_diario INT,
     despertar_horario_diario INT,
+
+    fecha DATE NOT NULL, -- Fecha de la medición
+    tipo VARCHAR(20) NOT NULL,   -- 'inicial' o 'final' 
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+CREATE TABLE datos_habitos_sol(
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+
     exposicion_sol_diaria INT,
     exposicion_sol_horas_seguras INT,
     exposicion_sol_20_minutos INT,
     uso_bloqueador_solar INT,
-    tecnica_respiraciones_profundas INT,
-    tiempo_tecnica_respiraciones INT,
-    horario_tecnica_respiraciones_manana INT,
-    horario_tecnica_respiraciones_noche INT,
+
+    fecha DATE NOT NULL, -- Fecha de la medición
+    tipo VARCHAR(20) NOT NULL,   -- 'inicial' o 'final' 
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+CREATE TABLE datos_habitos_esperanza(
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+
     ser_supremo_interviene INT,
     leo_biblia INT,
     practico_oracion INT,
     orar_y_estudiar_biblia_desarrollo_personal INT
     
+    fecha DATE NOT NULL, -- Fecha de la medición
+    tipo VARCHAR(20) NOT NULL,   -- 'inicial' o 'final' 
     FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
-
-
-
