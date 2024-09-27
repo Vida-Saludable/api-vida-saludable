@@ -216,13 +216,16 @@ CREATE TABLE test_ruffier (
 CREATE TABLE datos_habitos(
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
-    consumo_3_comidas_horario_fijo INT,
+
+    -- Alimentacion
+    consumo_3_comidas_horario_fijo INT, 
     consumo_5_porciones_frutas_verduras INT,
     consumo_3_porciones_proteinas INT,
     ingiero_otros_alimentos INT,
     consumo_carbohidratos INT,
     consumo_alimentos_fritos INT,
     consumo_alimentos_hechos_en_casa INT,
+
     consumo_liquidos_mientras_como INT,
     bebo_solo_agua_pura INT,
     bebo_8_vasos_agua INT,
