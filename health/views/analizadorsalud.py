@@ -208,7 +208,7 @@ class AnalizadorSalud:
             return 'Muy buena'
     
     @staticmethod
-    def clasificar_resultado_test_rufier(resultados_test):
+    def clasificar_resultado_test_ruffier(resultados_test):
 
         if resultados_test > 15:
             return 'Muy malo'

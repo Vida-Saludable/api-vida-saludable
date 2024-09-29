@@ -1946,6 +1946,7 @@ VALUES
 (59, 5, 1, 3, 4, 2, 4, '2024-10-29', 'final'),
 (60, 2, 3, 5, 1, 4, 1, '2024-10-30', 'final');
 
+
 INSERT INTO habits_datoshabitosaire (
     usuario_id, 
     tecnica_respiraciones_profundas, 
