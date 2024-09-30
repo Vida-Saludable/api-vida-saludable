@@ -130,16 +130,16 @@ DATABASES = {
     }
 }
 
-# DATABASES = {
-#      'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'vida_saludable',
-#         'USER': 'postgres',
-#         'PASSWORD': 'Juanjose8923510',
-#         'HOST': 'localhost',  # O la dirección IP de tu servidor MySQL
-#         'PORT': '5432',  # O el puerto que estés utilizando
-#     }
-# }
+DATABASES = {
+     'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'vida_saludable',
+        'USER': 'postgres',
+        'PASSWORD': '123456',
+        'HOST': 'localhost',  # O la dirección IP de tu servidor MySQL
+        'PORT': '5432',  # O el puerto que estés utilizando
+    }
+}
 
 
 AUTH_PASSWORD_VALIDATORS = [
