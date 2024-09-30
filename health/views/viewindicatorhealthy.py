@@ -80,6 +80,7 @@ class IndicadoresSaludPorUsuarioView(APIView):
             indicadores['colesterol_ldl'].append(dato.colesterol_ldl)
             indicadores['trigliceridos'].append(dato.trigliceridos)
             indicadores['glucosa'].append(dato.glucosa)
+            indicadores['glicemia_basal'].append(dato.glucosa)
 
         # Procesar datos de SignosVitales
         for dato in signos_vitales:
