@@ -14,6 +14,12 @@ class DatosFisicosViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         usuario_id = request.data.get('usuario')  # Asegúrate de que el campo 'usuario' esté presente en los datos
 
+        if not usuario_id:
+            return Response({
+                "success": False,
+                "message": "El campo 'usuario' es obligatorio."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
         # Verificar si hay registros previos del mismo usuario
         registros_previos = DatosFisicos.objects.filter(usuario_id=usuario_id).order_by('-fecha')
 
@@ -28,7 +34,7 @@ class DatosFisicosViewSet(viewsets.ModelViewSet):
                     # Si el último registro es 'inicial', este nuevo será 'final'
                     request.data['tipo'] = 'final'
                 elif ultimo_registro.tipo == 'final':
-                    # Si el último registro es 'final', actualizamos ese registro a 'seguimiento'
+                    # Si el último registro es 'final', se actualiza a 'seguimiento' y el nuevo será 'final'
                     ultimo_registro.tipo = 'seguimiento'
                     ultimo_registro.save()
 
@@ -45,7 +51,7 @@ class DatosFisicosViewSet(viewsets.ModelViewSet):
 
                 # Datos que se devolverán con el mensaje de éxito
                 response_data = {
-                    "success": True,  # Indicador de éxito
+                    "success": True,
                     "message": "Registro de datos físicos creado con éxito.",
                     "data": serializer.data
                 }

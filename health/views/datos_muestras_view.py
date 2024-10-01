@@ -13,6 +13,12 @@ class DatosMuestrasViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         usuario_id = request.data.get('usuario')  # Asegúrate de que el campo 'usuario' esté presente en los datos
+        
+        if not usuario_id:
+            return Response({
+                "success": False,
+                "message": "El campo 'usuario' es obligatorio."
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         # Verificar si hay registros previos del mismo usuario
         registros_previos = DatosMuestras.objects.filter(usuario_id=usuario_id).order_by('-fecha')
@@ -45,12 +51,13 @@ class DatosMuestrasViewSet(viewsets.ModelViewSet):
 
                 # Datos que se devolverán con el mensaje de éxito
                 response_data = {
-                    "success": True,  # Indicador de éxito
+                    "success": True,
                     "message": "Registro de datos de muestras creado con éxito.",
                     "data": serializer.data
                 }
                 return Response(response_data, status=status.HTTP_201_CREATED)
             else:
+                # En caso de error de validación, se devuelve el error específico
                 response_data = {
                     "success": False,
                     "message": "Error al crear el registro de datos de muestras.",
