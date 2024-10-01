@@ -1,9 +1,10 @@
 INSERT INTO users_role (name) VALUES
-('Administrador'),
-('Desarrollador'),
-('Diseñador'),
-('Analista'),
-('Tester');
+('Admin'),          -- Administrador
+('SupProy'),        -- Supervisor de Proyecto
+('RespSeg'),       -- Responsable de Seguimiento
+('TomDatos'),       -- Tomador de Datos
+('Paciente');       -- Paciente
+
 
 -- Inserción masiva de 60 registros en la tabla usuarios con todos los campos
 INSERT INTO users_usuario (nombre, correo, password, role_id, is_superuser, is_active, is_staff, last_login)
