@@ -184,6 +184,9 @@ class HealthIndicatorsComparisonAPIView(APIView):
             ('resultado_test_ruffier', test_ruffier_inicial.resultado_test_ruffier, test_ruffier_final.resultado_test_ruffier),
         ]
 
+       # Creación de una lista para almacenar los resultados del análisis
+        analisis = []
+        
         # Iteración por los indicadores, validando y calculando cada uno
         for nombre, inicial, final in indicadores:
             mejora = calcular_mejora(inicial, final)
@@ -191,12 +194,16 @@ class HealthIndicatorsComparisonAPIView(APIView):
             umbral_advertencia = umbrales_advertencia.get(nombre, 0)
             recomendacion = generar_recomendacion(mejora, umbral_mejora, nombre)
             advertencia = generar_advertencia(inicial, final, nombre, umbral_advertencia)
-            analisis[nombre] = {
+            
+            # En lugar de añadir los datos a un diccionario, añádelos a la lista
+            analisis.append({
+                'nombre': nombre,
                 'valor_inicial': convertir_a_float(inicial),
                 'valor_final': convertir_a_float(final),
                 'diferencia': mejora,
                 'recomendacion': recomendacion,
                 'advertencia': advertencia
-            }
-
+            })
+        
+        # Devolvemos la lista de objetos
         return analisis
