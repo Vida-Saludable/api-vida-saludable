@@ -38,10 +38,10 @@ urlpatterns = [
     path('fechas-min-max/<int:usuario_id>/', GetDatesByIdView.as_view(), name='fechas'),
     path('tipos-correlacion/', TiposDeCorrelacionView.as_view(), name='tipos-correlacion'),
 
-    path('test-ruffier/<int:usuario_id>/', ListaTestRuffierUsuarioView.as_view(), name='listar_test_ruffier_usuario'),
-    path('datos-fisicos/<int:usuario_id>/', ListaDatosFisicosUsuarioView.as_view(), name='listar_datos_fisicos_usuario'),
-    path('datos-muestras/<int:usuario_id>/', ListaDatosMuestrasUsuarioView.as_view(), name='listar_datos_muestras_usuario'),
-    path('signos-vitales/<int:usuario_id>/', ListaSignosVitalesUsuarioView.as_view(), name='listar_signos_vitales_usuario'),
+    path('lista-test-ruffier/<int:usuario_id>/', ListaTestRuffierUsuarioView.as_view(), name='listar_test_ruffier_usuario'),
+    path('lista-datos-fisicos/<int:usuario_id>/', ListaDatosFisicosUsuarioView.as_view(), name='listar_datos_fisicos_usuario'),
+    path('lista-datos-muestras/<int:usuario_id>/', ListaDatosMuestrasUsuarioView.as_view(), name='listar_datos_muestras_usuario'),
+    path('lista-signos-vitales/<int:usuario_id>/', ListaSignosVitalesUsuarioView.as_view(), name='listar_signos_vitales_usuario'),
 ]
 
 urlpatterns += router.urls
