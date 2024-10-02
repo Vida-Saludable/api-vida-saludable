@@ -13,6 +13,12 @@ class TestRuffierViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         usuario_id = request.data.get('usuario')  # Asegúrate de que el campo 'usuario' esté presente en los datos
+        
+        if not usuario_id:
+            return Response({
+                "success": False,
+                "message": "El campo 'usuario' es obligatorio."
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         # Verificar si hay registros previos del mismo usuario
         registros_previos = TestRuffier.objects.filter(usuario_id=usuario_id).order_by('-fecha')
