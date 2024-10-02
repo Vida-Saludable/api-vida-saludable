@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
 from django.db import transaction
+from rest_framework.views import APIView
 
 from health.models.datos_fisicos_models import DatosFisicos
 from health.serializers.datos_fisicos_serializer import DatosFisicosSerializer
@@ -63,3 +64,45 @@ class DatosFisicosViewSet(viewsets.ModelViewSet):
                     "errors": serializer.errors
                 }
                 return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ListaDatosFisicosUsuarioView(APIView):
+    def get(self, request, usuario_id=None):
+        """
+        Lista todos los registros de Datos Físicos de un usuario específico.
+        Se puede pasar `usuario_id` como parámetro en la URL o usar el usuario autenticado.
+        """
+        # Si `usuario_id` no se pasa en la URL, se puede obtener del usuario autenticado (si aplica)
+        usuario_id = usuario_id or request.user.id
+
+        # Verificar si el `usuario_id` es válido
+        if not usuario_id:
+            return Response({
+                "success": False,
+                "message": "El ID del usuario es obligatorio."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Obtener los registros del usuario
+        registros = DatosFisicos.objects.filter(usuario_id=usuario_id).order_by('-fecha')
+
+        # Verificar si el usuario tiene registros
+        if not registros.exists():
+            return Response({
+                "success": False,
+                "message": "No se encontraron registros para este usuario."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        # Serializar los datos
+        serializer = DatosFisicosSerializer(registros, many=True)
+
+        # Eliminar el campo 'id' de cada registro en los datos serializados
+        data = serializer.data
+        for registro in data:
+            if 'id' in registro:
+                del registro['id']
+
+        # Devolver los registros serializados sin el campo 'id'
+        return Response({
+            "success": True,
+            "data": data
+        }, status=status.HTTP_200_OK)
