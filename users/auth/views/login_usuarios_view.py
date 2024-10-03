@@ -39,7 +39,9 @@ class LoginUsuarioView(APIView):
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
                     'nombre': usuario.nombre,  # Asegúrate de que 'nombre' es un campo válido
-                    'correo': usuario.correo
+                    'correo': usuario.correo,
+                    'role': str(usuario.role)
+
                 }
             }, status=status.HTTP_200_OK)
 
