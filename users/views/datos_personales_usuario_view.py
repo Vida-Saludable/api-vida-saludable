@@ -61,20 +61,21 @@ class ListaDatosPersonalesUsuarioView(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
         # Obtener los datos personales del usuario
-        datos_personales = DatosPersonalesUsuario.objects.filter(usuario_id=usuario_id).first()
+        datos_personales = DatosPersonalesUsuario.objects.filter(usuario_id=usuario_id)
 
         # Verificar si se encontraron los datos personales
-        if not datos_personales:
+        if not datos_personales.exists():
             return Response({
                 "success": False,
                 "message": "No se encontraron datos personales para este usuario."
             }, status=status.HTTP_404_NOT_FOUND)
 
         # Serializar los datos
-        serializer = DatosPersonalesUsuarioSerializer(datos_personales)
+        serializer = DatosPersonalesUsuarioSerializer(datos_personales, many=True)
 
-        # Devolver los datos serializados, incluyendo el campo 'id'
+        # Devolver los datos serializados como una lista de objetos
         return Response({
             "success": True,
-            "data": serializer.data  # Incluye el 'id' en los datos
+            "data": serializer.data  # Devolver los datos como lista de objetos
         }, status=status.HTTP_200_OK)
+
