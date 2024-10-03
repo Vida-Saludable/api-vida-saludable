@@ -2,10 +2,10 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from health.views.correlationhabitsvshealthydeltas_view import CorrelationHealthyVsHabitsDeltas
-from health.views.datos_fisicos_view import DatosFisicosViewSet
-from health.views.datos_muestras_view import DatosMuestrasViewSet
-from health.views.signos_vitales_view import SignosVitalesViewSet
-from health.views.test_ruffier_view import TestRuffierViewSet
+from health.views.datos_fisicos_view import DatosFisicosViewSet, ListaDatosFisicosUsuarioView
+from health.views.datos_muestras_view import DatosMuestrasViewSet, ListaDatosMuestrasUsuarioView
+from health.views.signos_vitales_view import ListaSignosVitalesUsuarioView, SignosVitalesViewSet
+from health.views.test_ruffier_view import TestRuffierViewSet, ListaTestRuffierUsuarioView
 from health.views.viewindicatorhealthy import IndicadoresSaludPorUsuarioView
 from health.views.viewindicatormainwithfinal import HealthIndicatorsComparisonAPIView
 
@@ -37,6 +37,11 @@ urlpatterns = [
     path('indicadores-habitos-por-usuario-seguimiento/<int:usuario_id>/', UserHabitsAllAPIView.as_view(), name='todos-los-indicadores'),
     path('fechas-min-max/<int:usuario_id>/', GetDatesByIdView.as_view(), name='fechas'),
     path('tipos-correlacion/', TiposDeCorrelacionView.as_view(), name='tipos-correlacion'),
+
+    path('lista-test-ruffier/<int:usuario_id>/', ListaTestRuffierUsuarioView.as_view(), name='listar_test_ruffier_usuario'),
+    path('lista-datos-fisicos/<int:usuario_id>/', ListaDatosFisicosUsuarioView.as_view(), name='listar_datos_fisicos_usuario'),
+    path('lista-datos-muestras/<int:usuario_id>/', ListaDatosMuestrasUsuarioView.as_view(), name='listar_datos_muestras_usuario'),
+    path('lista-signos-vitales/<int:usuario_id>/', ListaSignosVitalesUsuarioView.as_view(), name='listar_signos_vitales_usuario'),
 ]
 
 urlpatterns += router.urls

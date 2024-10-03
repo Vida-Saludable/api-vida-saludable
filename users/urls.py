@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter # type: ignore
 
 from .views.role_view import RoleViewSet
 from .views.usuario_view import ListaUsuariosView, UsuarioViewSet, ListaPacientesView
-from .views.datos_personales_usuario_view import DatosPersonalesUsuarioViewSet
+from .views.datos_personales_usuario_view import DatosPersonalesUsuarioViewSet, ListaDatosPersonalesUsuarioView
 from .views.proyecto_view import ProyectoViewSet, ListaProyectoUsuariosView
 from .views.usuario_proyecto_view import UsuarioProyectoViewSet
 # from health.views.datos_corporales_view import DatosCorporalesViewSet
@@ -30,6 +30,9 @@ urlpatterns = [
 
     # LISTA PACIENTES
     path('lista-pacientes/', ListaPacientesView.as_view(), name='lista-pacientes'),
+
+    # LISTA DATOS PERSONALES DE POR USUARIO
+    path('lista-datos-personales/<int:usuario_id>/', ListaDatosPersonalesUsuarioView.as_view(), name='lista_datos_personales_usuario'),
     
 ]
 

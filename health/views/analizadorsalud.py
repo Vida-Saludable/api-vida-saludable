@@ -24,10 +24,7 @@ class AnalizadorSalud:
         else:
             return 'Fuera de rango normal'
     
-    @staticmethod
-    def calcular_imc(peso, altura):
-        altura_metros = altura / Decimal('100')
-        return peso / (altura_metros ** 2)
+  
     
     @staticmethod
     def clasificar_imc(imc):

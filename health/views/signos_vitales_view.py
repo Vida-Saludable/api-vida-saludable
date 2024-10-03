@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.response import Response
 from django.db import transaction
+from rest_framework.views import APIView
 
 from health.models.signos_vitales_models import SignosVitales
 from health.serializers.signos_vitales_serializer import SignosVitalesSerializer
@@ -13,6 +14,12 @@ class SignosVitalesViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         usuario_id = request.data.get('usuario')  # Asegúrate de que el campo 'usuario' esté presente en los datos
+        
+        if not usuario_id:
+            return Response({
+                "success": False,
+                "message": "El campo 'usuario' es obligatorio."
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         # Verificar si hay registros previos del mismo usuario
         registros_previos = SignosVitales.objects.filter(usuario_id=usuario_id).order_by('-fecha')
@@ -45,15 +52,58 @@ class SignosVitalesViewSet(viewsets.ModelViewSet):
 
                 # Datos que se devolverán con el mensaje de éxito
                 response_data = {
-                    "success": True,  # Indicador de éxito
+                    "success": True,
                     "message": "Registro de signos vitales creado con éxito.",
                     "data": serializer.data
                 }
                 return Response(response_data, status=status.HTTP_201_CREATED)
             else:
+                # En caso de error de validación, se devuelve el error específico
                 response_data = {
                     "success": False,
                     "message": "Error al crear el registro de signos vitales.",
                     "errors": serializer.errors
                 }
                 return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ListaSignosVitalesUsuarioView(APIView):
+    def get(self, request, usuario_id=None):
+        """
+        Lista todos los registros de Signos Vitales de un usuario específico.
+        Se puede pasar `usuario_id` como parámetro en la URL o usar el usuario autenticado.
+        """
+        # Si `usuario_id` no se pasa en la URL, se puede obtener del usuario autenticado (si aplica)
+        usuario_id = usuario_id or request.user.id
+
+        # Verificar si el `usuario_id` es válido
+        if not usuario_id:
+            return Response({
+                "success": False,
+                "message": "El ID del usuario es obligatorio."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Obtener los registros del usuario
+        registros = SignosVitales.objects.filter(usuario_id=usuario_id).order_by('-fecha')
+
+        # Verificar si el usuario tiene registros
+        if not registros.exists():
+            return Response({
+                "success": False,
+                "message": "No se encontraron registros para este usuario."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        # Serializar los datos
+        serializer = SignosVitalesSerializer(registros, many=True)
+
+        # Eliminar el campo 'id' de cada registro en los datos serializados
+        data = serializer.data
+        for registro in data:
+            if 'id' in registro:
+                del registro['id']
+
+        # Devolver los registros serializados sin el campo 'id'
+        return Response({
+            "success": True,
+            "data": data
+        }, status=status.HTTP_200_OK)

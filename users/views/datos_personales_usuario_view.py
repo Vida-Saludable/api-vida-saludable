@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
 from users.models.datos_personales_usuario_model import DatosPersonalesUsuario
@@ -42,3 +43,38 @@ class DatosPersonalesUsuarioViewSet(viewsets.ModelViewSet):
         }
 
         return Response(response_data, status=status.HTTP_200_OK)
+
+class ListaDatosPersonalesUsuarioView(APIView):
+    def get(self, request, usuario_id=None):
+        """
+        Lista los datos personales de un usuario específico.
+        Se puede pasar `usuario_id` como parámetro en la URL o usar el usuario autenticado.
+        """
+        # Si `usuario_id` no se pasa en la URL, se puede obtener del usuario autenticado
+        usuario_id = usuario_id or request.user.id
+
+        # Verificar si el `usuario_id` es válido
+        if not usuario_id:
+            return Response({
+                "success": False,
+                "message": "El ID del usuario es obligatorio."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Obtener los datos personales del usuario
+        datos_personales = DatosPersonalesUsuario.objects.filter(usuario_id=usuario_id).first()
+
+        # Verificar si se encontraron los datos personales
+        if not datos_personales:
+            return Response({
+                "success": False,
+                "message": "No se encontraron datos personales para este usuario."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        # Serializar los datos
+        serializer = DatosPersonalesUsuarioSerializer(datos_personales)
+
+        # Devolver los datos serializados, incluyendo el campo 'id'
+        return Response({
+            "success": True,
+            "data": serializer.data  # Incluye el 'id' en los datos
+        }, status=status.HTTP_200_OK)

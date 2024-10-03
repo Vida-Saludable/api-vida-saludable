@@ -77,6 +77,14 @@ class IndicadoresSaludPorProyectoView(APIView):
                 indicadores['altura'].append(dato.altura)
             if dato.imc is not None:
                 indicadores['imc'].append(dato.imc)
+            if dato.radio_abdominal is not None:
+                indicadores['radio_abdominal'][sexo].append(dato.radio_abdominal)
+            if dato.porcentaje_musculo is not None:
+                indicadores['porcentaje_musculo'][sexo].append(dato.porcentaje_musculo)
+            if dato.grasa_corporal is not None:
+                indicadores['grasa_corporal'][sexo].append(dato.grasa_corporal)
+            if dato.grasa_visceral is not None:
+                indicadores['grasa_visceral'].append(dato.grasa_visceral)
 
         for dato in datos_muestras:
             usuario_id = dato.usuario_id
@@ -101,6 +109,10 @@ class IndicadoresSaludPorProyectoView(APIView):
                 indicadores['presion_sistolica'].append(dato.presion_sistolica)
             if dato.presion_diastolica is not None:
                 indicadores['presion_diastolica'].append(dato.presion_diastolica)
+            if dato.saturacion_oxigeno is not None:
+                indicadores['saturacion_oxigeno'].append(dato.saturacion_oxigeno)
+            if dato.temperatura is not None:
+                indicadores['temperatura'].append(dato.temperatura)
 
         for dato in test_ruffier:
             if dato.frecuencia_cardiaca_en_reposo is not None:
