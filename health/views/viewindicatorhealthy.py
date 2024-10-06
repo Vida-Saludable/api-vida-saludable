@@ -80,6 +80,7 @@ class IndicadoresSaludPorUsuarioView(APIView):
             indicadores['colesterol_ldl'].append(dato.colesterol_ldl)
             indicadores['trigliceridos'].append(dato.trigliceridos)
             indicadores['glucosa'].append(dato.glucosa)
+            indicadores['glicemia_basal'].append(dato.glicemia_basal)
 
         # Procesar datos de SignosVitales
         for dato in signos_vitales:
@@ -120,17 +121,17 @@ class IndicadoresSaludPorUsuarioView(APIView):
                 if promedios[clave]['M'] is not None:
                     resultados[clave] = {
                         'promedio': promedios[clave]['M'],
-                        'status': getattr(AnalizadorSalud, f'clasificar_{clave}')(promedios[clave]['M'], 'M')
+                        'data': getattr(AnalizadorSalud, f'clasificar_{clave}')(promedios[clave]['M'], 'M')
                     }
                 elif promedios[clave]['F'] is not None:
                     resultados[clave] = {
                         'promedio': promedios[clave]['F'],
-                        'status': getattr(AnalizadorSalud, f'clasificar_{clave}')(promedios[clave]['F'], 'F')
+                        'data': getattr(AnalizadorSalud, f'clasificar_{clave}')(promedios[clave]['F'], 'F')
                     }
             else:
                 resultados[clave] = {
                     'promedio': promedio,
-                    'status': getattr(AnalizadorSalud, f'clasificar_{clave}')(promedio) if promedio is not None else None
+                    'data': getattr(AnalizadorSalud, f'clasificar_{clave}')(promedio) if promedio is not None else None
                 }
 
         return Response(resultados, status=status.HTTP_200_OK)
