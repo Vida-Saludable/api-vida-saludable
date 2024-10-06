@@ -17,31 +17,31 @@ class UserHabitsAllAPIView(APIView):
     def get(self, request, *args, **kwargs):
         usuario_id = self.kwargs.get('usuario_id')
 
-        # Obtener los registros del usuario desde el primer día hasta el último registro
-        modelos = {
-            'alimentacion': Alimentacion.objects.filter(usuario_id=usuario_id).order_by('fecha'),
-            'agua': Agua.objects.filter(usuario_id=usuario_id).order_by('fecha'),
-            'esperanza': Esperanza.objects.filter(usuario_id=usuario_id).order_by('fecha'),
-            'sol': Sol.objects.filter(usuario_id=usuario_id).order_by('fecha'),
-            'aire': Aire.objects.filter(usuario_id=usuario_id).order_by('fecha'),
-            'dormir': Dormir.objects.filter(usuario_id=usuario_id).order_by('fecha'),
-            'despertar': Despertar.objects.filter(usuario_id=usuario_id).order_by('fecha'),
-            'ejercicio': Ejercicio.objects.filter(usuario_id=usuario_id).order_by('fecha'),
-        }
-
-        # Verificar si los modelos tienen registros
-        if not all(len(modelo) for modelo in modelos.values()):
-            return Response({'error': 'No hay suficientes datos en una o más categorías.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Encuentra el tamaño mínimo común para las listas
-        min_size = min(len(modelo) for modelo in modelos.values())
-
-        # Truncar los datos al tamaño mínimo común
-        for key in modelos:
-            modelos[key] = list(modelos[key])[:min_size]
-
-        # Crear DataFrame con los datos clasificados y fechas
         try:
+            # Obtener los registros del usuario desde el primer día hasta el último registro
+            modelos = {
+                'alimentacion': Alimentacion.objects.filter(usuario_id=usuario_id).order_by('fecha'),
+                'agua': Agua.objects.filter(usuario_id=usuario_id).order_by('fecha'),
+                'esperanza': Esperanza.objects.filter(usuario_id=usuario_id).order_by('fecha'),
+                'sol': Sol.objects.filter(usuario_id=usuario_id).order_by('fecha'),
+                'aire': Aire.objects.filter(usuario_id=usuario_id).order_by('fecha'),
+                'dormir': Dormir.objects.filter(usuario_id=usuario_id).order_by('fecha'),
+                'despertar': Despertar.objects.filter(usuario_id=usuario_id).order_by('fecha'),
+                'ejercicio': Ejercicio.objects.filter(usuario_id=usuario_id).order_by('fecha'),
+            }
+
+            # Verificar si los modelos tienen registros
+            if not all(len(modelo) for modelo in modelos.values()):
+                return Response({'error': 'No hay suficientes datos en una o más categorías.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Encuentra el tamaño mínimo común para las listas
+            min_size = min(len(modelo) for modelo in modelos.values())
+
+            # Truncar los datos al tamaño mínimo común
+            for key in modelos:
+                modelos[key] = list(modelos[key])[:min_size]
+
+            # Crear DataFrame con los datos clasificados y fechas
             df = pd.DataFrame({
                 'fecha': [data.fecha for data in modelos['alimentacion']],
                 'alimentacion': [
@@ -65,8 +65,11 @@ class UserHabitsAllAPIView(APIView):
                 ],
                 'ejercicio': [AnalizadorHabitosVida.clasificar_ejercicio(data.tipo, data.tiempo) for data in modelos['ejercicio']],
             })
+
         except KeyError as e:
             return Response({'error': f"Campo faltante en el modelo: {e}"}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # Funciones de utilidad para analizar y generar recomendaciones
         def calcular_tendencia(columna):
@@ -141,17 +144,17 @@ class UserHabitsAllAPIView(APIView):
             return alertas
 
         # Generar el resultado final con tendencia, estadísticas, recomendaciones y alertas
-        result = {
-            habito: {
+        result = [
+            {
+                'habito': habito,
                 'tendencia': calcular_tendencia(habito),
                 'promedio': calcular_estadisticas(habito)[0],
                 'comparacion_normas': comparar_con_normas(calcular_estadisticas(habito)[0], habito),
                 'recomendaciones': generar_recomendaciones(habito),
                 'alertas': generar_alertas(habito),
                 'historial': list(zip(df['fecha'], df[habito])),  # Incluir fechas en el historial
-
             }
             for habito in df.columns if habito != 'fecha'  # Excluir 'fecha' de los análisis
-        }
+        ]
 
         return Response(result, status=status.HTTP_200_OK)
