@@ -132,7 +132,7 @@ class IndicadoresSaludPorProyectoView(APIView):
             else:
                 resultados[clave] = {
                     'promedio': promedio,
-                    'datac ': getattr(AnalizadorSalud, f'clasificar_{clave}')(promedio) if promedio is not None else None
+                    'data': getattr(AnalizadorSalud, f'clasificar_{clave}')(promedio) if promedio is not None else None
                 }
 
         return Response(resultados, status=status.HTTP_200_OK)
