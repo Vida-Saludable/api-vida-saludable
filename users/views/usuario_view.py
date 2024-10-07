@@ -176,3 +176,50 @@ class ListaPacientesView(APIView):
 
         return Response(response_data, status=200)
 
+class EditarPacienteView(APIView):
+    def put(self, request, *args, **kwargs):
+        try:
+            # Obtener el usuario que se va a actualizar
+            usuario_id = kwargs.get('pk')  # ID del usuario pasado en la URL
+            usuario = Usuario.objects.get(id=usuario_id)
+
+            # Filtrar solo los campos permitidos para la actualización
+            allowed_fields = ['nombre', 'correo', 'role']  # Agregamos 'role' a los campos que se pueden editar
+            filtered_data = {field: request.data[field] for field in allowed_fields if field in request.data}
+
+            # Verificar si se ha enviado una lista de proyectos
+            if 'proyectos' in request.data:
+                # Obtener los IDs de los proyectos y validar que existan en la base de datos
+                proyectos_ids = request.data['proyectos']
+                proyectos = Proyecto.objects.filter(id__in=proyectos_ids)  # Filtrar proyectos por IDs recibidos
+                
+                if len(proyectos) != len(proyectos_ids):
+                    return Response({
+                        'success': False,
+                        'error': 'Uno o más proyectos no existen'
+                    }, status=status.HTTP_400_BAD_REQUEST)
+
+                # Eliminar los proyectos actuales del usuario
+                UsuarioProyecto.objects.filter(usuario=usuario).delete()
+
+                # Asignar los nuevos proyectos al usuario
+                for proyecto in proyectos:
+                    UsuarioProyecto.objects.create(usuario=usuario, proyecto=proyecto)
+
+            # Actualizar los datos del Usuario (solo los campos permitidos)
+            usuario_serializer = UsuarioSerializer(usuario, data=filtered_data, partial=True)
+            usuario_serializer.is_valid(raise_exception=True)
+            usuario_serializer.save()  # Se actualiza el usuario
+
+            # Respuesta de éxito si todo se actualizó correctamente
+            return Response({
+                'success': True,
+                'message': 'Usuario actualizado correctamente',
+                'data': usuario_serializer.data  # Devolver los datos del usuario actualizado
+            }, status=status.HTTP_200_OK)
+
+        except Usuario.DoesNotExist:
+            return Response({'success': False, 'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
