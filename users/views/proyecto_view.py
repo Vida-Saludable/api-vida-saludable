@@ -65,7 +65,7 @@ class ListaProyectoUsuariosView(APIView):
 
             if not usuario_proyectos.exists():
                 return Response(
-                    {"mensaje": "Este usuario no tiene proyectos asociados."},
+                    {"message": "Este usuario no tiene proyectos asociados."},
                     status=status.HTTP_404_NOT_FOUND
                 )
             
@@ -75,20 +75,20 @@ class ListaProyectoUsuariosView(APIView):
             # Serializar los proyectos
             serializer = ProyectoSerializer(proyectos, many=True)
             
-            # Filtrar solo los campos deseados (nombre y descripcion)
+            # Filtrar solo los campos deseados (id, nombre y descripcion) y agrupar en 'data'
             proyectos_filtrados = [
                 {
+                    "id": proyecto["id"],  # Incluir el ID del proyecto
                     "nombre": proyecto["nombre"],
                     "descripcion": proyecto["descripcion"]
                 } for proyecto in serializer.data
             ]
             
-            # Crear la respuesta final
+            # Crear la respuesta final con 'success', 'message' y 'data' (proyectos)
             response_data = {
                 "success": True,
-                "mensaje": "Proyectos obtenidos exitosamente.",
-                "usuario": usuario.nombre,  # Suponiendo que el campo del nombre es 'nombre'
-                "proyectos": proyectos_filtrados
+                "message": "Proyectos obtenidos exitosamente.",
+                "data": proyectos_filtrados  # Proyectos dentro de 'data'
             }
             
             # Devolver la respuesta en formato JSON
