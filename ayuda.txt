@@ -1,109 +1,29 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from ..models import Proyecto, UsuarioProyecto, DatosCorporales, DatosPersonalesUsuario, DatosHabitos
-from ..serializers import UsuarioProyectoSerializer, DatosCorporalesSerializer, DatosPersonalesUsuarioSerializer
-from .analizadorsalud import AnalizadorSalud
-
-class HealthIndicatorsComparisonAPIView(APIView):
-
-    def get(self, request, *args, **kwargs):
-        usuario_id = self.kwargs.get('usuario_id')
-        try:
-            datos_iniciales_corporales = DatosCorporales.objects.get(usuario_id=usuario_id, tipo='inicial')
-            datos_finales_corporales = DatosCorporales.objects.get(usuario_id=usuario_id, tipo='final')
-
-            datos_iniciales_habitos = DatosHabitos.objects.get(usuario_id=usuario_id, tipo='inicial')
-            datos_finales_habitos = DatosHabitos.objects.get(usuario_id=usuario_id, tipo='final')
-            
-            # Usa el nombre correcto del modelo
-            datos_personales = DatosPersonalesUsuario.objects.get(usuario_id=usuario_id)
-        except (DatosCorporales.DoesNotExist, DatosHabitos.DoesNotExist, DatosPersonalesUsuario.DoesNotExist):
-            return Response({"detail": "Datos del usuario no encontrados."}, status=status.HTTP_404_NOT_FOUND)
-
-        # Realizar comparaciones entre los datos iniciales y finales
-        analisis_comparativo = self.realizar_comparacion(datos_iniciales_corporales, datos_finales_corporales, datos_personales)
-
-        return Response(analisis_comparativo)
-
-    def realizar_comparacion(self, datos_iniciales_corporales, datos_finales_corporales, datos_personales):
-        analisis = {}
-
-        def convertir_a_float(valor):
-            """Convierte un valor a float y maneja posibles errores."""  
-            try:
-                return float(valor)
-            except (ValueError, TypeError):
-                return None  # O manejar el error de otra manera si no se puede convertir
-
-        def calcular_mejora(inicial, final):
-            """Calcula la diferencia entre el valor inicial y final."""
-            inicial = convertir_a_float(inicial)
-            final = convertir_a_float(final)
-            if inicial is None or final is None:
-                return None  # O manejar el error de otra manera
-            return final - inicial
-
-        def generar_recomendacion(mejora, umbral_mejora, indicador):
-            """Genera una recomendación basada en la mejora o deterioro del indicador."""
-            if mejora is None:
-                return f"Datos no válidos para {indicador}."
-            if mejora < 0:
-                return f"Se ha logrado una mejora en {indicador}. ¡Continúa con el buen trabajo!"
-            elif mejora > umbral_mejora:
-                return f"Es necesario mejorar en {indicador}. Considera cambios en tu estilo de vida."
-            else:
-                return f"El {indicador} se mantiene estable. Continúa monitoreando."
-
-        def generar_advertencia(status_inicial, status_final, indicador):
-            """Genera una advertencia si el indicador ha empeorado."""
-            if status_inicial == 'No disponible' or status_final == 'No disponible':
-                return f"Datos no disponibles para {indicador}."
-            if status_final < status_inicial:
-                return f"{indicador} ha empeorado, es recomendable que consultes a un médico."
-            elif status_final == status_inicial:
-                return f"{indicador} no ha mostrado cambios significativos."
-            else:
-                return f"{indicador} ha mejorado, sigue así."
-
-        # Lista de indicadores a comparar
-        indicadores = [
-            ('peso', datos_iniciales_corporales.peso, datos_finales_corporales.peso, AnalizadorSalud.clasificar_peso),
-            ('altura', datos_iniciales_corporales.altura, datos_finales_corporales.altura, AnalizadorSalud.clasificar_altura),
-            ('imc', datos_iniciales_corporales.imc, datos_finales_corporales.imc, AnalizadorSalud.clasificar_imc),
-            ('presion_sistolica', datos_iniciales_corporales.presion_sistolica, datos_finales_corporales.presion_sistolica, AnalizadorSalud.clasificar_presion_sistolica),
-            ('presion_diastolica', datos_iniciales_corporales.presion_diastolica, datos_finales_corporales.presion_diastolica, AnalizadorSalud.clasificar_presion_diastolica),
-            ('radio_abdominal', datos_iniciales_corporales.radio_abdominal, datos_finales_corporales.radio_abdominal,
-                lambda x: AnalizadorSalud.clasificar_radio_abdominal(x, datos_personales.sexo)),
-            ('grasa_corporal', datos_iniciales_corporales.grasa_corporal, datos_finales_corporales.grasa_corporal,
-                lambda x: AnalizadorSalud.clasificar_grasa_corporal(x, datos_personales.sexo)),
-            ('grasa_visceral', datos_iniciales_corporales.grasa_visceral, datos_finales_corporales.grasa_visceral, AnalizadorSalud.clasificar_grasa_visceral),
-            ('frecuencia_cardiaca', datos_iniciales_corporales.frecuencia_cardiaca, datos_finales_corporales.frecuencia_cardiaca, AnalizadorSalud.clasificar_frecuencia_cardiaca),
-            ('frecuencia_respiratoria', datos_iniciales_corporales.frecuencia_respiratoria, datos_finales_corporales.frecuencia_respiratoria, AnalizadorSalud.clasificar_frecuencia_respiratoria),
-            ('colesterol_total', datos_iniciales_corporales.colesterol_total, datos_finales_corporales.colesterol_total, AnalizadorSalud.clasificar_colesterol_total),
-            ('colesterol_hdl', datos_iniciales_corporales.colesterol_hdl, datos_finales_corporales.colesterol_hdl, lambda x: AnalizadorSalud.clasificar_colesterol_hdl(x, datos_personales.sexo)),
-            ('colesterol_ldl', datos_iniciales_corporales.colesterol_ldl, datos_finales_corporales.colesterol_ldl, AnalizadorSalud.clasificar_colesterol_ldl),
-            ('trigliceridos', datos_iniciales_corporales.trigliceridos, datos_finales_corporales.trigliceridos, AnalizadorSalud.clasificar_trigliceridos),
-            ('glucosa', datos_iniciales_corporales.glucosa, datos_finales_corporales.glucosa, AnalizadorSalud.clasificar_glucosa),
-            ('temperatura', datos_iniciales_corporales.temperatura, datos_finales_corporales.temperatura, AnalizadorSalud.clasificar_temperatura),
-            ('saturacion_oxigeno', datos_iniciales_corporales.saturacion_oxigeno, datos_finales_corporales.saturacion_oxigeno, AnalizadorSalud.clasificar_saturacion_oxigeno),
-            ('porcentaje_musculo', datos_iniciales_corporales.porcentaje_musculo, datos_finales_corporales.porcentaje_musculo, lambda x: AnalizadorSalud.clasificar_porcentaje_musculo(x, datos_personales.sexo)),
-            ('glicemia_basal', datos_iniciales_corporales.glicemia_basal, datos_finales_corporales.glicemia_basal, AnalizadorSalud.clasificar_glicemia_basal),
-            ('frecuencia_cardiaca_en_reposo', datos_iniciales_corporales.frecuencia_cardiaca_en_reposo, datos_finales_corporales.frecuencia_cardiaca_en_reposo, AnalizadorSalud.clasificar_frecuencia_cardiaca_en_reposo),
-            ('frecuencia_cardiaca_despues_de_45_segundos', datos_iniciales_corporales.frecuencia_cardiaca_despues_de_45_segundos, datos_finales_corporales.frecuencia_cardiaca_despues_de_45_segundos, AnalizadorSalud.clasificar_frecuencia_cardiaca_despues_de_45_segundos),
-            ('frecuencia_cardiaca_1_minuto_despues', datos_iniciales_corporales.frecuencia_cardiaca_1_minuto_despues, datos_finales_corporales.frecuencia_cardiaca_1_minuto_despues, AnalizadorSalud.clasificar_frecuencia_cardiaca_1_minuto_despues),
-            ('resultado_test_rufier', datos_iniciales_corporales.resultado_test_rufier, datos_finales_corporales.resultado_test_rufier, AnalizadorSalud.clasificar_resultado_test_rufier)
-        ]
-
-        for nombre, inicial, final, clasificar in indicadores:
-            mejora = calcular_mejora(inicial, final)
-            recomendacion = generar_recomendacion(mejora, umbral_mejora=5, indicador=nombre)
-            advertencia = generar_advertencia(inicial, final, nombre)
-            analisis[nombre] = {
-                'mejora': mejora,
-                'recomendacion': recomendacion,
-                'advertencia': advertencia,
-                'clasificacion': clasificar(final)
-            }
-
-        return analisis
+asgiref==3.8.1
+astroid==3.2.4
+bcrypt==4.2.0
+colorama==0.4.6
+dill==0.3.8
+dj-database-url==2.2.0
+Django==5.0.7
+django-cors-headers==4.4.0
+django-filter==24.3
+djangorestframework==3.15.2
+djangorestframework-simplejwt==5.3.1
+isort==5.13.2
+mccabe==0.7.0
+numpy==2.1.0
+pandas==2.2.2
+platformdirs==4.3.6
+psycopg2==2.9.9
+PyJWT==2.8.0
+pylint==3.2.7
+python-dateutil==2.9.0.post0
+pytz==2024.1
+rest-framework-simplejwt==0.0.2
+scipy==1.14.1
+six==1.16.0
+sqlparse==0.5.1
+tomlkit==0.13.2
+typing_extensions==4.12.2
+tzdata==2024.1
+whitenoise==6.7.0
