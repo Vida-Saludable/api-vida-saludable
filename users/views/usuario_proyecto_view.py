@@ -62,45 +62,41 @@ class ListaProyectosPorUsuarioView(APIView):
     
     def get(self, request, usuario_id):
         try:
-            # Verificar que el usuario exista
+            # Verificar que el usuario existe
             usuario = Usuario.objects.get(id=usuario_id)
 
-            # Obtener los proyectos asociados al usuario mediante la relación UsuarioProyecto
+            # Obtener los registros de UsuarioProyecto asociados a este usuario
             usuario_proyectos = UsuarioProyecto.objects.filter(usuario=usuario)
 
             if not usuario_proyectos.exists():
                 return Response(
-                    {"message": "Este usuario no tiene proyectos asociados."},
+                    {"message": "Este usuario no tiene proyectos asignados."},
                     status=status.HTTP_404_NOT_FOUND
                 )
-            
-            # Extraer los proyectos relacionados con el usuario
+
+            # Obtener los proyectos de cada registro de UsuarioProyecto
             proyectos = [usuario_proyecto.proyecto for usuario_proyecto in usuario_proyectos]
 
-            # Serializar los proyectos
-            serializer = ProyectoSerializer(proyectos, many=True)
-            
-            # Filtrar solo los campos deseados (id, nombre y descripcion) y agrupar en 'data'
+            # Serializar los proyectos, obteniendo solo nombre y descripcion
             proyectos_filtrados = [
                 {
-                    "id": proyecto["id"],  # Incluir el ID del proyecto
-                    "nombre": proyecto["nombre"],
-                    "descripcion": proyecto["descripcion"]
-                } for proyecto in serializer.data
+                    "id": usuario_proyecto.id,  # ID del registro en UsuarioProyecto
+                    "nombre": proyecto.nombre,
+                    "descripcion": proyecto.descripcion
+                } for usuario_proyecto, proyecto in zip(usuario_proyectos, proyectos)
             ]
-            
-            # Crear la respuesta final con 'success', 'message' y 'data' (proyectos)
+
+            # Crear la respuesta final
             response_data = {
                 "success": True,
                 "message": "Proyectos obtenidos exitosamente.",
-                "data": proyectos_filtrados  # Proyectos dentro de 'data'
+                "data": proyectos_filtrados
             }
-            
-            # Devolver la respuesta en formato JSON
+
             return Response(response_data, status=status.HTTP_200_OK)
 
         except Usuario.DoesNotExist:
             return Response(
-                {"error": "Usuario no encontrado"},
+                {"error": "Usuario no encontrado."},
                 status=status.HTTP_404_NOT_FOUND
             )
