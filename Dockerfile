@@ -1,7 +1,7 @@
 FROM python:3.11-alpine
 
 ENV PYTHONUNBUFFERED=1
-WORKDIR /usr/app/
+WORKDIR /app
 
 RUN apk update \
     && apk add --no-cache gcc musl-dev postgresql-dev python3-dev libffi-dev \
@@ -14,4 +14,6 @@ RUN pip install -r requirements.txt
 
 COPY ./ ./
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+EXPOSE 8000
+
+CMD ["sh", "/app/django.sh"]

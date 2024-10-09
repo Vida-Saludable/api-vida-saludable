@@ -1,5 +1,30 @@
 from django.urls import path
 
+
+
+from reports.views.cantidad_agua_view import ClasificacionAguaUsuariosAPIView
+from reports.views.cantidad_aire_view import ClasificacionAireUsuariosAPIView
+from reports.views.cantidad_alimentos_view import ClasificacionAlimentacionUsuariosAPIView
+from reports.views.cantidad_despertar_view import ClasificacionDespertarUsuariosAPIView
+from reports.views.cantidad_ejercicio_view import ClasificacionEjercicioUsuariosAPIView
+from reports.views.cantidad_esperanza_view import ClasificacionEsperanzaUsuariosAPIView
+from reports.views.cantidad_sol_view import ClasificacionSolUsuariosAPIView
+from reports.views.cantidad_suenio_view import ClasificacionSuenioUsuariosAPIView
+from reports.views.unicos_agua_view import AguaUnicosAPIView
+from reports.views.unicos_aire_view import AireUnicosAPIView
+from reports.views.unicos_alimentos_view import AlimentacionUnicosAPIView
+from reports.views.unicos_despertar_view import DespertarUnicosAPIView
+from reports.views.unicos_dormir_view import DormirUnicosAPIView
+from reports.views.unicos_ejercicio_view import EjercicioUnicosAPIView
+from reports.views.unicos_esperanza_view import EsperanzaUnicosAPIView
+from reports.views.unicos_sol_view import SolUnicosAPIView
+
+
+
+
+
+
+
 # from users.views.usuario_view import ListaUsuariosView
 
 # from rest_framework.routers import DefaultRouter
@@ -41,6 +66,47 @@ urlpatterns = [
 
     # Reporte general de registros de habitos de cada persona por dia
     path('registros-diarios/', RegistroHabitosView.as_view(), name='registros-diarios'),
+
+
+    
+    
+    
+    
+# Alimentación
+    path('alimentacion-unicos/', AlimentacionUnicosAPIView.as_view(), name='alimentacion-unicos'),
+    path('clasificacion-alimentacion-usuarios/', ClasificacionAlimentacionUsuariosAPIView.as_view(), name='clasificacion-alimentacion-usuarios'),
+
+    # Agua
+    path('agua-unicos/', AguaUnicosAPIView.as_view(), name='agua-unicos'),
+    path('clasificacion-agua-usuarios/', ClasificacionAguaUsuariosAPIView.as_view(), name='clasificacion-agua-usuarios'),
+
+    # Aire
+    path('aire-unicos/', AireUnicosAPIView.as_view(), name='aire-unicos'),
+    path('clasificacion-aire-usuarios/', ClasificacionAireUsuariosAPIView.as_view(), name='clasificacion-aire-usuarios'),
+
+    # Despertar
+    path('despertar-unicos/', DespertarUnicosAPIView.as_view(), name='despertar-unicos'),
+    path('clasificacion-despertar-usuarios/', ClasificacionDespertarUsuariosAPIView.as_view(), name='clasificacion-despertar-usuarios'),
+
+    # Sueño (calculado con Dormir y Despertar)
+    path('suenio-unicos/', DormirUnicosAPIView.as_view(), name='suenio-unicos'),
+    path('clasificacion-suenio-usuarios/', ClasificacionSuenioUsuariosAPIView.as_view(), name='clasificacion-suenio-usuarios'),
+
+    # Ejercicio
+    path('ejercicio-unicos/', EjercicioUnicosAPIView.as_view(), name='ejercicio-unicos'),
+    path('clasificacion-ejercicio-usuarios/', ClasificacionEjercicioUsuariosAPIView.as_view(), name='clasificacion-ejercicio-usuarios'),
+
+    # Esperanza
+    path('esperanza-unicos/', EsperanzaUnicosAPIView.as_view(), name='esperanza-unicos'),
+    path('clasificacion-esperanza-usuarios/', ClasificacionEsperanzaUsuariosAPIView.as_view(), name='clasificacion-esperanza-usuarios'),
+
+    # Sol
+    path('sol-unicos/', SolUnicosAPIView.as_view(), name='sol-unicos'),
+    path('clasificacion-sol-usuarios/', ClasificacionSolUsuariosAPIView.as_view(), name='clasificacion-sol-usuarios'),
+
+
+
+    
 
 ]
 

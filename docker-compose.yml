@@ -1,0 +1,28 @@
+
+services:
+  web:
+    build: .
+    command: ["sh", "/app/django.sh"]
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DJANGO_SECRET_KEY=your_secret_key
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
+    env_file:
+      - .env  # Si tienes variables de entorno adicionales, puedes agregarlas aquí
+
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+volumes:
+  postgres_data:
