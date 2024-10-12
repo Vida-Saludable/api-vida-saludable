@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.db.models import Q
 from users.models.datos_personales_usuario_model import DatosPersonalesUsuario
 from habits.models.agua_model import Agua
 
@@ -9,16 +10,20 @@ class ClasificacionAguaUsuariosAPIView(APIView):
         # Obtener parámetros de filtro de la URL
         hora = request.query_params.get('hora', None)
         cantidad = request.query_params.get('cantidad', None)
+        fecha_inicio = request.query_params.get('fecha_inicio', None)
+        fecha_fin = request.query_params.get('fecha_fin', None)
 
         # Filtrar los registros de Agua con los criterios recibidos
-        filtros = {}
+        filtros = Q()
         if hora:
-            filtros['hora'] = hora
+            filtros &= Q(hora=hora)
         if cantidad:
-            filtros['cantidad'] = cantidad
+            filtros &= Q(cantidad=cantidad)
+        if fecha_inicio and fecha_fin:
+            filtros &= Q(fecha__range=[fecha_inicio, fecha_fin])
 
         # Obtener los registros de agua con los filtros (si no hay filtros, trae todos)
-        agua_qs = Agua.objects.filter(**filtros).select_related('usuario')
+        agua_qs = Agua.objects.filter(filtros).select_related('usuario')
 
         # Obtener los IDs de los usuarios de esos registros
         usuario_ids = agua_qs.values_list('usuario_id', flat=True).distinct()

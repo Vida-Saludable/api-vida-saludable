@@ -8,14 +8,15 @@ class ClasificacionSolUsuariosAPIView(APIView):
     def get(self, request, *args, **kwargs):
         # Obtener parámetros de filtro de la URL
         tiempo = request.query_params.get('tiempo', None)
-        fecha = request.query_params.get('fecha', None)
+        fecha_inicio = request.query_params.get('fecha_inicio', None)
+        fecha_fin = request.query_params.get('fecha_fin', None)
 
         # Filtrar los registros de Sol según los criterios recibidos
         filtros = {}
         if tiempo:
             filtros['tiempo'] = tiempo
-        if fecha:
-            filtros['fecha'] = fecha
+        if fecha_inicio and fecha_fin:
+            filtros['fecha__range'] = [fecha_inicio, fecha_fin]
 
         # Obtener los registros de Sol con los filtros (si no hay filtros, trae todos)
         sol_qs = Sol.objects.filter(**filtros).select_related('usuario')
