@@ -8,7 +8,7 @@ class EjercicioUnicosAPIView(APIView):
     def get(self, request, *args, **kwargs):
         # Obtener los valores únicos de los campos 'tipo' y 'tiempo' del modelo Ejercicio
         tipos_ejercicio = Ejercicio.objects.values_list('tipo', flat=True).distinct()
-        tiempos_ejercicio = Ejercicio.objects.values_list('tiempo', flat=True).distinct()
+        tiempos_ejercicio = Ejercicio.objects.values_list('tiempo', flat=True).distinct().order_by('tiempo')
 
         # Obtener la fecha mínima y máxima de los registros
         fecha_min = Ejercicio.objects.aggregate(min_fecha=Min('fecha'))['min_fecha']

@@ -2,12 +2,21 @@ from django.urls import path
 
 
 
+from reports.views.cantidad_agua_excel_view import ClasificacionAguaUsuariosExcelAPIView
 from reports.views.cantidad_agua_view import ClasificacionAguaUsuariosAPIView
+from reports.views.cantidad_aire_excel_view import ClasificacionAireUsuariosExcelAPIView
 from reports.views.cantidad_aire_view import ClasificacionAireUsuariosAPIView
+from reports.views.cantidad_alimentos_excel_view import ClasificacionAlimentacionUsuariosExcelAPIView
 from reports.views.cantidad_alimentos_view import ClasificacionAlimentacionUsuariosAPIView
+from reports.views.cantidad_despertar_excel_view import ClasificacionDespertarUsuariosExcelAPIView
 from reports.views.cantidad_despertar_view import ClasificacionDespertarUsuariosAPIView
+from reports.views.cantidad_dormir_excel_view import ClasificacionDormirUsuariosExcelAPIView
+from reports.views.cantidad_dormir_view import ClasificacionDormirUsuariosAPIView
+from reports.views.cantidad_ejercicio_excel_view import ClasificacionEjercicioUsuariosExcelAPIView
 from reports.views.cantidad_ejercicio_view import ClasificacionEjercicioUsuariosAPIView
+from reports.views.cantidad_esperanza_excel_view import ClasificacionEsperanzaUsuariosExcelAPIView
 from reports.views.cantidad_esperanza_view import ClasificacionEsperanzaUsuariosAPIView
+from reports.views.cantidad_sol_excel_view import ClasificacionSolUsuariosExcelAPIView
 from reports.views.cantidad_sol_view import ClasificacionSolUsuariosAPIView
 from reports.views.cantidad_suenio_view import ClasificacionSuenioUsuariosAPIView
 from reports.views.unicos_agua_view import AguaUnicosAPIView
@@ -75,34 +84,49 @@ urlpatterns = [
 # Alimentación
     path('alimentacion-unicos/', AlimentacionUnicosAPIView.as_view(), name='alimentacion-unicos'),
     path('clasificacion-alimentacion-usuarios/', ClasificacionAlimentacionUsuariosAPIView.as_view(), name='clasificacion-alimentacion-usuarios'),
+    path('clasificacion-alimentacion-usuarios-excel/', ClasificacionAlimentacionUsuariosExcelAPIView.as_view(), name='clasificacion-alimentacion-usuarios-excel'),
+
 
     # Agua
     path('agua-unicos/', AguaUnicosAPIView.as_view(), name='agua-unicos'),
     path('clasificacion-agua-usuarios/', ClasificacionAguaUsuariosAPIView.as_view(), name='clasificacion-agua-usuarios'),
+    path('clasificacion-agua-usuarios-excel/', ClasificacionAguaUsuariosExcelAPIView.as_view(), name='clasificacion-agua-usuarios-excel'),
 
     # Aire
     path('aire-unicos/', AireUnicosAPIView.as_view(), name='aire-unicos'),
     path('clasificacion-aire-usuarios/', ClasificacionAireUsuariosAPIView.as_view(), name='clasificacion-aire-usuarios'),
+    path('clasificacion-aire-usuarios-excel/', ClasificacionAireUsuariosExcelAPIView.as_view(), name='clasificacion-aire-usuarios-excel'),
+
 
     # Despertar
     path('despertar-unicos/', DespertarUnicosAPIView.as_view(), name='despertar-unicos'),
     path('clasificacion-despertar-usuarios/', ClasificacionDespertarUsuariosAPIView.as_view(), name='clasificacion-despertar-usuarios'),
+    path('clasificacion-despertar-usuarios-excel/', ClasificacionDespertarUsuariosExcelAPIView.as_view(), name='clasificacion-despertar-usuarios-excel'),
+
 
     # Sueño (calculado con Dormir y Despertar)
-    path('suenio-unicos/', DormirUnicosAPIView.as_view(), name='suenio-unicos'),
-    path('clasificacion-suenio-usuarios/', ClasificacionSuenioUsuariosAPIView.as_view(), name='clasificacion-suenio-usuarios'),
+    path('dormir-unicos/', DormirUnicosAPIView.as_view(), name='suenio-unicos'),
+    path('clasificacion-dormir-usuarios/', ClasificacionDormirUsuariosAPIView.as_view(), name='clasificacion-suenio-usuarios'),
+    path('clasificacion-dormir-usuarios-excel/', ClasificacionDormirUsuariosExcelAPIView.as_view(), name='clasificacion-dormir-usuarios-excel'),
+
 
     # Ejercicio
     path('ejercicio-unicos/', EjercicioUnicosAPIView.as_view(), name='ejercicio-unicos'),
     path('clasificacion-ejercicio-usuarios/', ClasificacionEjercicioUsuariosAPIView.as_view(), name='clasificacion-ejercicio-usuarios'),
+    path('clasificacion-ejercicio-usuarios-excel/', ClasificacionEjercicioUsuariosExcelAPIView.as_view(), name='clasificacion-ejercicio-usuarios-excel'),
+
 
     # Esperanza
     path('esperanza-unicos/', EsperanzaUnicosAPIView.as_view(), name='esperanza-unicos'),
     path('clasificacion-esperanza-usuarios/', ClasificacionEsperanzaUsuariosAPIView.as_view(), name='clasificacion-esperanza-usuarios'),
+    path('clasificacion-esperanza-usuarios-excel/', ClasificacionEsperanzaUsuariosExcelAPIView.as_view(), name='clasificacion-esperanza-usuarios-excel'),
+
 
     # Sol
     path('sol-unicos/', SolUnicosAPIView.as_view(), name='sol-unicos'),
     path('clasificacion-sol-usuarios/', ClasificacionSolUsuariosAPIView.as_view(), name='clasificacion-sol-usuarios'),
+    path('clasificacion-sol-usuarios-excel/', ClasificacionSolUsuariosExcelAPIView.as_view(), name='clasificacion-sol-usuarios-excel'),
+
 
 
 

@@ -7,9 +7,9 @@ from habits.models.alimentacion_model import Alimentacion
 class AlimentacionUnicosAPIView(APIView):
     def get(self, request, *args, **kwargs):
         # Obtener los valores únicos de los campos relacionados con alimentación
-        desayuno_horas = Alimentacion.objects.values_list('desayuno_hora', flat=True).distinct()
-        almuerzo_horas = Alimentacion.objects.values_list('almuerzo_hora', flat=True).distinct()
-        cena_horas = Alimentacion.objects.values_list('cena_hora', flat=True).distinct()
+        desayuno_horas = Alimentacion.objects.values_list('desayuno_hora', flat=True).distinct().order_by('desayuno_hora')
+        almuerzo_horas = Alimentacion.objects.values_list('almuerzo_hora', flat=True).distinct().order_by('almuerzo_hora')
+        cena_horas = Alimentacion.objects.values_list('cena_hora', flat=True).distinct().order_by('cena_hora')
         desayunos = Alimentacion.objects.values_list('desayuno', flat=True).distinct()
         almuerzos = Alimentacion.objects.values_list('almuerzo', flat=True).distinct()
         cenas = Alimentacion.objects.values_list('cena', flat=True).distinct()

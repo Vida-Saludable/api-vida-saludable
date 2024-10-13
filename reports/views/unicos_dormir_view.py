@@ -7,7 +7,7 @@ from habits.models.dormir_model import Dormir
 class DormirUnicosAPIView(APIView):
     def get(self, request, *args, **kwargs):
         # Obtener los valores únicos del campo 'hora' del modelo Dormir
-        horas_unicas = Dormir.objects.values_list('hora', flat=True).distinct()
+        horas_unicas = Dormir.objects.values_list('hora', flat=True).distinct().order_by('hora')
 
         # Obtener la fecha mínima y máxima de los registros
         fecha_min = Dormir.objects.aggregate(min_fecha=Min('fecha'))['min_fecha']

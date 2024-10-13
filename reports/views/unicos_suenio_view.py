@@ -7,7 +7,7 @@ from habits.models.despertar_model import Despertar
 class SuenioUnicosAPIView(APIView):
     def get(self, request, *args, **kwargs):
         # Obtener los valores únicos de las horas de dormir y despertar
-        dormir_horas = Dormir.objects.values_list('hora', flat=True).distinct()
+        dormir_horas = Dormir.objects.values_list('hora', flat=True).distinct().order_by('hora')
         despertar_horas = Despertar.objects.values_list('hora', flat=True).distinct()
 
         # Crear la respuesta

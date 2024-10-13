@@ -6,9 +6,9 @@ from habits.models.agua_model import Agua
 
 class AguaUnicosAPIView(APIView):
     def get(self, request, *args, **kwargs):
-        # Obtener los valores únicos de los campos relacionados con agua
-        horas = Agua.objects.values_list('hora', flat=True).distinct()
-        cantidades = Agua.objects.values_list('cantidad', flat=True).distinct()
+        # Obtener los valores únicos de los campos relacionados con agua y ordenarlos
+        horas = Agua.objects.values_list('hora', flat=True).distinct().order_by('hora')
+        cantidades = Agua.objects.values_list('cantidad', flat=True).distinct().order_by('cantidad')
 
         # Obtener las fechas mínima y máxima
         fecha_min = Agua.objects.aggregate(min_fecha=Min('fecha'))['min_fecha']

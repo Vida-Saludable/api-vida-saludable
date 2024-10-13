@@ -7,7 +7,7 @@ from habits.models.despertar_model import Despertar
 class DespertarUnicosAPIView(APIView):
     def get(self, request, *args, **kwargs):
         # Obtener los valores únicos de los campos 'hora' y 'estado'
-        horas = Despertar.objects.values_list('hora', flat=True).distinct()
+        horas = Despertar.objects.values_list('hora', flat=True).distinct().order_by('hora')
         estados = Despertar.objects.values_list('estado', flat=True).distinct()
 
         # Obtener fechas mínima y máxima de los registros

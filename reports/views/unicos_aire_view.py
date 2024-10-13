@@ -7,7 +7,7 @@ from habits.models.aire_model import Aire
 class AireUnicosAPIView(APIView):
     def get(self, request, *args, **kwargs):
         # Obtener los valores únicos del campo "tiempo"
-        tiempos = Aire.objects.values_list('tiempo', flat=True).distinct()
+        tiempos = Aire.objects.values_list('tiempo', flat=True).distinct().order_by('tiempo')
 
         # Obtener las fechas mínima y máxima
         fecha_min = Aire.objects.aggregate(min_fecha=Min('fecha'))['min_fecha']

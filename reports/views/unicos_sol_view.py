@@ -7,7 +7,7 @@ from habits.models.sol_model import Sol
 class SolUnicosAPIView(APIView):
     def get(self, request, *args, **kwargs):
         # Obtener los valores únicos del campo 'tiempo' y 'fecha' del modelo Sol
-        tiempos_sol = Sol.objects.values_list('tiempo', flat=True).distinct()
+        tiempos_sol = Sol.objects.values_list('tiempo', flat=True).distinct().order_by('tiempo')
         fechas_sol = Sol.objects.values_list('fecha', flat=True).distinct()
 
         # Obtener la fecha mínima y máxima de los registros
