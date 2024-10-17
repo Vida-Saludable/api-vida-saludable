@@ -118,17 +118,27 @@ WSGI_APPLICATION = 'api.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
 DATABASES = {
-   'default': {
+    'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'vida_saludable_0uon',
-        'USER': 'vida_saludable_0uon_user',
-        'PASSWORD': '7fTLF3XB6XL9N745siJE94xcT6ybtcGK',
-        'HOST': 'dpg-crksavtumphs73br47j0-a.oregon-postgres.render.com',  # O la dirección IP de tu servidor MySQL
-        'PORT': '5432',  # O el puerto que estés utilizando
+        'NAME': 'vida_saludable',
+        'USER': 'UAB',
+        'PASSWORD': 'UAB',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
+
+# DATABASES = {
+#    'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'vida_saludable_0uon',
+#         'USER': 'vida_saludable_0uon_user',
+#         'PASSWORD': '7fTLF3XB6XL9N745siJE94xcT6ybtcGK',
+#         'HOST': 'dpg-crksavtumphs73br47j0-a.oregon-postgres.render.com',  # O la dirección IP de tu servidor MySQL
+#         'PORT': '5432',  # O el puerto que estés utilizando
+#     }
+# }
 
 # DATABASES = {
 #      'default': {
@@ -140,6 +150,8 @@ DATABASES = {
 #         'PORT': '5432',  # O el puerto que estés utilizando
 #     }
 # }
+
+
 
 
 AUTH_PASSWORD_VALIDATORS = [
