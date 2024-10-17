@@ -122,7 +122,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'vida_saludable',
-        'USER': 'UAB',
+        'USER': 'uab',
         'PASSWORD': 'UAB',
         'HOST': 'localhost',
         'PORT': '5432',
