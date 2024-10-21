@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
 from django.db import transaction
+from rest_framework.views import APIView
 
 from ..models.datos_habitos_aire_model import DatosHabitosAire
 from ..serializers.datos_habitos_aire_serializer import DatosHabitosAireSerializer
@@ -57,3 +58,21 @@ class DatosHabitosAireViewSet(viewsets.ModelViewSet):
                     "errors": serializer.errors
                 }
                 return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+
+class ListaDatosHabitosAireUsuarioView(APIView):
+    def get(self, request, usuario_id, *args, **kwargs):
+        # Filtrar los registros de hábitos de aire por el usuario recibido en la URL
+        registros = DatosHabitosAire.objects.filter(usuario_id=usuario_id)
+
+        if not registros.exists():
+            return Response({
+                "success": False,
+                "message": "No se encontraron registros de hábitos de aire para este usuario."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        # Serializar los datos
+        serializer = DatosHabitosAireSerializer(registros, many=True)
+        return Response({
+            "success": True,
+            "data": serializer.data
+        }, status=status.HTTP_200_OK)

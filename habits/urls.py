@@ -1,14 +1,14 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from habits.views.datos_habitos_agua_view import DatosHabitosAguaViewSet
-from habits.views.datos_habitos_aire_view import DatosHabitosAireViewSet
-from habits.views.datos_habitos_alimentacion_view import DatosHabitosAlimentacionViewSet
-from habits.views.datos_habitos_descanso_view import DatosHabitosDescansoViewSet
-from habits.views.datos_habitos_ejercicio_view import DatosHabitosEjercicioViewSet
-from habits.views.datos_habitos_esperanza_view import DatosHabitosEsperanzaViewSet
-from habits.views.datos_habitos_sol_view import DatosHabitosSolViewSet
-from habits.views.datos_habitos_temperancia_view import DatosHabitosTemperanciaViewSet
+from habits.views.datos_habitos_agua_view import DatosHabitosAguaViewSet, ListaDatosHabitosAguaUsuarioView
+from habits.views.datos_habitos_aire_view import DatosHabitosAireViewSet, ListaDatosHabitosAireUsuarioView
+from habits.views.datos_habitos_alimentacion_view import DatosHabitosAlimentacionViewSet, ListaDatosHabitosAlimentacionUsuarioView
+from habits.views.datos_habitos_descanso_view import DatosHabitosDescansoViewSet, ListaDatosHabitosDescansoUsuarioView
+from habits.views.datos_habitos_ejercicio_view import DatosHabitosEjercicioViewSet, ListaDatosHabitosEjercicioUsuarioView
+from habits.views.datos_habitos_esperanza_view import DatosHabitosEsperanzaViewSet, ListaDatosHabitosEsperanzaUsuarioView
+from habits.views.datos_habitos_sol_view import DatosHabitosSolViewSet, ListaDatosHabitosSolUsuarioView
+from habits.views.datos_habitos_temperancia_view import DatosHabitosTemperanciaViewSet, ListaDatosHabitosTemperanciaUsuarioView
 
 from .views.agua_view import AguaViewSet
 from .views.aire_view import AireViewSet
@@ -40,5 +40,14 @@ router.register(r'datos-habitos-temperancia', DatosHabitosTemperanciaViewSet)
 router.register(r'datos-habitos-esperanza', DatosHabitosEsperanzaViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('datos-habitos-agua/usuario/<int:usuario_id>/', ListaDatosHabitosAguaUsuarioView.as_view(), name='listar-datos-habitos-usuario'),
+    path('datos-habitos-aire/usuario/<int:usuario_id>/', ListaDatosHabitosAireUsuarioView.as_view(), name='listar-datos-habitos-usuario'),
+    path('datos-habitos-alimentacion/usuario/<int:usuario_id>/', ListaDatosHabitosAlimentacionUsuarioView.as_view(), name='listar-datos-habitos-usuario'),
+    path('datos-habitos-ejercicio/usuario/<int:usuario_id>/', ListaDatosHabitosEjercicioUsuarioView.as_view(), name='listar-datos-habitos-usuario'),
+    path('datos-habitos-descanso/usuario/<int:usuario_id>/', ListaDatosHabitosDescansoUsuarioView.as_view(), name='listar-datos-habitos-usuario'),
+    path('datos-habitos-sol/usuario/<int:usuario_id>/', ListaDatosHabitosSolUsuarioView.as_view(), name='listar-datos-habitos-usuario'),
+    path('datos-habitos-temperancia/usuario/<int:usuario_id>/', ListaDatosHabitosTemperanciaUsuarioView.as_view(), name='listar-datos-habitos-usuario'),
+    path('datos-habitos-esperanza/usuario/<int:usuario_id>/', ListaDatosHabitosEsperanzaUsuarioView.as_view(), name='listar-datos-habitos-usuario'),
 ]
+
+urlpatterns += router.urls
