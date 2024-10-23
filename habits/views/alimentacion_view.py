@@ -44,7 +44,7 @@ class AlimentacionViewSet(viewsets.ModelViewSet):
 
             return Response({
                 'success': True,
-                'message': 'Los datos de alimentación fueron actualizados correctamente',
+                'message': 'Se registró exitosamente',
                 'data': AlimentacionSerializer(alimentacion_existente).data
             }, status=status.HTTP_200_OK)
 
@@ -56,7 +56,7 @@ class AlimentacionViewSet(viewsets.ModelViewSet):
             headers = self.get_success_headers(serializer.data)
             return Response({
                 'success': True,
-                'message': 'Los datos de alimentación fueron registrados exitosamente',
+                'message': 'Se registró exitosamente',
                 'data': serializer.data
             }, status=status.HTTP_201_CREATED, headers=headers)
 
