@@ -17,7 +17,7 @@ DEBUG = 'RENDER' not in os.environ
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['145.223.27.25','127.0.0.1']
 
 RENDER_EXTERNAL_HOSTNAME=os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
@@ -118,28 +118,40 @@ WSGI_APPLICATION = 'api.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
 DATABASES = {
-   'default': {
+    'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'vida_saludable_0uon',
-        'USER': 'vida_saludable_0uon_user',
-        'PASSWORD': '7fTLF3XB6XL9N745siJE94xcT6ybtcGK',
-        'HOST': 'dpg-crksavtumphs73br47j0-a.oregon-postgres.render.com',  # O la dirección IP de tu servidor MySQL
-        'PORT': '5432',  # O el puerto que estés utilizando
+        'NAME': 'vida_saludable',
+        'USER': 'uab',
+        'PASSWORD': 'UAB',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
+
+# DATABASES = {
+#    'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'vida_saludable_0uon',
+#         'USER': 'vida_saludable_0uon_user',
+#         'PASSWORD': '7fTLF3XB6XL9N745siJE94xcT6ybtcGK',
+#         'HOST': 'dpg-crksavtumphs73br47j0-a.oregon-postgres.render.com',  # O la dirección IP de tu servidor MySQL
+#         'PORT': '5432',  # O el puerto que estés utilizando
+#     }
+# }
 
 # DATABASES = {
 #      'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
 #         'NAME': 'vida_saludable',
 #         'USER': 'postgres',
-#         'PASSWORD': '123456',
+#         'PASSWORD': 'Juanjose8923510',
 #         'HOST': 'localhost',  # O la dirección IP de tu servidor MySQL
 #         'PORT': '5432',  # O el puerto que estés utilizando
 #     }
 # }
+
+
 
 
 AUTH_PASSWORD_VALIDATORS = [

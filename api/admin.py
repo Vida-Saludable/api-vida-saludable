@@ -17,6 +17,7 @@ from habits.models.dormir_model import Dormir
 from habits.models.despertar_model import Despertar
 from users.models.datos_personales_usuario_model import DatosPersonalesUsuario
 from users.models.proyecto_model import Proyecto
+from users.models.role_model import Role
 from users.models.usuario_proyecto_model import UsuarioProyecto
 from health.models.datos_fisicos_models import DatosFisicos
 from health.models.datos_muestras_models import DatosMuestras
@@ -29,6 +30,7 @@ admin.site.register(Agua)
 admin.site.register(Esperanza)
 admin.site.register(Sol)
 admin.site.register(Aire)
+admin.site.register(Role)
 admin.site.register(Dormir)
 admin.site.register(Despertar)
 admin.site.register(Ejercicio)

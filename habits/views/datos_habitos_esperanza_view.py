@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
 from django.db import transaction
+from rest_framework.views import APIView
 
 from ..models.datos_habitos_esperanza_model import DatosHabitosEsperanza
 from ..serializers.datos_habitos_esperanza_serializer import DatosHabitosEsperanzaSerializer
@@ -57,3 +58,21 @@ class DatosHabitosEsperanzaViewSet(viewsets.ModelViewSet):
                     "errors": serializer.errors
                 }
                 return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+            
+class ListaDatosHabitosEsperanzaUsuarioView(APIView):
+    def get(self, request, usuario_id, *args, **kwargs):
+        # Filtrar los registros de hábitos de esperanza por el usuario recibido en la URL
+        registros = DatosHabitosEsperanza.objects.filter(usuario_id=usuario_id)
+
+        if not registros.exists():
+            return Response({
+                "success": False,
+                "message": "No se encontraron registros de hábitos de esperanza para este usuario."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        # Serializar los datos
+        serializer = DatosHabitosEsperanzaSerializer(registros, many=True)
+        return Response({
+            "success": True,
+            "data": serializer.data
+        }, status=status.HTTP_200_OK)
