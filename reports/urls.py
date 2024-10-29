@@ -44,6 +44,7 @@ from .views.reporte_ejercicio_view import ReporteEjercicioView, ReporteEjercicio
 from .views.reporte_esperanza_view import ReporteEsperanzaPorcentajeView
 from .views.reporte_sol_view import ReporteSolView
 from .views.reporte_descanso_view import ReporteHorasDormidasView, ReportePorcentajeDescansoView
+from reports.views.reporte_alimentacion_view import ReportePorcentajeAlimentacionTipoView, ReportePorcentajeAlimentacionView
 from .views.reporte_general_habitos_view import RegistroHabitosView
 
 urlpatterns = [
@@ -72,6 +73,11 @@ urlpatterns = [
     path('reporte-descanso/<int:usuario_id>/', ReporteHorasDormidasView.as_view(), name='reporte-descanso'),
     # Porcentaje de estado por usuario de como descanso
     path('reporte-descanso-porcentaje/<int:usuario_id>/', ReportePorcentajeDescansoView.as_view(), name='reporte-descanso-porcentaje'),
+
+    # Porcentaje de alimentacion comida saludable y no saludable
+    path('reporte-alimentacion-porcentaje/<int:usuario_id>/', ReportePorcentajeAlimentacionView.as_view(), name='reporte-alimentacion-porcentaje'),
+    # Porcentaje de alimentacion comida saludable y no saludable por tipo
+    path('reporte-alimentacion-porcentaje-tipo/<int:usuario_id>/<str:tipo_alimento>/', ReportePorcentajeAlimentacionTipoView.as_view(), name='reporte-alimentacion-porcentaje-tipo'),
 
     # Reporte general de registros de habitos de cada persona por dia
     path('registros-diarios/', RegistroHabitosView.as_view(), name='registros-diarios'),
