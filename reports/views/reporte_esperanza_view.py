@@ -30,7 +30,7 @@ class ReporteEsperanzaPorcentajeView(APIView):
         # Inicializar contadores para los tipos de práctica
         conteo_esperanzas = {
             'oracion': 0,
-            'lectura biblica': 0,
+            'leer biblia': 0,
         }
 
         # Llenar los contadores con los valores reales
@@ -45,7 +45,7 @@ class ReporteEsperanzaPorcentajeView(APIView):
         reporte = {
             'total_tipo': total_tipo,
             'tipo_oracion': calcular_porcentaje(conteo_esperanzas['oracion'], total_tipo),
-            'tipo_lectura': calcular_porcentaje(conteo_esperanzas['lectura biblica'], total_tipo),
+            'tipo_lectura': calcular_porcentaje(conteo_esperanzas['leer biblia'], total_tipo),
         }
 
         # Devolver la respuesta en el formato requerido
