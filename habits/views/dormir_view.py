@@ -1,17 +1,21 @@
-from rest_framework import status
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from datetime import datetime, timedelta
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 
 from ..models.dormir_model import Dormir
 from ..models.despertar_model import Despertar
 from ..serializers.dormir_serializer import DormirSerializer
 from users.models.datos_personales_usuario_model import DatosPersonalesUsuario
 
-
+class CustomPagination(PageNumberPagination):
+    page_size = 7  # Número de elementos por página
+    page_size_query_param = 'page_size'  # Permite a los usuarios definir el tamaño de página en la solicitud
+    max_page_size = 100  # Tamaño máximo de la página
 class DormirViewSet(viewsets.ModelViewSet):
     queryset = Dormir.objects.all()
     serializer_class = DormirSerializer
+    pagination_class = CustomPagination
     # permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
@@ -26,7 +30,21 @@ class DormirViewSet(viewsets.ModelViewSet):
         }, status=status.HTTP_201_CREATED, headers=headers)
 
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
+        # Obtener parámetros de búsqueda
+        usuario = request.query_params.get('usuario', None)
+        proyecto_id = request.query_params.get('proyecto', None)
+
+        # Obtener el queryset base y ordenarlo
+        queryset = self.get_queryset().order_by('fecha')
+
+        # Filtrar por usuario
+        if usuario:
+            queryset = queryset.filter(usuario__datospersonalesusuario__nombres_apellidos__icontains=usuario)
+
+        # Filtrar por proyecto
+        if proyecto_id:
+            queryset = queryset.filter(usuario__usuarioproyecto__proyecto__id=proyecto_id).distinct()
+
         resultados = []
         usuario_info = {}
 
@@ -76,9 +94,20 @@ class DormirViewSet(viewsets.ModelViewSet):
         for item in usuario_info.values():
             resultados.append(item)
 
+        # Paginación
+        page = self.paginate_queryset(resultados)
+        if page is not None:
+            return Response({
+                'success': True,
+                'count': len(resultados),  # Total de elementos
+                'next': self.paginator.get_next_link(),  # Enlace a la siguiente página
+                'previous': self.paginator.get_previous_link(),  # Enlace a la página anterior
+                'data': page  # Incluir los datos en 'data'
+            }, status=status.HTTP_200_OK)
+
         return Response({
             'success': True,
             'message': 'Listado de registros de dormir',
-            'data': resultados
-        })
+            'data': resultados  # Incluir los datos en 'data'
+        }, status=status.HTTP_200_OK)
 

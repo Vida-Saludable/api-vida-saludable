@@ -1,26 +1,24 @@
-from rest_framework import viewsets, generics
+from rest_framework import viewsets
+from django.db.models import Q
 from django.db import transaction
 from rest_framework.pagination import PageNumberPagination
 
 from users.models.proyecto_model import Proyecto
 from users.models.role_model import Role
 from users.models.usuario_models import Usuario
-from users.models.datos_personales_usuario_model import DatosPersonalesUsuario
+# from users.models.datos_personales_usuario_model import DatosPersonalesUsuario
 from users.models.usuario_proyecto_model import UsuarioProyecto
 # from users.models.role_model import Role
 
 from users.serializers.usuario_serializer import UsuarioSerializer
-from users.serializers.datos_personales_serializers import DatosPersonalesUsuarioSerializer
+# from users.serializers.datos_personales_serializers import DatosPersonalesUsuarioSerializer
 from users.serializers.usuario_proyecto_serializer import UsuarioProyectoSerializer
-from users.serializers.proyecto_serializer import ProyectoSerializer
+# from users.serializers.proyecto_serializer import ProyectoSerializer
 
 
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-
-class CustomPagination(PageNumberPagination):
-    page_size = 10 
 
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
@@ -112,13 +110,34 @@ class RegistroUsuarioView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ListaUsuariosPagination(PageNumberPagination):
+    page_size = 7
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 class ListaUsuariosView(APIView):
     def get(self, request, *args, **kwargs):
+        # Obtener parámetros de búsqueda y paginación
+        nombre = request.query_params.get('nombre', None)
+        proyecto_id = request.query_params.get('proyecto', None)
+        paginator = ListaUsuariosPagination()
+        
         # Filtrar todos los usuarios que no tengan el rol 'Paciente'
         usuarios = Usuario.objects.exclude(role__name="Paciente")
-        usuarios_data = []
+        
+        # Filtrar por nombre si se proporciona
+        if nombre:
+            usuarios = usuarios.filter(nombre__icontains=nombre)
+        
+        # Filtrar por proyecto si se proporciona
+        if proyecto_id:
+            usuarios = usuarios.filter(usuarioproyecto__proyecto__id=proyecto_id).distinct()
 
-        for usuario in usuarios:
+        # Aplicar paginación
+        result_page = paginator.paginate_queryset(usuarios, request)
+        
+        usuarios_data = []
+        for usuario in result_page:
             # Serializar los datos del usuario
             usuario_serializado = UsuarioSerializer(usuario).data
             
@@ -136,45 +155,76 @@ class ListaUsuariosView(APIView):
             }
 
             usuarios_data.append(usuario_info)
+        
+        paginated_response = paginator.get_paginated_response(usuarios_data)
+        
+        response_data = {
+            'success': True,
+            'count': paginated_response.data['count'],
+            'next': paginated_response.data['next'],
+            'previous': paginated_response.data['previous'],
+            'data': paginated_response.data['results']
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
 
-        return Response(usuarios_data, status=200)
 
+class ListaPacientesPagination(PageNumberPagination):
+    page_size = 7
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 class ListaPacientesView(APIView):
     def get(self, request, *args, **kwargs):
+        # Obtener parámetros de búsqueda y paginación
+        nombre = request.query_params.get('nombre', None)  # Parámetro para filtrar por nombre
+        proyecto_id = request.query_params.get('proyecto', None)  # Parámetro para filtrar por proyecto
+        paginator = ListaPacientesPagination()  # Instanciar el paginador
+        
         # Filtrar todos los usuarios que tengan el rol 'Paciente'
         pacientes = Usuario.objects.filter(role__name="Paciente")
 
-        # Lista de usuarios con los datos requeridos
-        pacientes_data = []
+        # Filtrar por nombre si se proporciona
+        if nombre:
+            pacientes = pacientes.filter(nombre__icontains=nombre)  # Filtrar por nombre
 
-        for paciente in pacientes:
+        # Filtrar por proyecto si se proporciona
+        if proyecto_id:
+            pacientes = pacientes.filter(usuarioproyecto__proyecto__id=proyecto_id).distinct()
+
+        # Aplicar paginación
+        result_page = paginator.paginate_queryset(pacientes.prefetch_related('usuarioproyecto_set'), request)
+
+        pacientes_data = []
+        for paciente in result_page:
             # Serializar los datos del usuario
             paciente_serializado = UsuarioSerializer(paciente).data
 
-            # Obtener el proyecto asociado al paciente
+            # Obtener todos los nombres de los proyectos asociados al paciente mediante la tabla intermedia UsuarioProyecto
             usuario_proyectos = UsuarioProyecto.objects.filter(usuario=paciente)
-
-            # Obtener solo los nombres de los proyectos
             proyectos_nombres = [usuario_proyecto.proyecto.nombre for usuario_proyecto in usuario_proyectos]
 
+            # Armar la respuesta con la información del paciente y sus nombres de proyectos
             paciente_info = {
-                'id': paciente.id,  # Incluimos el ID del usuario
-                'nombre': paciente_serializado.get('nombre'),  # Nombre del usuario
-                'correo': paciente_serializado.get('correo'),  # Correo electrónico del usuario
-                'role': paciente.role.name if paciente.role else None,  # Obtener el nombre del rol
-                'proyectos': proyectos_nombres  # Agregar solo los nombres de los proyectos
+                'id': paciente.id,
+                'nombre': paciente_serializado.get('nombre'),
+                'correo': paciente_serializado.get('correo'),
+                'role': paciente.role.name if paciente.role else None,
+                'proyectos': proyectos_nombres  # Solo incluir los nombres de los proyectos
             }
 
             pacientes_data.append(paciente_info)
 
-        # Crear la respuesta final con éxito y mensaje
+        # Crear la respuesta paginada
+        paginated_response = paginator.get_paginated_response(pacientes_data)
+
         response_data = {
             'success': True,
-            'message': 'Lista de pacientes obtenida con éxito.',
-            'data': pacientes_data
+            'count': paginated_response.data['count'],
+            'next': paginated_response.data['next'],
+            'previous': paginated_response.data['previous'],
+            'data': paginated_response.data['results']
         }
 
-        return Response(response_data, status=200)
+        return Response(response_data, status=status.HTTP_200_OK)
 
 class EditarPacienteView(APIView):
     def put(self, request, *args, **kwargs):
