@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db import transaction
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 from health.models.datos_fisicos_models import DatosFisicos
 from health.serializers.datos_fisicos_serializer import DatosFisicosSerializer
@@ -10,7 +11,7 @@ from health.serializers.datos_fisicos_serializer import DatosFisicosSerializer
 class DatosFisicosViewSet(viewsets.ModelViewSet):
     queryset = DatosFisicos.objects.all()
     serializer_class = DatosFisicosSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         usuario_id = request.data.get('usuario')  # Asegúrate de que el campo 'usuario' esté presente en los datos
@@ -67,6 +68,7 @@ class DatosFisicosViewSet(viewsets.ModelViewSet):
 
 
 class ListaDatosFisicosUsuarioView(APIView):
+    # permission_classes = [IsAuthenticated]
     def get(self, request, usuario_id=None):
         """
         Lista todos los registros de Datos Físicos de un usuario específico.

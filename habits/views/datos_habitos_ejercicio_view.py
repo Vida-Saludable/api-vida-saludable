@@ -3,6 +3,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from django.db import transaction
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 from ..models.datos_habitos_ejercicio_model import DatosHabitosEjercicio
 from ..serializers.datos_habitos_ejercicio_serializer import DatosHabitosEjercicioSerializer
@@ -11,6 +12,7 @@ from ..serializers.datos_habitos_ejercicio_serializer import DatosHabitosEjercic
 class DatosHabitosEjercicioViewSet(viewsets.ModelViewSet):
     queryset = DatosHabitosEjercicio.objects.all()
     serializer_class = DatosHabitosEjercicioSerializer
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         usuario_id = request.data.get('usuario')  # Asegúrate de que el campo 'usuario' está presente en los datos
@@ -60,6 +62,7 @@ class DatosHabitosEjercicioViewSet(viewsets.ModelViewSet):
                 return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
             
 class ListaDatosHabitosEjercicioUsuarioView(APIView):
+    permission_classes = [IsAuthenticated]
     """
     Vista para listar los registros de DatosHabitosEjercicio de un usuario específico.
     """

@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from django.db.models import Q
 from django.db import transaction
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 
 from users.models.proyecto_model import Proyecto
 from users.models.role_model import Role
@@ -23,6 +24,7 @@ from rest_framework.response import Response
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
+    permission_classes = [IsAuthenticated]
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
@@ -102,6 +104,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 
 
 class RegistroUsuarioView(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         serializer = UsuarioSerializer(data=request.data)
         if serializer.is_valid():
@@ -116,6 +119,7 @@ class ListaUsuariosPagination(PageNumberPagination):
     max_page_size = 100
 
 class ListaUsuariosView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, *args, **kwargs):
         # Obtener parámetros de búsqueda y paginación
         nombre = request.query_params.get('nombre', None)
@@ -173,6 +177,7 @@ class ListaPacientesPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 100
 class ListaPacientesView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, *args, **kwargs):
         # Obtener parámetros de búsqueda y paginación
         nombre = request.query_params.get('nombre', None)  # Parámetro para filtrar por nombre
@@ -227,6 +232,7 @@ class ListaPacientesView(APIView):
         return Response(response_data, status=status.HTTP_200_OK)
 
 class EditarPacienteView(APIView):
+    permission_classes = [IsAuthenticated]
     def put(self, request, *args, **kwargs):
         try:
             # Obtener el usuario que se va a actualizar

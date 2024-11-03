@@ -3,6 +3,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from django.db import transaction
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 from ..models.datos_habitos_sol_model import DatosHabitosSol
 from ..serializers.datos_habitos_sol_serializer import DatosHabitosSolSerializer
@@ -11,6 +12,7 @@ from ..serializers.datos_habitos_sol_serializer import DatosHabitosSolSerializer
 class DatosHabitosSolViewSet(viewsets.ModelViewSet):
     queryset = DatosHabitosSol.objects.all()
     serializer_class = DatosHabitosSolSerializer
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         usuario_id = request.data.get('usuario')  # Asegúrate de que el campo 'usuario' está presente en los datos
@@ -60,6 +62,7 @@ class DatosHabitosSolViewSet(viewsets.ModelViewSet):
                 return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
             
 class ListaDatosHabitosSolUsuarioView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, usuario_id, *args, **kwargs):
         # Filtrar los registros de hábitos de sol por el usuario recibido en la URL
         registros = DatosHabitosSol.objects.filter(usuario_id=usuario_id)

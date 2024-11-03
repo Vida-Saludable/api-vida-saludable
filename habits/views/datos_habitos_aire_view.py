@@ -3,6 +3,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from django.db import transaction
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 from ..models.datos_habitos_aire_model import DatosHabitosAire
 from ..serializers.datos_habitos_aire_serializer import DatosHabitosAireSerializer
@@ -11,6 +12,7 @@ from ..serializers.datos_habitos_aire_serializer import DatosHabitosAireSerializ
 class DatosHabitosAireViewSet(viewsets.ModelViewSet):
     queryset = DatosHabitosAire.objects.all()
     serializer_class = DatosHabitosAireSerializer
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         usuario_id = request.data.get('usuario')  # Asegúrate de que el campo 'usuario' está presente en los datos
@@ -60,6 +62,7 @@ class DatosHabitosAireViewSet(viewsets.ModelViewSet):
                 return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
 
 class ListaDatosHabitosAireUsuarioView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, usuario_id, *args, **kwargs):
         # Filtrar los registros de hábitos de aire por el usuario recibido en la URL
         registros = DatosHabitosAire.objects.filter(usuario_id=usuario_id)
