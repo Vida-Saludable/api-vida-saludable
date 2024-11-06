@@ -23,7 +23,7 @@ class AnalizadorSalud:
             return {'status': 'Normal', 'color': '#00FF00'}  # Verde
         else:
             return {'status': 'Fuera de rango normal', 'color': '#FFA500'}  # Naranja
-
+        
     @staticmethod
     def clasificar_imc(imc):
         if imc < Decimal('16'):
@@ -46,7 +46,8 @@ class AnalizadorSalud:
         elif 130 <= sistolica < 140:
             return {'status': 'Hipertensión etapa 1', 'color': '#FFA500'}  # Naranja
         else:
-            return {'status': 'Hipertensión etapa 2', 'color': '#FF0000'}  # Rojo
+            return {'status': 'Hipertensión etapa 2', 'color': '#FF0000'}  # Rojo oscuro
+        
 
     @staticmethod
     def clasificar_presion_diastolica(diastolica):
@@ -55,7 +56,7 @@ class AnalizadorSalud:
         elif 80 <= diastolica < 90:
             return {'status': 'Hipertensión etapa 1', 'color': '#FFA500'}  # Naranja
         else:
-            return {'status': 'Hipertensión etapa 2', 'color': '#FF0000'}  # Rojo
+            return {'status': 'Hipertensión etapa 2', 'color': '#FF0000'}  # Rojo oscuro
 
     @staticmethod
     def clasificar_radio_abdominal(radio_abdominal, sexo):
@@ -65,7 +66,7 @@ class AnalizadorSalud:
             return {'status': 'Malo', 'color': '#FF4C4C'}  # Rojo
         else:
             return {'status': 'Bueno', 'color': '#00FF00'}  # Verde
-
+        
     @staticmethod
     def clasificar_grasa_corporal(grasa, sexo):
         if grasa is None:
@@ -95,6 +96,7 @@ class AnalizadorSalud:
             return {'status': 'Bueno', 'color': '#00FF00'}  # Verde
         else:
             return {'status': 'Muy bueno', 'color': '#32CD32'}  # Verde claro
+        
     
     @staticmethod
     def clasificar_frecuencia_cardiaca(frecuencia_cardiaca):
@@ -155,6 +157,7 @@ class AnalizadorSalud:
             return {'status': 'Aceptable', 'color': '#FFD700'}  # Amarillo
         else:
             return {'status': 'Bueno', 'color': '#00FF00'}  # Verde
+        
 
     @staticmethod
     def clasificar_glucosa(glucosa):
@@ -186,7 +189,7 @@ class AnalizadorSalud:
             return {'status': 'Buena', 'color': '#00FF00'}  # Verde
         else:
             return {'status': 'Muy buena', 'color': '#32CD32'}  # Verde claro
-
+        
     @staticmethod
     def clasificar_frecuencia_cardiaca_1_minuto_despues(frecuencia_cardiaca_1_minuto):
         if frecuencia_cardiaca_1_minuto > 100:
@@ -219,7 +222,7 @@ class AnalizadorSalud:
             return {'status': 'Normal', 'color': '#00FF00'}  # Verde
         else:
             return {'status': 'Hipotermia', 'color': '#FFA500'}  # Naranja
-
+        
     @staticmethod
     def clasificar_saturacion_oxigeno(saturacion_oxigeno):
         if saturacion_oxigeno < 90:

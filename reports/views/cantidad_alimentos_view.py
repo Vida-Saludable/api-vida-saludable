@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from users.models.datos_personales_usuario_model import DatosPersonalesUsuario
 from habits.models.alimentacion_model import Alimentacion
 
@@ -19,6 +20,10 @@ class ClasificacionAlimentacionUsuariosAPIView(APIView):
         cena_saludable = request.query_params.get('cena_saludable', None)
         fecha_inicio = request.query_params.get('fecha_inicio', None)
         fecha_fin = request.query_params.get('fecha_fin', None)
+
+        # Obtener parámetros de paginación de la URL
+        page = request.query_params.get('page', 1)
+        page_size = request.query_params.get('pageSize', 10)
 
         # Filtrar los registros de Alimentación con los criterios recibidos
         filtros = Q()
@@ -52,10 +57,18 @@ class ClasificacionAlimentacionUsuariosAPIView(APIView):
         # Obtener los datos personales de esos usuarios
         usuarios = DatosPersonalesUsuario.objects.filter(usuario__id__in=usuario_ids)
 
-        # Crear la respuesta
+        # Configurar la paginación
+        paginator = Paginator(usuarios, page_size)
+        try:
+            usuarios_paginados = paginator.page(page)
+        except PageNotAnInteger:
+            usuarios_paginados = paginator.page(1)
+        except EmptyPage:
+            usuarios_paginados = paginator.page(paginator.num_pages)
+
+        # Crear la respuesta con paginación
         result = {
-            'total_usuarios': usuarios.count(),
-            'usuarios': [
+            'data': [
                 {
                     'nombres_apellidos': usuario.nombres_apellidos,
                     'sexo': usuario.sexo,
@@ -66,11 +79,14 @@ class ClasificacionAlimentacionUsuariosAPIView(APIView):
                     'grado_instruccion': usuario.grado_instruccion,
                     'procedencia': usuario.procedencia,
                     'religion': usuario.religion,
-                    'fecha': usuario.fecha,
                     'correo': usuario.usuario.correo,
                 }
-                for usuario in usuarios
-            ]
+                for usuario in usuarios_paginados
+            ],
+            'totalItems': paginator.count,
+            'page': usuarios_paginados.number,
+            'pageSize': page_size,
+            'totalPages': paginator.num_pages,
         }
 
         return Response(result, status=status.HTTP_200_OK)
