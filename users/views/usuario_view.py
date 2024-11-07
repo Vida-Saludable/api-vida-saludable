@@ -104,7 +104,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 
 
 class RegistroUsuarioView(APIView):
-    permission_classes = [IsAuthenticated]
+  
     def post(self, request):
         serializer = UsuarioSerializer(data=request.data)
         if serializer.is_valid():
