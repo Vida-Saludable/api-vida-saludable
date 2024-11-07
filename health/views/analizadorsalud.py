@@ -201,18 +201,7 @@ class AnalizadorSalud:
         else:
             return {'status': 'Muy buena', 'color': '#32CD32'}  # Verde claro
 
-    @staticmethod
-    def clasificar_resultado_test_ruffier(resultados_test):
-        if resultados_test > 15:
-            return {'status': 'Muy malo', 'color': '#FF4C4C'}  # Rojo
-        elif 11 <= resultados_test <= 14:
-            return {'status': 'Malo', 'color': '#FFA500'}  # Naranja
-        elif 6 <= resultados_test <= 10:
-            return {'status': 'Aceptable', 'color': '#FFD700'}  # Amarillo
-        elif 0 <= resultados_test <= 5:
-            return {'status': 'Bueno', 'color': '#00FF00'}  # Verde
-        else:
-            return {'status': 'Excelente', 'color': '#32CD32'}  # Verde claro
+ 
 
     @staticmethod
     def clasificar_temperatura(temperatura):

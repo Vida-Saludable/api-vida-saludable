@@ -9,7 +9,7 @@ from users.models.usuario_proyecto_model import UsuarioProyecto
 from health.models.datos_fisicos_models import DatosFisicos
 from health.models.datos_muestras_models import DatosMuestras
 from health.models.signos_vitales_models import SignosVitales
-from health.models.test_ruffier_models import TestRuffier
+
 from .analizadorsalud import AnalizadorSalud
 
 class IndicadoresSaludPorProyectoView(APIView):
@@ -30,11 +30,10 @@ class IndicadoresSaludPorProyectoView(APIView):
         datos_fisicos = DatosFisicos.objects.filter(usuario_id__in=usuarios_ids).select_related('usuario')
         datos_muestras = DatosMuestras.objects.filter(usuario_id__in=usuarios_ids).select_related('usuario')
         signos_vitales = SignosVitales.objects.filter(usuario_id__in=usuarios_ids).select_related('usuario')
-        test_ruffier = TestRuffier.objects.filter(usuario_id__in=usuarios_ids).select_related('usuario')
         datos_personales = DatosPersonalesUsuario.objects.filter(usuario_id__in=usuarios_ids).select_related('usuario')
 
         # Verificar si hay datos de salud disponibles
-        if not (datos_fisicos.exists() or datos_muestras.exists() or signos_vitales.exists() or test_ruffier.exists()):
+        if not (datos_fisicos.exists() or datos_muestras.exists() or signos_vitales.exists()):
             return Response({"detail": "No se encontraron datos de salud para los usuarios del proyecto."}, status=status.HTTP_404_NOT_FOUND)
 
         # Crear un diccionario para acceder fácilmente al sexo de cada usuario
@@ -47,9 +46,7 @@ class IndicadoresSaludPorProyectoView(APIView):
             'grasa_visceral': [], 'colesterol_total': [], 'colesterol_hdl': {'M': [], 'F': []},
             'colesterol_ldl': [], 'trigliceridos': [], 'glucosa': [], 'presion_sistolica': [],
             'presion_diastolica': [], 'frecuencia_cardiaca': [], 'frecuencia_respiratoria': [],
-            'saturacion_oxigeno': [], 'glicemia_basal': [], 'temperatura': [], 'frecuencia_cardiaca_en_reposo': [],
-            'frecuencia_cardiaca_despues_de_45_segundos': [], 'frecuencia_cardiaca_1_minuto_despues': [],
-            'resultado_test_ruffier': []
+            'saturacion_oxigeno': [], 'glicemia_basal': [], 'temperatura': []
         }
 
         # Llenar los indicadores con los datos de los diferentes modelos
@@ -101,15 +98,7 @@ class IndicadoresSaludPorProyectoView(APIView):
             if dato.temperatura is not None:
                 indicadores['temperatura'].append(dato.temperatura)
 
-        for dato in test_ruffier:
-            if dato.frecuencia_cardiaca_en_reposo is not None:
-                indicadores['frecuencia_cardiaca_en_reposo'].append(dato.frecuencia_cardiaca_en_reposo)
-            if dato.frecuencia_cardiaca_despues_de_45_segundos is not None:
-                indicadores['frecuencia_cardiaca_despues_de_45_segundos'].append(dato.frecuencia_cardiaca_despues_de_45_segundos)
-            if dato.frecuencia_cardiaca_1_minuto_despues is not None:
-                indicadores['frecuencia_cardiaca_1_minuto_despues'].append(dato.frecuencia_cardiaca_1_minuto_despues)
-            if dato.resultado_test_ruffier is not None:
-                indicadores['resultado_test_ruffier'].append(dato.resultado_test_ruffier)
+      
 
         # Calcular el promedio de cada indicador
         promedios = {}

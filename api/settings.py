@@ -118,16 +118,16 @@ WSGI_APPLICATION = 'api.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'vida_saludable',
-        'USER': 'uab',
-        'PASSWORD': 'UAB',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'vida_saludable',
+#         'USER': 'uab',
+#         'PASSWORD': 'UAB',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
 
 # DATABASES = {
 #    'default': {
@@ -140,16 +140,16 @@ DATABASES = {
 #     }
 # }
 
-# DATABASES = {
-#      'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'vida_saludable',
-#         'USER': 'postgres',
-#         'PASSWORD': '123456',
-#         'HOST': 'localhost',  # O la dirección IP de tu servidor MySQL
-#         'PORT': '5432',  # O el puerto que estés utilizando
-#     }
-# }
+DATABASES = {
+     'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'vida_saludable',
+        'USER': 'postgres',
+        'PASSWORD': '123456',
+        'HOST': 'localhost',  # O la dirección IP de tu servidor MySQL
+        'PORT': '5432',  # O el puerto que estés utilizando
+    }
+}
 
 
 

@@ -9,7 +9,7 @@ class DatosPersonalesUsuario(models.Model):
     estado_civil = models.CharField(max_length=20, null=True, blank=True)
     fecha_nacimiento = models.DateField(null=True, blank=True)
     telefono = models.CharField(max_length=100, null=True, blank=True)
-    grado_instruccion = models.CharField(max_length=50, null=True, blank=True)
+    ocupacion = models.CharField(max_length=50, null=True, blank=True)
     procedencia = models.CharField(max_length=100, null=True, blank=True)
     religion = models.CharField(max_length=50, null=True, blank=True)
     fecha = models.DateField(null=True, blank=True)

@@ -7,7 +7,6 @@ from rest_framework import status
 from health.models.datos_fisicos_models import DatosFisicos
 from health.models.datos_muestras_models import DatosMuestras
 from health.models.signos_vitales_models import SignosVitales
-from health.models.test_ruffier_models import TestRuffier
 from habits.models.datos_habitos_agua_model import DatosHabitosAgua
 from habits.models.datos_habitos_aire_model import DatosHabitosAire
 from habits.models.datos_habitos_alimentacion_model import DatosHabitosAlimentacion
@@ -35,8 +34,7 @@ class CorrelationView(APIView):
             datos_corporales = DatosMuestras.objects.filter(tipo=tipo_datos).values(variable_x, 'usuario')
         elif variable_x in ['presion_sistolica', 'presion_diastolica', 'frecuencia_cardiaca', 'frecuencia_respiratoria', 'temperatura', 'saturacion_oxigeno']:
             datos_corporales = SignosVitales.objects.filter(tipo=tipo_datos).values(variable_x, 'usuario')
-        elif variable_x in ['frecuencia_cardiaca_en_reposo', 'frecuencia_cardiaca_despues_de_45_segundos', 'frecuencia_cardiaca_1_minuto_despues', 'resultado_test_ruffier']:
-            datos_corporales = TestRuffier.objects.filter(tipo=tipo_datos).values(variable_x, 'usuario')
+  
         else:
             return Response({"error": "variable_x no corresponde a un modelo válido."}, status=status.HTTP_400_BAD_REQUEST)
 

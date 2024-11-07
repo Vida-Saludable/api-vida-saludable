@@ -22,7 +22,7 @@ from users.models.usuario_proyecto_model import UsuarioProyecto
 from health.models.datos_fisicos_models import DatosFisicos
 from health.models.datos_muestras_models import DatosMuestras
 from health.models.signos_vitales_models import SignosVitales
-from health.models.test_ruffier_models import TestRuffier
+
 
 admin.site.register(DatosPersonalesUsuario)
 admin.site.register(Alimentacion)
@@ -37,7 +37,6 @@ admin.site.register(Ejercicio)
 admin.site.register(DatosFisicos)
 admin.site.register(DatosMuestras)
 admin.site.register(SignosVitales)
-admin.site.register(TestRuffier)
 admin.site.register(DatosHabitosAgua)
 admin.site.register(DatosHabitosAire)
 admin.site.register(DatosHabitosAlimentacion)

@@ -23,7 +23,7 @@ CREATE TABLE datos_personales_usuarios (
     estado_civil VARCHAR(20),
     fecha_nacimiento DATE,
     telefono VARCHAR(100),
-    grado_instruccion VARCHAR(50),
+    ocupacion VARCHAR(50),
     procedencia VARCHAR(100),
     religion VARCHAR(50),
     fecha DATE,
@@ -182,19 +182,7 @@ CREATE TABLE datos_muestras (
     FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
-CREATE TABLE test_ruffier (
-    id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL,
-    frecuencia_cardiaca_en_reposo INT,                           -- Frecuencia cardíaca en reposo
-    frecuencia_cardiaca_despues_de_45_segundos INT,                           -- Frecuencia cardíaca después de 30 sentadillas en 45 segundos
-    frecuencia_cardiaca_1_minuto_despues INT,                           -- Frecuencia cardíaca 1 minuto después de las sentadillas
-    resultado_test_ruffier DECIMAL(5, 2),  -- Resultado del Test de Ruffier (opcional)
 
-    fecha DATE NOT NULL, -- Fecha de la medición
-    tipo VARCHAR(20) NOT NULL,   -- 'inicial' o 'final' 
-
-    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
-);
 
 CREATE TABLE datos_habitos_agua(
     id SERIAL PRIMARY KEY,

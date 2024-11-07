@@ -4,7 +4,6 @@ from rest_framework import status
 from health.models.datos_fisicos_models import DatosFisicos
 from health.models.datos_muestras_models import DatosMuestras
 from health.models.signos_vitales_models import SignosVitales
-from health.models.test_ruffier_models import TestRuffier
 from users.models.datos_personales_usuario_model import DatosPersonalesUsuario 
 from decimal import Decimal
 
@@ -23,25 +22,23 @@ class HealthIndicatorsComparisonAPIView(APIView):
             datos_iniciales_signos = SignosVitales.objects.get(usuario_id=usuario_id, tipo='inicial')
             datos_finales_signos = SignosVitales.objects.get(usuario_id=usuario_id, tipo='final')
             
-            test_ruffier_inicial = TestRuffier.objects.get(usuario_id=usuario_id, tipo='inicial')
-            test_ruffier_final = TestRuffier.objects.get(usuario_id=usuario_id, tipo='final')
+
 
             datos_personales = DatosPersonalesUsuario.objects.get(usuario_id=usuario_id)
 
-        except (DatosFisicos.DoesNotExist, DatosMuestras.DoesNotExist, SignosVitales.DoesNotExist, TestRuffier.DoesNotExist):
+        except (DatosFisicos.DoesNotExist, DatosMuestras.DoesNotExist, SignosVitales.DoesNotExist):
             return Response({"detail": "Datos del usuario no encontrados."}, status=status.HTTP_404_NOT_FOUND)
 
         analisis_comparativo = self.realizar_comparacion(datos_iniciales_fisicos, datos_finales_fisicos,
                                                          datos_iniciales_muestras, datos_finales_muestras,
-                                                         datos_iniciales_signos, datos_finales_signos,
-                                                         test_ruffier_inicial, test_ruffier_final, datos_personales)
+                                                         datos_iniciales_signos, datos_finales_signos, datos_personales)
 
         return Response(analisis_comparativo)
 
     def realizar_comparacion(self, datos_iniciales_fisicos, datos_finales_fisicos,
                              datos_iniciales_muestras, datos_finales_muestras,
                              datos_iniciales_signos, datos_finales_signos,
-                             test_ruffier_inicial, test_ruffier_final, datos_personales):
+                           datos_personales):
         analisis = {}
 
         def convertir_a_float(valor):
@@ -125,10 +122,7 @@ class HealthIndicatorsComparisonAPIView(APIView):
             'saturacion_oxigeno': 1,
             'porcentaje_musculo': 3,
             'glicemia_basal': 5,
-            'frecuencia_cardiaca_en_reposo': 5,
-            'frecuencia_cardiaca_despues_de_45_segundos': 10,
-            'frecuencia_cardiaca_1_minuto_despues': 10,
-            'resultado_test_ruffier': 3,
+            
         }
 
         umbrales_advertencia = {
@@ -151,10 +145,7 @@ class HealthIndicatorsComparisonAPIView(APIView):
             'saturacion_oxigeno': 1,
             'porcentaje_musculo': 2,
             'glicemia_basal': 3,
-            'frecuencia_cardiaca_en_reposo': 3,
-            'frecuencia_cardiaca_despues_de_45_segundos': 5,
-            'frecuencia_cardiaca_1_minuto_despues': 5,
-            'resultado_test_ruffier': 2,
+  
         }
 
         # Indicadores de salud: DatosFisicos, DatosMuestras, SignosVitales, TestRuffier
@@ -178,10 +169,7 @@ class HealthIndicatorsComparisonAPIView(APIView):
             ('saturacion_oxigeno', datos_iniciales_signos.saturacion_oxigeno, datos_finales_signos.saturacion_oxigeno),
             ('porcentaje_musculo', datos_iniciales_fisicos.porcentaje_musculo, datos_finales_fisicos.porcentaje_musculo),
             ('glicemia_basal', datos_iniciales_muestras.glicemia_basal, datos_finales_muestras.glicemia_basal),
-            ('frecuencia_cardiaca_en_reposo', test_ruffier_inicial.frecuencia_cardiaca_en_reposo, test_ruffier_final.frecuencia_cardiaca_en_reposo),
-            ('frecuencia_cardiaca_despues_de_45_segundos', test_ruffier_inicial.frecuencia_cardiaca_despues_de_45_segundos, test_ruffier_final.frecuencia_cardiaca_despues_de_45_segundos),
-            ('frecuencia_cardiaca_1_minuto_despues', test_ruffier_inicial.frecuencia_cardiaca_1_minuto_despues, test_ruffier_final.frecuencia_cardiaca_1_minuto_despues),
-            ('resultado_test_ruffier', test_ruffier_inicial.resultado_test_ruffier, test_ruffier_final.resultado_test_ruffier),
+      
         ]
 
        # Creación de una lista para almacenar los resultados del análisis

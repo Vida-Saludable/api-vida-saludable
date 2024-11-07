@@ -5,7 +5,7 @@ from health.views.correlationhabitsvshealthydeltas_view import CorrelationHealth
 from health.views.datos_fisicos_view import DatosFisicosViewSet, ListaDatosFisicosUsuarioView
 from health.views.datos_muestras_view import DatosMuestrasViewSet, ListaDatosMuestrasUsuarioView
 from health.views.signos_vitales_view import ListaSignosVitalesUsuarioView, SignosVitalesViewSet
-from health.views.test_ruffier_view import TestRuffierViewSet, ListaTestRuffierUsuarioView
+
 from health.views.viewindicatorhealthy import IndicadoresSaludPorUsuarioView
 from health.views.viewindicatormainwithfinal import HealthIndicatorsComparisonAPIView
 
@@ -24,7 +24,7 @@ router = DefaultRouter()
 router.register(r'datos-fisicos', DatosFisicosViewSet)
 router.register(r'datos-muestras', DatosMuestrasViewSet)
 router.register(r'signos-vitales', SignosVitalesViewSet)
-router.register(r'test-ruffier', TestRuffierViewSet)
+
 
 
 urlpatterns = [
@@ -38,7 +38,7 @@ urlpatterns = [
     path('fechas-min-max/<int:usuario_id>/', GetDatesByIdView.as_view(), name='fechas'),
     path('tipos-correlacion/', TiposDeCorrelacionView.as_view(), name='tipos-correlacion'),
 
-    path('lista-test-ruffier/<int:usuario_id>/', ListaTestRuffierUsuarioView.as_view(), name='listar_test_ruffier_usuario'),
+
     path('lista-datos-fisicos/<int:usuario_id>/', ListaDatosFisicosUsuarioView.as_view(), name='listar_datos_fisicos_usuario'),
     path('lista-datos-muestras/<int:usuario_id>/', ListaDatosMuestrasUsuarioView.as_view(), name='listar_datos_muestras_usuario'),
     path('lista-signos-vitales/<int:usuario_id>/', ListaSignosVitalesUsuarioView.as_view(), name='listar_signos_vitales_usuario'),

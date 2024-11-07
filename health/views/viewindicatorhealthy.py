@@ -7,7 +7,7 @@ from users.models.datos_personales_usuario_model import DatosPersonalesUsuario
 from health.models.datos_fisicos_models import DatosFisicos
 from health.models.datos_muestras_models import DatosMuestras
 from health.models.signos_vitales_models import SignosVitales
-from health.models.test_ruffier_models import TestRuffier
+
 from .analizadorsalud import AnalizadorSalud
 from statistics import mean
 
@@ -28,10 +28,10 @@ class IndicadoresSaludPorUsuarioView(APIView):
         datos_fisicos = DatosFisicos.objects.filter(usuario_id=usuario_id, tipo='inicial')
         datos_muestras = DatosMuestras.objects.filter(usuario_id=usuario_id, tipo='inicial')
         signos_vitales = SignosVitales.objects.filter(usuario_id=usuario_id, tipo='inicial')
-        test_ruffier = TestRuffier.objects.filter(usuario_id=usuario_id, tipo='inicial')
+      
 
         # Verificar si se encontraron datos en al menos uno de los modelos
-        if not (datos_fisicos.exists() or datos_muestras.exists() or signos_vitales.exists() or test_ruffier.exists()):
+        if not (datos_fisicos.exists() or datos_muestras.exists() or signos_vitales.exists()):
             return Response({"detail": "No se encontraron datos de salud para este usuario."}, status=status.HTTP_404_NOT_FOUND)
 
         # Inicializar acumuladores para los indicadores
@@ -55,10 +55,6 @@ class IndicadoresSaludPorUsuarioView(APIView):
             'saturacion_oxigeno': [],
             'glicemia_basal': [],
             'temperatura': [],
-            'frecuencia_cardiaca_en_reposo': [],
-            'frecuencia_cardiaca_despues_de_45_segundos': [],
-            'frecuencia_cardiaca_1_minuto_despues': [],
-            'resultado_test_ruffier': [],
         }
 
         # Procesar datos de DatosFisicos
@@ -91,12 +87,7 @@ class IndicadoresSaludPorUsuarioView(APIView):
             indicadores['saturacion_oxigeno'].append(dato.saturacion_oxigeno)
             indicadores['temperatura'].append(dato.temperatura)
 
-        # Procesar datos de TestRuffier
-        for dato in test_ruffier:
-            indicadores['frecuencia_cardiaca_en_reposo'].append(dato.frecuencia_cardiaca_en_reposo)
-            indicadores['frecuencia_cardiaca_despues_de_45_segundos'].append(dato.frecuencia_cardiaca_despues_de_45_segundos)
-            indicadores['frecuencia_cardiaca_1_minuto_despues'].append(dato.frecuencia_cardiaca_1_minuto_despues)
-            indicadores['resultado_test_ruffier'].append(dato.resultado_test_ruffier)
+
 
         # Calcular el promedio de cada indicador
         promedios = {}
