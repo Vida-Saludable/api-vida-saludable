@@ -93,6 +93,9 @@ class ReporteEjercicioPorcentajeView(APIView):
 
 class ReporteEjercicioTipoView(APIView):
     def get(self, request, usuario_id, tipo_ejercicio):
+        # Reemplazar guiones bajos con espacios en `tipo_ejercicio`
+        tipo_ejercicio = tipo_ejercicio.replace("_", " ")
+
         # Verificar si el usuario tiene ejercicios registrados de ese tipo
         if not Ejercicio.objects.filter(usuario_id=usuario_id, tipo=tipo_ejercicio).exists():
             return Response({"detail": "No se encontraron ejercicios para este usuario con el tipo especificado."}, status=status.HTTP_404_NOT_FOUND)
@@ -100,14 +103,14 @@ class ReporteEjercicioTipoView(APIView):
         # Obtener el tiempo total en minutos por día durante la semana, filtrando por tipo
         queryset = (
             Ejercicio.objects
-            .filter(usuario_id=usuario_id, tipo=tipo_ejercicio)  # Filtrar por usuario y tipo de ejercicio
+            .filter(usuario_id=usuario_id, tipo=tipo_ejercicio)
             .annotate(
-                fecha_dia=F('fecha'),  # Obtener la fecha completa
-                dia_semana=ExtractIsoWeekDay(F('fecha'))  # Día de la semana como número (1-7)
+                fecha_dia=F('fecha'),
+                dia_semana=ExtractIsoWeekDay(F('fecha'))
             )
-            .values('fecha_dia', 'dia_semana')  # Agrupar por fecha y día de la semana
-            .annotate(tiempo_total=Sum('tiempo'))  # Sumar el tiempo total
-            .order_by('fecha_dia')  # Ordenar por fecha
+            .values('fecha_dia', 'dia_semana')
+            .annotate(tiempo_total=Sum('tiempo'))
+            .order_by('fecha_dia')
         )
 
         serializer = ReporteEjercicioTipoSerializer(queryset, many=True)

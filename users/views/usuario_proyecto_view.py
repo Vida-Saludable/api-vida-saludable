@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 
 from users.models.usuario_models import Usuario
 from users.models.usuario_proyecto_model import UsuarioProyecto
@@ -11,7 +12,7 @@ from users.serializers.usuario_proyecto_serializer import UsuarioProyectoSeriali
 class UsuarioProyectoViewSet(viewsets.ModelViewSet):
     queryset = UsuarioProyecto.objects.all()
     serializer_class = UsuarioProyectoSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         # Crear el nuevo registro
@@ -59,6 +60,7 @@ class UsuarioProyectoViewSet(viewsets.ModelViewSet):
         instance.delete()
 
 class ListaProyectosPorUsuarioView(APIView):
+    permission_classes = [IsAuthenticated]
     
     def get(self, request, usuario_id):
         try:
