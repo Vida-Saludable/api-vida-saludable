@@ -3,10 +3,11 @@ from datetime import datetime, timedelta
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.db.models import Sum
+from django.db.models import Sum, Max, Func
 from rest_framework.pagination import PageNumberPagination
 
 from users.models.datos_personales_usuario_model import DatosPersonalesUsuario
+from health.models.datos_fisicos_models import DatosFisicos
 
 from habits.models.dormir_model import Dormir
 from habits.models.despertar_model import Despertar
@@ -19,6 +20,8 @@ from habits.models.sol_model import Sol
 from users.models.usuario_models import Usuario
 from users.models.usuario_proyecto_model import UsuarioProyecto
 
+class Round(Func):
+    function = 'ROUND'
 class RegistroHabitosPagination(PageNumberPagination):
     page_size = 6
     page_size_query_param = 'page_size'
@@ -222,10 +225,21 @@ class RegistroHabitosView(APIView):
                 usuario__id__in=usuarios_ids
             ).values('usuario_id', 'nombres_apellidos', 'telefono')
 
+            # Obtener el peso más reciente de cada usuario
+            pesos_recientes = DatosFisicos.objects.filter(
+                usuario_id__in=usuarios_ids
+            ).values('usuario_id').annotate(
+                peso_reciente=Max('fecha')
+            ).values('usuario_id', 'peso', 'fecha')
+    
+            # Crear un diccionario con el peso más reciente por usuario
+            pesos_dict = {peso['usuario_id']: peso['peso'] for peso in pesos_recientes}
+
             datos_personales_dict = {
                 datos['usuario_id']: {
                     'nombres_apellidos': datos['nombres_apellidos'],
-                    'telefono': datos['telefono']
+                    'telefono': datos['telefono'],
+                    'peso': pesos_dict.get(datos['usuario_id'], None)
                 } for datos in datos_personales
             }
 
