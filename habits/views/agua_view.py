@@ -7,7 +7,7 @@ from users.models.usuario_models import Usuario
 from ..models.agua_model import Agua
 from ..serializers.agua_serializer import AguaSerializer
 from users.models.datos_personales_usuario_model import DatosPersonalesUsuario
-
+    
 class CustomPagination(PageNumberPagination):
     page_size = 7  # Número de elementos por página
     page_size_query_param = 'page_size'  # Permite a los usuarios definir el tamaño de página en la solicitud
