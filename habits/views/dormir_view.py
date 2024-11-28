@@ -66,24 +66,39 @@ class DormirViewSet(viewsets.ModelViewSet):
                 "estado": None
             }
 
-            # Obtener registros de despertar para el usuario actual
-            registros_despertar = Despertar.objects.filter(usuario_id=usuario_id)
+            # Obtener el primer registro de despertar posterior al dormir
+            registros_despertar = Despertar.objects.filter(
+                usuario_id=usuario_id,
+                fecha__gte=dormir.fecha
+            ).order_by('fecha', 'hora')
 
             for despertar in registros_despertar:
-                if despertar.fecha >= dormir.fecha:  # Considerar solo despertares posteriores
-                    hora_dormir = datetime.combine(dormir.fecha, dormir.hora)
-                    hora_despertar = datetime.combine(despertar.fecha, despertar.hora)
+                hora_dormir = datetime.combine(dormir.fecha, dormir.hora)
+                hora_despertar = datetime.combine(despertar.fecha, despertar.hora)
 
-                    # Ajustar si el despertar es al día siguiente
-                    if hora_despertar < hora_dormir:
-                        hora_despertar += timedelta(days=1)
+                # Ajustar si el despertar es al día siguiente
+                if hora_despertar < hora_dormir:
+                    hora_despertar += timedelta(days=1)
 
-                    # Calcular el tiempo dormido
-                    tiempo_dormido = (hora_despertar - hora_dormir).total_seconds()
-                    item["total_horas"] += int(tiempo_dormido // 3600)
-                    item["total_minutos"] += int((tiempo_dormido % 3600) // 60)
-                    item["hora_despertar"] = despertar.hora.strftime("%H:%M:%S")
-                    item["estado"] = despertar.estado
+                # Calcular el tiempo dormido
+                tiempo_dormido = (hora_despertar - hora_dormir).total_seconds()
+                horas = int(tiempo_dormido // 3600)
+                minutos = int((tiempo_dormido % 3600) // 60)
+
+                item["total_horas"] += horas
+                item["total_minutos"] += minutos
+
+                # Ajustar minutos acumulados si exceden 60
+                if item["total_minutos"] >= 60:
+                    item["total_horas"] += item["total_minutos"] // 60
+                    item["total_minutos"] = item["total_minutos"] % 60
+
+                # Actualizar otros datos relevantes
+                item["hora_despertar"] = despertar.hora.strftime("%H:%M:%S")
+                item["estado"] = despertar.estado
+
+                # Solo considerar el primer registro de despertar válido
+                break
 
             usuario_info.append(item)
 
