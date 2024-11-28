@@ -12,16 +12,6 @@ class CustomPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 100
 
-    def get_paginated_response(self, data):
-        """Personaliza la estructura de la respuesta paginada."""
-        return Response({
-            'success': True,
-            'count': self.page.paginator.count,
-            'next': self.get_next_link(),
-            'previous': self.get_previous_link(),
-            'data': data
-        })
-
 
 class EsperanzaViewSet(viewsets.ModelViewSet):
     queryset = Esperanza.objects.all()
@@ -40,53 +30,39 @@ class EsperanzaViewSet(viewsets.ModelViewSet):
         }, status=status.HTTP_201_CREATED, headers=headers)
 
     def list(self, request, *args, **kwargs):
+        # Obtener parámetros de búsqueda
         usuario = request.query_params.get('usuario', None)
         proyecto_id = request.query_params.get('proyecto', None)
 
+        # Obtener el queryset base y ordenarlo
         queryset = self.get_queryset().order_by('fecha')
 
+        # Filtrar por usuario
         if usuario:
             queryset = queryset.filter(usuario__datospersonalesusuario__nombres_apellidos__icontains=usuario)
 
+        # Filtrar por proyecto
         if proyecto_id:
             queryset = queryset.filter(usuario__usuarioproyecto__proyecto__id=proyecto_id).distinct()
 
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            processed_data = self._process_queryset(page)
-            return self.get_paginated_response(processed_data)
+        # Aplicar paginación al queryset base
+        paginated_queryset = self.paginate_queryset(queryset)
 
-        data = self._process_queryset(queryset)
-        return Response({
-            'success': True,
-            'count': len(data),
-            'next': None,
-            'previous': None,
-            'data': data
-        }, status=status.HTTP_200_OK)
-
-    def _process_queryset(self, queryset):
-        """Procesa el queryset en el formato deseado."""
-        usuario_info = {}
-
-        for esperanza in queryset:
+        # Procesar solo los datos paginados
+        usuario_info = []
+        for esperanza in paginated_queryset:
             usuario_id = esperanza.usuario.id
             datos_personales = DatosPersonalesUsuario.objects.filter(usuario_id=usuario_id).first()
 
-            fecha_str = esperanza.fecha.strftime("%Y-%m-%d")
-            if fecha_str not in usuario_info:
-                usuario_info[fecha_str] = {
-                    "fecha": fecha_str,
-                    "usuario": datos_personales.nombres_apellidos if datos_personales else None,
-                    "telefono": datos_personales.telefono if datos_personales else None,
-                    "oracion": None,
-                    "leer_biblia": None,
-                    "id": esperanza.id,  # ID agregado aquí
-                }
+            # Construir el objeto final por cada registro
+            usuario_info.append({
+                "id": esperanza.id,
+                "fecha": esperanza.fecha.strftime("%Y-%m-%d"),
+                "usuario": datos_personales.nombres_apellidos if datos_personales else None,
+                "telefono": datos_personales.telefono if datos_personales else None,
+                "oracion": "oracion" if esperanza.tipo_practica == "oracion" else None,
+                "leer_biblia": "leer biblia" if esperanza.tipo_practica == "leer biblia" else None,
+            })
 
-            if esperanza.tipo_practica == "oracion":
-                usuario_info[fecha_str]["oracion"] = esperanza.tipo_practica
-            elif esperanza.tipo_practica == "leer biblia":
-                usuario_info[fecha_str]["leer_biblia"] = esperanza.tipo_practica
-
-        return list(usuario_info.values())
+        # Devolver los datos paginados en la respuesta
+        return self.get_paginated_response(usuario_info)
