@@ -64,5 +64,12 @@ class EsperanzaViewSet(viewsets.ModelViewSet):
                 "leer_biblia": "leer biblia" if esperanza.tipo_practica == "leer biblia" else None,
             })
 
-        # Devolver los datos paginados en la respuesta
-        return self.get_paginated_response(usuario_info)
+        # Personalizar la respuesta de la paginación
+        page = self.paginator
+        return Response({
+            'success': True,
+            'count': page.page.paginator.count,  # Total de elementos
+            'next': page.get_next_link(),  # Enlace a la siguiente página
+            'previous': page.get_previous_link(),  # Enlace a la página anterior
+            'data': usuario_info  # Datos procesados
+        }, status=status.HTTP_200_OK)
