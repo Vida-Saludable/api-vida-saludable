@@ -56,6 +56,7 @@ class DormirViewSet(viewsets.ModelViewSet):
 
             # Construir los datos iniciales
             item = {
+                "id": dormir.id,  # Incluir el ID del registro de dormir
                 "fecha": dormir.fecha.strftime("%Y-%m-%d"),
                 "usuario": datos_personales.nombres_apellidos if datos_personales else None,
                 "telefono": datos_personales.telefono if datos_personales else None,
