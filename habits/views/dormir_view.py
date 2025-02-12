@@ -12,11 +12,11 @@ class CustomPagination(PageNumberPagination):
     page_size = 7  # Número de elementos por página
     page_size_query_param = 'page_size'  # Permite a los usuarios definir el tamaño de página en la solicitud
     max_page_size = 100  # Tamaño máximo de la página
+
 class DormirViewSet(viewsets.ModelViewSet):
     queryset = Dormir.objects.all()
     serializer_class = DormirSerializer
     pagination_class = CustomPagination
-    # permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -45,69 +45,69 @@ class DormirViewSet(viewsets.ModelViewSet):
         if proyecto_id:
             queryset = queryset.filter(usuario__usuarioproyecto__proyecto__id=proyecto_id).distinct()
 
-        resultados = []
-        usuario_info = {}
+        # Aplicar paginación al queryset base
+        paginated_queryset = self.paginate_queryset(queryset)
 
-        for dormir in queryset:
+        # Procesar solo los datos paginados
+        usuario_info = []
+        for dormir in paginated_queryset:
             usuario_id = dormir.usuario.id
             datos_personales = DatosPersonalesUsuario.objects.filter(usuario_id=usuario_id).first()
 
-            # Agrupar por fecha
-            fecha_str = dormir.fecha.strftime("%Y-%m-%d")
-            if fecha_str not in usuario_info:
-                usuario_info[fecha_str] = {
-                    "fecha": fecha_str,
-                    "usuario": datos_personales.nombres_apellidos if datos_personales else None,
-                    "telefono": datos_personales.telefono if datos_personales else None,
-                    "total_horas": 0,
-                    "total_minutos": 0,
-                    "hora_dormir": dormir.hora.strftime("%H:%M:%S"),
-                    "hora_despertar": None,  # Inicializar
-                    "estado": None  # Inicializar el estado
-                }
+            # Construir los datos iniciales
+            item = {
+                "fecha": dormir.fecha.strftime("%Y-%m-%d"),
+                "usuario": datos_personales.nombres_apellidos if datos_personales else None,
+                "telefono": datos_personales.telefono if datos_personales else None,
+                "total_horas": 0,
+                "total_minutos": 0,
+                "hora_dormir": dormir.hora.strftime("%H:%M:%S"),
+                "hora_despertar": None,
+                "estado": None
+            }
 
-            # Obtener registros de despertar para la fecha actual
-            registros_despertar = Despertar.objects.filter(usuario_id=usuario_id)
+            # Obtener el primer registro de despertar posterior al dormir
+            registros_despertar = Despertar.objects.filter(
+                usuario_id=usuario_id,
+                fecha__gte=dormir.fecha
+            ).order_by('fecha', 'hora')
 
             for despertar in registros_despertar:
-                if despertar.fecha >= dormir.fecha:  # Considerar solo despertares después de dormir
-                    hora_dormir = datetime.combine(dormir.fecha, dormir.hora)
-                    hora_despertar = datetime.combine(despertar.fecha, despertar.hora)
+                hora_dormir = datetime.combine(dormir.fecha, dormir.hora)
+                hora_despertar = datetime.combine(despertar.fecha, despertar.hora)
 
-                    # Ajustar si la hora de despertar es al día siguiente
-                    if hora_despertar < hora_dormir:
-                        hora_despertar += timedelta(days=1)
+                # Ajustar si el despertar es al día siguiente
+                if hora_despertar < hora_dormir:
+                    hora_despertar += timedelta(days=1)
 
-                    # Calcular el tiempo dormido
-                    tiempo_dormido = (hora_despertar - hora_dormir).total_seconds()
-                    total_horas = tiempo_dormido // 3600
-                    total_minutos = (tiempo_dormido % 3600) // 60
+                # Calcular el tiempo dormido
+                tiempo_dormido = (hora_despertar - hora_dormir).total_seconds()
+                horas = int(tiempo_dormido // 3600)
+                minutos = int((tiempo_dormido % 3600) // 60)
 
-                    usuario_info[fecha_str]["total_horas"] += int(total_horas)
-                    usuario_info[fecha_str]["total_minutos"] += int(total_minutos)
+                item["total_horas"] += horas
+                item["total_minutos"] += minutos
 
-                    # Guardar la última hora de despertar y el estado
-                    usuario_info[fecha_str]["hora_despertar"] = despertar.hora.strftime("%H:%M:%S")
-                    usuario_info[fecha_str]["estado"] = despertar.estado  # Guardar el estado
+                # Ajustar minutos acumulados si exceden 60
+                if item["total_minutos"] >= 60:
+                    item["total_horas"] += item["total_minutos"] // 60
+                    item["total_minutos"] = item["total_minutos"] % 60
 
-        # Convertir el diccionario a lista
-        for item in usuario_info.values():
-            resultados.append(item)
+                # Actualizar otros datos relevantes
+                item["hora_despertar"] = despertar.hora.strftime("%H:%M:%S")
+                item["estado"] = despertar.estado
 
-        # Paginación
-        page = self.paginate_queryset(resultados)
-        if page is not None:
-            return Response({
-                'success': True,
-                'count': len(resultados),  # Total de elementos
-                'next': self.paginator.get_next_link(),  # Enlace a la siguiente página
-                'previous': self.paginator.get_previous_link(),  # Enlace a la página anterior
-                'data': page  # Incluir los datos en 'data'
-            }, status=status.HTTP_200_OK)
+                # Solo considerar el primer registro de despertar válido
+                break
 
+            usuario_info.append(item)
+
+        # Devolver la respuesta personalizada
+        page = self.paginator
         return Response({
-            'success': True,
-            'message': 'Listado de registros de dormir',
-            'data': resultados  # Incluir los datos en 'data'
+            "success": True,
+            "count": page.page.paginator.count,  # Total de elementos
+            "next": page.get_next_link(),  # Enlace a la siguiente página
+            "previous": page.get_previous_link(),  # Enlace a la página anterior
+            "data": usuario_info  # Datos procesados
         }, status=status.HTTP_200_OK)
-

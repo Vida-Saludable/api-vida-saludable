@@ -24,8 +24,7 @@ from rest_framework.response import Response
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
-   
-
+    # permission_classes = [IsAuthenticated]
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         try:

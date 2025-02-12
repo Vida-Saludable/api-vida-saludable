@@ -3,10 +3,11 @@ from datetime import datetime, timedelta
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.db.models import Sum
+from django.db.models import Sum, Max, Func
 from rest_framework.pagination import PageNumberPagination
 
 from users.models.datos_personales_usuario_model import DatosPersonalesUsuario
+from health.models.datos_fisicos_models import DatosFisicos
 
 from habits.models.dormir_model import Dormir
 from habits.models.despertar_model import Despertar
@@ -19,6 +20,8 @@ from habits.models.sol_model import Sol
 from users.models.usuario_models import Usuario
 from users.models.usuario_proyecto_model import UsuarioProyecto
 
+class Round(Func):
+    function = 'ROUND'
 class RegistroHabitosPagination(PageNumberPagination):
     page_size = 6
     page_size_query_param = 'page_size'
@@ -175,7 +178,7 @@ class RegistroHabitosView(APIView):
                 usuario_id__in=usuarios_ids,
                 **date_filters
             ).values('fecha', 'hora', 'usuario_id')
-            
+
             registros_despertar = Despertar.objects.filter(
                 usuario_id__in=usuarios_ids,
                 **date_filters
@@ -184,30 +187,34 @@ class RegistroHabitosView(APIView):
             for dormir in registros_dormir:
                 usuario_id = dormir['usuario_id']
                 fecha_dormir = dormir['fecha']
+                hora_dormir = datetime.combine(dormir['fecha'], dormir['hora'])
+
+                # Buscar el primer despertar el mismo día o al día siguiente
                 despertar = registros_despertar.filter(
                     usuario_id=usuario_id,
-                    fecha=dormir['fecha'],
+                    fecha__gte=fecha_dormir,
                     hora__gte=dormir['hora']
-                ).order_by('hora').first()
+                ).order_by('fecha', 'hora').first()
 
                 if not despertar:
                     despertar = registros_despertar.filter(
                         usuario_id=usuario_id,
-                        fecha=dormir['fecha'] + timedelta(days=1),
-                        hora__lt=dormir['hora']
+                        fecha=fecha_dormir + timedelta(days=1)
                     ).order_by('hora').first()
 
                 if despertar:
-                    hora_dormir = datetime.combine(dormir['fecha'], dormir['hora'])
                     hora_despertar = datetime.combine(despertar['fecha'], despertar['hora'])
 
+                    # Ajustar si el despertar es al día siguiente
                     if hora_despertar < hora_dormir:
                         hora_despertar += timedelta(days=1)
 
+                    # Calcular el tiempo dormido
                     tiempo_dormido = (hora_despertar - hora_dormir).total_seconds()
                     total_horas = tiempo_dormido // 3600
                     total_minutos = (tiempo_dormido % 3600) // 60
 
+                    # Asegurar que los minutos no excedan 60
                     if 'descanso' not in resultado_agrupado[usuario_id][fecha_dormir]:
                         resultado_agrupado[usuario_id][fecha_dormir]['descanso'] = {
                             'total_horas': 0,
@@ -217,15 +224,33 @@ class RegistroHabitosView(APIView):
                     resultado_agrupado[usuario_id][fecha_dormir]['descanso']['total_horas'] += int(total_horas)
                     resultado_agrupado[usuario_id][fecha_dormir]['descanso']['total_minutos'] += int(total_minutos)
 
+                    # Ajustar minutos acumulados
+                    if resultado_agrupado[usuario_id][fecha_dormir]['descanso']['total_minutos'] >= 60:
+                        extra_horas = resultado_agrupado[usuario_id][fecha_dormir]['descanso']['total_minutos'] // 60
+                        resultado_agrupado[usuario_id][fecha_dormir]['descanso']['total_horas'] += extra_horas
+                        resultado_agrupado[usuario_id][fecha_dormir]['descanso']['total_minutos'] %= 60
+
+
             # Obtener datos personales solo para usuarios filtrados
             datos_personales = DatosPersonalesUsuario.objects.filter(
                 usuario__id__in=usuarios_ids
             ).values('usuario_id', 'nombres_apellidos', 'telefono')
 
+            # Obtener el peso más reciente de cada usuario
+            pesos_recientes = DatosFisicos.objects.filter(
+                usuario_id__in=usuarios_ids
+            ).values('usuario_id').annotate(
+                peso_reciente=Max('fecha')
+            ).values('usuario_id', 'peso', 'fecha')
+    
+            # Crear un diccionario con el peso más reciente por usuario
+            pesos_dict = {peso['usuario_id']: peso['peso'] for peso in pesos_recientes}
+
             datos_personales_dict = {
                 datos['usuario_id']: {
                     'nombres_apellidos': datos['nombres_apellidos'],
-                    'telefono': datos['telefono']
+                    'telefono': datos['telefono'],
+                    'peso': pesos_dict.get(datos['usuario_id'], None)
                 } for datos in datos_personales
             }
 
