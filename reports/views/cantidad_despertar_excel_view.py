@@ -40,7 +40,7 @@ class ClasificacionDespertarUsuariosExcelAPIView(APIView):
         # Definir el encabezado de la tabla
         headers = [
             "Nombres Apellidos", "Sexo", "Edad", "Estado Civil",
-            "Fecha de Nacimiento", "Teléfono", "Grado de Instrucción",
+            "Fecha de Nacimiento", "Teléfono", "Ocupación",
             "Procedencia", "Religión", "Correo"
         ]
 
@@ -58,7 +58,7 @@ class ClasificacionDespertarUsuariosExcelAPIView(APIView):
             ws.cell(row=row_num, column=4, value=usuario.estado_civil)
             ws.cell(row=row_num, column=5, value=usuario.fecha_nacimiento)
             ws.cell(row=row_num, column=6, value=usuario.telefono)
-            ws.cell(row=row_num, column=7, value=usuario.grado_instruccion)
+            ws.cell(row=row_num, column=7, value=usuario.ocupacion)
             ws.cell(row=row_num, column=8, value=usuario.procedencia)
             ws.cell(row=row_num, column=9, value=usuario.religion)
             ws.cell(row=row_num, column=10, value=usuario.usuario.correo)

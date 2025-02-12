@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Avg
 from statistics import mean
+from decimal import Decimal, ROUND_HALF_UP
 from users.models.datos_personales_usuario_model import DatosPersonalesUsuario 
 from users.models.proyecto_model import Proyecto 
 from users.models.usuario_proyecto_model import UsuarioProyecto 
@@ -98,17 +99,18 @@ class IndicadoresSaludPorProyectoView(APIView):
             if dato.temperatura is not None:
                 indicadores['temperatura'].append(dato.temperatura)
 
-      
+        # Calcular el promedio de cada indicador y formatear a 2 decimales
+        def redondear(valor):
+            return float(Decimal(valor).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP))
 
-        # Calcular el promedio de cada indicador
         promedios = {}
         for clave, valores in indicadores.items():
             if isinstance(valores, dict):
                 promedios[clave] = {}
                 for subclave, subvalores in valores.items():
-                    promedios[clave][subclave] = mean(subvalores) if subvalores else None
+                    promedios[clave][subclave] = redondear(mean(subvalores)) if subvalores else None
             else:
-                promedios[clave] = mean(valores) if valores else None
+                promedios[clave] = redondear(mean(valores)) if valores else None
 
         # Construir los resultados con los análisis
         resultados = {}

@@ -12,7 +12,7 @@ from users.serializers.usuario_proyecto_serializer import UsuarioProyectoSeriali
 class UsuarioProyectoViewSet(viewsets.ModelViewSet):
     queryset = UsuarioProyecto.objects.all()
     serializer_class = UsuarioProyectoSerializer
-    permission_classes = [IsAuthenticated]
+    
 
     def create(self, request, *args, **kwargs):
         # Crear el nuevo registro
@@ -60,7 +60,7 @@ class UsuarioProyectoViewSet(viewsets.ModelViewSet):
         instance.delete()
 
 class ListaProyectosPorUsuarioView(APIView):
-    permission_classes = [IsAuthenticated]
+
     
     def get(self, request, usuario_id):
         try:

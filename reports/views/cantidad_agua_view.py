@@ -55,7 +55,7 @@ class ClasificacionAguaUsuariosAPIView(APIView):
                     'estado_civil': usuario.estado_civil,
                     'fecha_nacimiento': usuario.fecha_nacimiento,
                     'telefono': usuario.telefono,
-                    'grado_instruccion': usuario.grado_instruccion,
+                    'ocupacion': usuario.ocupacion,
                     'procedencia': usuario.procedencia,
                     'religion': usuario.religion,
                     'correo': usuario.usuario.correo,

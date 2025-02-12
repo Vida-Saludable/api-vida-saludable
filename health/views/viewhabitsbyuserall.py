@@ -41,9 +41,9 @@ class UserHabitsAllAPIView(APIView):
             for key in modelos:
                 modelos[key] = list(modelos[key])[:min_size]
 
-            # Crear DataFrame con los datos clasificados y fechas
+            # Crear DataFrame con los datos clasificados y fechas formateadas
             df = pd.DataFrame({
-                'fecha': [data.fecha for data in modelos['alimentacion']],
+                'fecha': [data.fecha.strftime('%d-%m-%Y') for data in modelos['alimentacion']],  # Formatear la fecha
                 'alimentacion': [
                     AnalizadorHabitosVida.clasificar_alimentacion(
                         data.desayuno, data.almuerzo, data.cena,
