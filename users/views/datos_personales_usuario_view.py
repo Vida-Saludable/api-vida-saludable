@@ -9,7 +9,7 @@ from users.serializers.datos_personales_serializers import DatosPersonalesUsuari
 class DatosPersonalesUsuarioViewSet(viewsets.ModelViewSet):
     queryset = DatosPersonalesUsuario.objects.all()
     serializer_class = DatosPersonalesUsuarioSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         # Serializa los datos

@@ -17,7 +17,7 @@ DEBUG = 'RENDER' not in os.environ
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['145.223.27.25','127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 RENDER_EXTERNAL_HOSTNAME=os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
@@ -128,6 +128,19 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+
+# DATABASES = {
+#      'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'vida_saludable',
+#         'USER': 'postgres',
+#         'PASSWORD': '123456',
+#         'HOST': 'localhost',  # O la dirección IP de tu servidor MySQL
+#         'PORT': '5432',  # O el puerto que estés utilizando
+#     }
+# }
+
 
 # DATABASES = {
 #    'default': {
