@@ -129,8 +129,23 @@ DATABASES = {
     }
 }
 
+# Database
+# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'vida_saludable',
+#         'USER': 'uab',
+#         'PASSWORD': 'UAB',
+#         'HOST': '145.223.27.25',  # <-- IP del servidor
+        
+#         'PORT': '5432',
+#     }
+# }
 
-### Esto es para local
+
+
+# Esto es para local
 # DATABASES = {
 #      'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
@@ -141,7 +156,10 @@ DATABASES = {
 #         'PORT': '5432',  # O el puerto que estés utilizando
 #     }
 # }
-### Esto es para local
+## Esto es para local
+
+
+
 
 
 # DATABASES = {

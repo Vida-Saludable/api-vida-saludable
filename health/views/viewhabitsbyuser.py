@@ -32,7 +32,26 @@ class HabitosAPIView(APIView):
         }
 
         # Crear DataFrame con los datos clasificados
-        df = pd.DataFrame({
+        # df = pd.DataFrame({
+        #     'alimentacion': [
+        #         AnalizadorHabitosVida.clasificar_alimentacion(
+        #             data.desayuno, data.almuerzo, data.cena,
+        #             data.desayuno_saludable, data.almuerzo_saludable, data.cena_saludable,
+        #             data.desayuno_hora, data.almuerzo_hora, data.cena_hora
+        #         ) for data in modelos['alimentacion']
+        #     ],
+        #     'agua': [AnalizadorHabitosVida.clasificar_consumo_agua(data.cantidad) for data in modelos['agua']],
+        #     'esperanza': [AnalizadorHabitosVida.clasificar_esperanza(data.tipo_practica) for data in modelos['esperanza']],
+        #     'sol': [AnalizadorHabitosVida.clasificar_sol(data.tiempo) for data in modelos['sol']],
+        #     'aire': [AnalizadorHabitosVida.clasificar_aire(data.tiempo) for data in modelos['aire']],
+        #     'dormir': [
+        #         AnalizadorHabitosVida.clasificar_sueno(data1.hora, data2.hora)
+        #         for data1, data2 in zip(modelos['dormir'], modelos['despertar'])
+        #     ],
+        #     'ejercicio': [AnalizadorHabitosVida.clasificar_ejercicio(data.tipo, data.tiempo) for data in modelos['ejercicio']],
+        # })
+        # Construir los datos
+        datos_dict = {
             'alimentacion': [
                 AnalizadorHabitosVida.clasificar_alimentacion(
                     data.desayuno, data.almuerzo, data.cena,
@@ -49,7 +68,23 @@ class HabitosAPIView(APIView):
                 for data1, data2 in zip(modelos['dormir'], modelos['despertar'])
             ],
             'ejercicio': [AnalizadorHabitosVida.clasificar_ejercicio(data.tipo, data.tiempo) for data in modelos['ejercicio']],
-        })
+        }
+        
+        # ✅ Función para normalizar con ceros
+        def normalizar_con_ceros(diccionario):
+            max_len = max(len(lista) for lista in diccionario.values())
+            for clave in diccionario:
+                diferencia = max_len - len(diccionario[clave])
+                if diferencia > 0:
+                    diccionario[clave].extend([0] * diferencia)
+            return diccionario
+        
+        # Normalizar antes de construir el DataFrame
+        datos_dict = normalizar_con_ceros(datos_dict)
+        
+        # ✅ Crear el DataFrame sin error
+        df = pd.DataFrame(datos_dict)
+        
 
         # Funciones de utilidad para analizar y generar recomendaciones
         def calcular_tendencia(columna):

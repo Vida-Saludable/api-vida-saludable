@@ -62,6 +62,10 @@ class CorrelationView(APIView):
         df_corporales = pd.DataFrame(list(datos_corporales))
         df_habitos = pd.DataFrame(list(datos_habitos))
 
+        print("DF corporales columnas:", df_corporales.columns)
+        print("DF hábitos columnas:", df_habitos.columns)
+
+
         # Fusiona los DataFrames en función del campo 'usuario'
         df = pd.merge(df_corporales, df_habitos, on='usuario', how='inner')
 
