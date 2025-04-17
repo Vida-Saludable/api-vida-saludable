@@ -130,6 +130,7 @@ DATABASES = {
 }
 
 
+### Esto es para local
 # DATABASES = {
 #      'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
@@ -140,6 +141,7 @@ DATABASES = {
 #         'PORT': '5432',  # O el puerto que estés utilizando
 #     }
 # }
+### Esto es para local
 
 
 # DATABASES = {
