@@ -2,7 +2,6 @@ import pandas as pd
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
 from habits.models.alimentacion_model import Alimentacion
 from habits.models.agua_model import Agua
 from habits.models.aire_model import Aire
@@ -18,8 +17,6 @@ class HabitosAPIView(APIView):
         usuario_id = self.kwargs.get('usuario_id')
         start_date = request.query_params.get('start_date', '2024-08-20')
         end_date = request.query_params.get('end_date', '2024-08-22')
-
-        # Obtener los registros del usuario en el rango de fechas
         modelos = {
             'alimentacion': Alimentacion.objects.filter(usuario_id=usuario_id, fecha__range=[start_date, end_date]),
             'agua': Agua.objects.filter(usuario_id=usuario_id, fecha__range=[start_date, end_date]),
@@ -30,27 +27,6 @@ class HabitosAPIView(APIView):
             'despertar': Despertar.objects.filter(usuario_id=usuario_id, fecha__range=[start_date, end_date]),
             'ejercicio': Ejercicio.objects.filter(usuario_id=usuario_id, fecha__range=[start_date, end_date]),
         }
-
-        # Crear DataFrame con los datos clasificados
-        # df = pd.DataFrame({
-        #     'alimentacion': [
-        #         AnalizadorHabitosVida.clasificar_alimentacion(
-        #             data.desayuno, data.almuerzo, data.cena,
-        #             data.desayuno_saludable, data.almuerzo_saludable, data.cena_saludable,
-        #             data.desayuno_hora, data.almuerzo_hora, data.cena_hora
-        #         ) for data in modelos['alimentacion']
-        #     ],
-        #     'agua': [AnalizadorHabitosVida.clasificar_consumo_agua(data.cantidad) for data in modelos['agua']],
-        #     'esperanza': [AnalizadorHabitosVida.clasificar_esperanza(data.tipo_practica) for data in modelos['esperanza']],
-        #     'sol': [AnalizadorHabitosVida.clasificar_sol(data.tiempo) for data in modelos['sol']],
-        #     'aire': [AnalizadorHabitosVida.clasificar_aire(data.tiempo) for data in modelos['aire']],
-        #     'dormir': [
-        #         AnalizadorHabitosVida.clasificar_sueno(data1.hora, data2.hora)
-        #         for data1, data2 in zip(modelos['dormir'], modelos['despertar'])
-        #     ],
-        #     'ejercicio': [AnalizadorHabitosVida.clasificar_ejercicio(data.tipo, data.tiempo) for data in modelos['ejercicio']],
-        # })
-        # Construir los datos
         datos_dict = {
             'alimentacion': [
                 AnalizadorHabitosVida.clasificar_alimentacion(
@@ -70,7 +46,6 @@ class HabitosAPIView(APIView):
             'ejercicio': [AnalizadorHabitosVida.clasificar_ejercicio(data.tipo, data.tiempo) for data in modelos['ejercicio']],
         }
         
-        # ✅ Función para normalizar con ceros
         def normalizar_con_ceros(diccionario):
             max_len = max(len(lista) for lista in diccionario.values())
             for clave in diccionario:
@@ -78,15 +53,8 @@ class HabitosAPIView(APIView):
                 if diferencia > 0:
                     diccionario[clave].extend([0] * diferencia)
             return diccionario
-        
-        # Normalizar antes de construir el DataFrame
         datos_dict = normalizar_con_ceros(datos_dict)
-        
-        # ✅ Crear el DataFrame sin error
         df = pd.DataFrame(datos_dict)
-        
-
-        # Funciones de utilidad para analizar y generar recomendaciones
         def calcular_tendencia(columna):
             if df[columna].empty:
                 return "No hay datos suficientes para calcular la tendencia."
@@ -157,8 +125,6 @@ class HabitosAPIView(APIView):
                 alertas.append(criterios_alertas[columna][2])
 
             return alertas
-
-        # Generar el resultado final con tendencia, estadísticas, recomendaciones y alertas
         result = {
             habito: {
                 'tendencia': calcular_tendencia(habito),

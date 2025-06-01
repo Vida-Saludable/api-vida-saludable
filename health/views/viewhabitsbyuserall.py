@@ -181,7 +181,6 @@ from collections import defaultdict
 class UserHabitsAllAPIView(APIView):
     def get(self, request, *args, **kwargs):
         usuario_id = self.kwargs.get('usuario_id')
-
         try:
             fechas_set = set()
             registros = defaultdict(dict)
@@ -194,32 +193,25 @@ class UserHabitsAllAPIView(APIView):
                     fecha_str = formatear_fecha(modelo.fecha)
                     registros[fecha_str][campo] = funcion(modelo)
                     fechas_set.add(fecha_str)
-
             agregar_valores(Alimentacion.objects.filter(usuario_id=usuario_id), 'alimentacion',
                             lambda d: AnalizadorHabitosVida.clasificar_alimentacion(
                                 d.desayuno, d.almuerzo, d.cena,
                                 getattr(d, 'desayuno_saludable', None), getattr(d, 'almuerzo_saludable', None), getattr(d, 'cena_saludable', None),
                                 getattr(d, 'desayuno_hora', None), getattr(d, 'almuerzo_hora', None), getattr(d, 'cena_hora', None)))
-
             agregar_valores(Agua.objects.filter(usuario_id=usuario_id), 'agua',
                             lambda d: AnalizadorHabitosVida.clasificar_consumo_agua(d.cantidad))
-
             agregar_valores(Esperanza.objects.filter(usuario_id=usuario_id), 'esperanza',
                             lambda d: AnalizadorHabitosVida.clasificar_esperanza(d.tipo_practica))
-
             agregar_valores(Sol.objects.filter(usuario_id=usuario_id), 'sol',
                             lambda d: AnalizadorHabitosVida.clasificar_sol(d.tiempo))
-
             agregar_valores(Aire.objects.filter(usuario_id=usuario_id), 'aire',
                             lambda d: AnalizadorHabitosVida.clasificar_aire(d.tiempo))
-
             dormir_data = list(Dormir.objects.filter(usuario_id=usuario_id).order_by('fecha'))
             despertar_data = list(Despertar.objects.filter(usuario_id=usuario_id).order_by('fecha'))
             for d1, d2 in zip(dormir_data, despertar_data):
                 fecha_str = formatear_fecha(d1.fecha)
                 registros[fecha_str]['dormir'] = AnalizadorHabitosVida.clasificar_sueno(d1.hora, d2.hora)
                 fechas_set.add(fecha_str)
-
             agregar_valores(Ejercicio.objects.filter(usuario_id=usuario_id), 'ejercicio',
                             lambda d: AnalizadorHabitosVida.clasificar_ejercicio(d.tipo, d.tiempo))
 

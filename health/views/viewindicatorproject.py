@@ -16,31 +16,21 @@ from .analizadorsalud import AnalizadorSalud
 class IndicadoresSaludPorProyectoView(APIView):
 
     def get(self, request, proyecto_id, *args, **kwargs):
-        # Verificar si el proyecto existe
+
         if not Proyecto.objects.filter(id=proyecto_id).exists():
             return Response({"detail": "El proyecto no existe."}, status=status.HTTP_404_NOT_FOUND)
-
-        # Obtener los usuarios asociados al proyecto
         usuario_proyectos = UsuarioProyecto.objects.filter(proyecto_id=proyecto_id)
         usuarios_ids = usuario_proyectos.values_list('usuario_id', flat=True)
 
         if not usuarios_ids:
             return Response({"detail": "No se encontraron usuarios para este proyecto."}, status=status.HTTP_404_NOT_FOUND)
-
-        # Obtener los datos de los 4 modelos y los datos personales de los usuarios asociados al proyecto
         datos_fisicos = DatosFisicos.objects.filter(usuario_id__in=usuarios_ids).select_related('usuario')
         datos_muestras = DatosMuestras.objects.filter(usuario_id__in=usuarios_ids).select_related('usuario')
         signos_vitales = SignosVitales.objects.filter(usuario_id__in=usuarios_ids).select_related('usuario')
         datos_personales = DatosPersonalesUsuario.objects.filter(usuario_id__in=usuarios_ids).select_related('usuario')
-
-        # Verificar si hay datos de salud disponibles
         if not (datos_fisicos.exists() or datos_muestras.exists() or signos_vitales.exists()):
             return Response({"detail": "No se encontraron datos de salud para los usuarios del proyecto."}, status=status.HTTP_404_NOT_FOUND)
-
-        # Crear un diccionario para acceder fácilmente al sexo de cada usuario
         sexo_usuario = {dato.usuario_id: dato.sexo for dato in datos_personales}
-
-        # Inicializar acumuladores para los promedios de todos los indicadores de salud
         indicadores = {
             'peso': [], 'altura': [], 'imc': [], 'radio_abdominal': {'M': [], 'F': []},
             'porcentaje_musculo': {'M': [], 'F': []}, 'grasa_corporal': {'M': [], 'F': []},
@@ -49,8 +39,6 @@ class IndicadoresSaludPorProyectoView(APIView):
             'presion_diastolica': [], 'frecuencia_cardiaca': [], 'frecuencia_respiratoria': [],
             'saturacion_oxigeno': [], 'glicemia_basal': [], 'temperatura': []
         }
-
-        # Llenar los indicadores con los datos de los diferentes modelos
         for dato in datos_fisicos:
             usuario_id = dato.usuario_id
             sexo = sexo_usuario.get(usuario_id, 'M')
@@ -99,7 +87,6 @@ class IndicadoresSaludPorProyectoView(APIView):
             if dato.temperatura is not None:
                 indicadores['temperatura'].append(dato.temperatura)
 
-        # Calcular el promedio de cada indicador y formatear a 2 decimales
         def redondear(valor):
             return float(Decimal(valor).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP))
 
