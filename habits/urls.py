@@ -22,12 +22,12 @@ from .views.ejercicio_view import EjercicioViewSet
 
 # Crea un enrutador para la aplicación habits
 router = DefaultRouter()
-router.register(r'alimentaciones', AlimentacionViewSet)
-router.register(r'aguas', AguaViewSet)
-router.register(r'esperanzas', EsperanzaViewSet)
-router.register(r'soles', SolViewSet)
-router.register(r'aires', AireViewSet)
-router.register(r'sleeps', DormirViewSet)
+router.register(r'alimentaciones', AlimentacionViewSet)# listo
+router.register(r'aguas', AguaViewSet)# listo
+router.register(r'esperanzas', EsperanzaViewSet) #listo
+router.register(r'soles', SolViewSet) #listo
+router.register(r'aires', AireViewSet) #listo
+router.register(r'sleeps', DormirViewSet) #listo
 router.register(r'despertares', DespertarViewSet)
 router.register(r'ejercicios', EjercicioViewSet)
 router.register(r'datos-habitos-agua', DatosHabitosAguaViewSet)

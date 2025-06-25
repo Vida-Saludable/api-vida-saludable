@@ -66,7 +66,8 @@ class ListaDatosHabitosAlimentacionUsuarioView(APIView):
     def get(self, request, usuario_id, *args, **kwargs):
         # Filtrar los registros de hábitos de alimentación por el usuario recibido en la URL
         registros = DatosHabitosAlimentacion.objects.filter(usuario_id=usuario_id)
-
+        print("Usuario ID: ", usuario_id)
+        print("Registros ",registros)
         if not registros.exists():
             return Response({
                 "success": False,

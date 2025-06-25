@@ -60,14 +60,9 @@ class UsuarioProyectoViewSet(viewsets.ModelViewSet):
         instance.delete()
 
 class ListaProyectosPorUsuarioView(APIView):
-
-    
     def get(self, request, usuario_id):
         try:
-            # Verificar que el usuario existe
             usuario = Usuario.objects.get(id=usuario_id)
-
-            # Obtener los registros de UsuarioProyecto asociados a este usuario
             usuario_proyectos = UsuarioProyecto.objects.filter(usuario=usuario)
 
             if not usuario_proyectos.exists():
@@ -75,20 +70,14 @@ class ListaProyectosPorUsuarioView(APIView):
                     {"message": "Este usuario no tiene proyectos asignados."},
                     status=status.HTTP_404_NOT_FOUND
                 )
-
-            # Obtener los proyectos de cada registro de UsuarioProyecto
             proyectos = [usuario_proyecto.proyecto for usuario_proyecto in usuario_proyectos]
-
-            # Serializar los proyectos, obteniendo solo nombre y descripcion
             proyectos_filtrados = [
                 {
-                    "id": usuario_proyecto.id,  # ID del registro en UsuarioProyecto
+                    "id": usuario_proyecto.id, 
                     "nombre": proyecto.nombre,
                     "descripcion": proyecto.descripcion
                 } for usuario_proyecto, proyecto in zip(usuario_proyectos, proyectos)
             ]
-
-            # Crear la respuesta final
             response_data = {
                 "success": True,
                 "message": "Proyectos obtenidos exitosamente.",

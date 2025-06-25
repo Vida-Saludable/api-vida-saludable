@@ -27,11 +27,16 @@ from reports.views.unicos_dormir_view import DormirUnicosAPIView
 from reports.views.unicos_ejercicio_view import EjercicioUnicosAPIView
 from reports.views.unicos_esperanza_view import EsperanzaUnicosAPIView
 from reports.views.unicos_sol_view import SolUnicosAPIView
+# exportar
+from reports.views.exports.exportar_agua_excel import ExportarAguaExcelView
+from reports.views.exports.exportar_alimentos_excel import ExportarAlimentacionExcelView
+from reports.views.exports.exportar_esperanza_excel import ExportarEsperanzaExcelView
+from reports.views.exports.exportar_sol_excel import ExportarSolExcelView
+from reports.views.exports.exportar_aire_excel import ExportarAireExcelView
+from reports.views.exports.exportar_dormir_excel import ExportarDormirExcelView
 
-
-
-
-
+from reports.views.exports.exportar_ejercicio_excel import ExportarEjercicioExcelView
+from reports.views.exports.exportar_general_excel import ExportarRegistroHabitosExcelView
 
 
 # from users.views.usuario_view import ListaUsuariosView
@@ -82,10 +87,18 @@ urlpatterns = [
     # Reporte general de registros de habitos de cada persona por dia
     path('registros-diarios/', RegistroHabitosView.as_view(), name='registros-diarios'),
 
+    # path('registro-habitos/exportar/', ExportarHabitosExcelView.as_view(), name='exportar_excel_habitos'),
+    # path('aire/exportar/', ExportarAguaExcelView.as_view(), name='exportar-aire-excel'),
 
-    
-    
-    
+    path('agua/exportar/', ExportarAguaExcelView.as_view(), name='exportar-habitos-agua-excel'),
+    path('alimentacion/exportar/', ExportarAlimentacionExcelView.as_view(), name='exportar-alimentacion-excel'),
+    path('esperanza/exportar/', ExportarEsperanzaExcelView.as_view(), name='exportar-esperanza-excel'),
+    path('sol/exportar/', ExportarSolExcelView.as_view(), name='exportar-sol-excel'),
+    path('aire/exportar/', ExportarAireExcelView.as_view(), name='exportar-aire-excel'),
+    path('dormir/exportar/', ExportarDormirExcelView.as_view(), name='exportar-dormir-excel'),
+    path('ejercicio/exportar/', ExportarEjercicioExcelView.as_view(), name='exportar-ejercicio-excel'),
+    path('general/exportar/', ExportarRegistroHabitosExcelView.as_view(), name='exportar-registro-habitos'),
+
     
 # Alimentación
     path('alimentacion-unicos/', AlimentacionUnicosAPIView.as_view(), name='alimentacion-unicos'),

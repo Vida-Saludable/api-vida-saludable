@@ -8,13 +8,11 @@ from habits.models.agua_model import Agua
 
 class ClasificacionAguaUsuariosExcelAPIView(APIView):
     def get(self, request, *args, **kwargs):
-        # Obtener parámetros de filtro de la URL
         hora = request.query_params.get('hora', None)
         cantidad = request.query_params.get('cantidad', None)
         fecha_inicio = request.query_params.get('fecha_inicio', None)
         fecha_fin = request.query_params.get('fecha_fin', None)
 
-        # Filtrar los registros de Agua con los criterios recibidos
         filtros = Q()
         if hora:
             filtros &= Q(hora=hora)
@@ -22,30 +20,18 @@ class ClasificacionAguaUsuariosExcelAPIView(APIView):
             filtros &= Q(cantidad=cantidad)
         if fecha_inicio and fecha_fin:
             filtros &= Q(fecha__range=[fecha_inicio, fecha_fin])
-
-        # Obtener los registros de agua con los filtros (si no hay filtros, trae todos)
         agua_qs = Agua.objects.filter(filtros).select_related('usuario')
-
-        # Obtener los IDs de los usuarios de esos registros
         usuario_ids = agua_qs.values_list('usuario_id', flat=True).distinct()
 
-        # Obtener los datos personales de esos usuarios
         usuarios = DatosPersonalesUsuario.objects.filter(usuario__id__in=usuario_ids)
-
-        # Crear un libro de trabajo Excel
         wb = openpyxl.Workbook()
         ws = wb.active
         ws.title = "Usuarios"
-        
-
-        # Definir el encabezado de la tabla
         headers = [
             "Nombres Apellidos", "Sexo", "Edad", "Estado Civil",
             "Fecha de Nacimiento", "Teléfono", "Ocupacion",
             "Procedencia", "Religión", "Correo"
         ]
-
-        # Agregar el encabezado en la primera fila con negrita
         for col_num, column_title in enumerate(headers, 1):
             cell = ws.cell(row=1, column=col_num)
             cell.value = column_title

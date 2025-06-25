@@ -8,17 +8,12 @@ from habits.models.ejercicio_model import Ejercicio
 
 class ClasificacionEjercicioUsuariosAPIView(APIView):
     def get(self, request, *args, **kwargs):
-        # Obtener parámetros de filtro de la URL
         tipo_ejercicio = request.query_params.get('tipo', None)
         tiempo_ejercicio = request.query_params.get('tiempo', None)
         fecha_inicio = request.query_params.get('fecha_inicio', None)
         fecha_fin = request.query_params.get('fecha_fin', None)
-
-        # Obtener parámetros de paginación de la URL
         page = request.query_params.get('page', 1)
         page_size = request.query_params.get('pageSize', 10)
-
-        # Filtrar los registros de Ejercicio según los criterios recibidos
         filtros = Q()
         if tipo_ejercicio:
             filtros &= Q(tipo=tipo_ejercicio)
@@ -26,17 +21,9 @@ class ClasificacionEjercicioUsuariosAPIView(APIView):
             filtros &= Q(tiempo=tiempo_ejercicio)
         if fecha_inicio and fecha_fin:
             filtros &= Q(fecha__range=[fecha_inicio, fecha_fin])
-
-        # Obtener los registros de Ejercicio con los filtros (si no hay filtros, trae todos)
         ejercicio_qs = Ejercicio.objects.filter(filtros).select_related('usuario')
-
-        # Obtener los IDs de los usuarios de esos registros
         usuario_ids = ejercicio_qs.values_list('usuario_id', flat=True).distinct()
-
-        # Obtener los datos personales de esos usuarios
         usuarios = DatosPersonalesUsuario.objects.filter(usuario__id__in=usuario_ids)
-
-        # Configurar la paginación
         paginator = Paginator(usuarios, page_size)
         try:
             usuarios_paginados = paginator.page(page)
@@ -44,8 +31,6 @@ class ClasificacionEjercicioUsuariosAPIView(APIView):
             usuarios_paginados = paginator.page(1)
         except EmptyPage:
             usuarios_paginados = paginator.page(paginator.num_pages)
-
-        # Crear respuesta con paginación
         result = {
             'data': [
                 {

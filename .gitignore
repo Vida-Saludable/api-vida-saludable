@@ -1,5 +1,56 @@
-/db.sqlite3
-/virtual
+# Entorno virtual
+venv/
+ENV/
+env/
+.venv/
 
+# Archivos de entorno
+.env
+.env.*
 
+# Base de datos SQLite
+*.sqlite3
 
+# Archivos de caché y compilados de Python
+__pycache__/
+*.py[cod]
+*.pyo
+*$py.class
+
+# Archivos de logs
+*.log
+
+# Archivos temporales del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de IDEs y editores
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Archivos de migraciones compilados
+**/migrations/__pycache__/
+**/migrations/*.pyc
+
+# Archivos de cobertura y pruebas
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+
+# Archivos de compilación
+build/
+dist/
+*.egg-info/
+
+# Archivos generados por traducciones
+*.mo
+*.pot
+
+# Archivos generados por herramientas de estilo/caché
+.cache/
+*.pyy

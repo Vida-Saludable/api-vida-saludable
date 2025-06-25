@@ -11,7 +11,7 @@ class UsuarioManager(BaseUserManager):
         
         correo = self.normalize_email(correo)
         usuario = self.model(correo=correo, nombre=nombre, role=role, **extra_fields)
-        usuario.set_password(password)  # Usa set_password para hashear la contraseña
+        usuario.set_password(password)  
         usuario.save(using=self._db)
         return usuario
 
