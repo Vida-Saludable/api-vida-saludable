@@ -14,6 +14,16 @@ class ProyectoViewSet(viewsets.ModelViewSet):
     serializer_class = ProyectoSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        all_projects = self.request.query_params.get('all', 'false').lower() == 'true'
+        
+        if all_projects:
+            return Proyecto.objects.all()
+        
+        usuario = self.request.user
+        proyectos_ids = UsuarioProyecto.objects.filter(usuario=usuario).values_list('proyecto_id', flat=True)
+        return Proyecto.objects.filter(id__in=proyectos_ids)
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
