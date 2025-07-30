@@ -116,59 +116,128 @@ class ListaUsuariosPagination(PageNumberPagination):
     page_size = 7
     page_size_query_param = 'page_size'
     max_page_size = 100
-
+    
 class ListaUsuariosView(APIView):
     permission_classes = [IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
-        # Obtener parámetros de búsqueda y paginación
         nombre = request.query_params.get('nombre', None)
         proyecto_id = request.query_params.get('proyecto', None)
+        all_users = request.query_params.get('all', 'false').lower() == 'true'
         paginator = ListaUsuariosPagination()
-        
-        # Filtrar todos los usuarios que no tengan el rol 'Paciente'
+
+        # Base: excluir pacientes
         usuarios = Usuario.objects.exclude(role__name="Paciente")
-        
-        # Filtrar por nombre si se proporciona
+
+        # Obtener el rol del usuario autenticado
+        rol_actual = request.user.role.name if request.user.role else None
+
+        # Filtrar usuarios según rol del usuario autenticado
+        if rol_actual == "Administrador":
+            # No filtramos, mostramos todos (menos Paciente ya excluidos)
+            pass
+
+        elif rol_actual == "Supervisor de proyecto":
+            # Excluir Administrador y Supervisor de proyecto
+            usuarios = usuarios.exclude(role__name__in=["Administrador", "Supervisor de proyecto"])
+
+        elif rol_actual == "Responsable de Seguimiento":
+            # Excluir Administrador, Supervisor de proyecto y Responsable de Seguimiento
+            usuarios = usuarios.exclude(role__name__in=["Administrador", "Supervisor de proyecto", "Responsable de Seguimiento"])
+
+        else:
+            # Si el rol no está en las opciones, aplicar filtro por proyectos del usuario autenticado como default
+            proyectos_usuario = UsuarioProyecto.objects.filter(usuario=request.user).values_list('proyecto_id', flat=True)
+            usuarios = usuarios.filter(usuarioproyecto__proyecto__id__in=proyectos_usuario).distinct()
+
+        # Si no se pide all, filtramos también por proyectos del usuario autenticado
+        if not all_users:
+            proyectos_usuario = UsuarioProyecto.objects.filter(usuario=request.user).values_list('proyecto_id', flat=True)
+            usuarios = usuarios.filter(usuarioproyecto__proyecto__id__in=proyectos_usuario).distinct()
+
+        # Filtro por nombre
         if nombre:
             usuarios = usuarios.filter(nombre__icontains=nombre)
-        
-        # Filtrar por proyecto si se proporciona
+
+        # Filtro por proyecto específico
         if proyecto_id:
             usuarios = usuarios.filter(usuarioproyecto__proyecto__id=proyecto_id).distinct()
 
-        # Aplicar paginación
+        # Paginación
         result_page = paginator.paginate_queryset(usuarios, request)
-        
+
         usuarios_data = []
         for usuario in result_page:
-            # Serializar los datos del usuario
             usuario_serializado = UsuarioSerializer(usuario).data
-            
-            # Obtener todos los proyectos asociados al usuario mediante la tabla intermedia UsuarioProyecto
             usuario_proyectos = UsuarioProyecto.objects.filter(usuario=usuario)
             proyectos_data = [{'id': up.proyecto.id, 'nombre': up.proyecto.nombre} for up in usuario_proyectos]
 
-            # Armar la respuesta con la información del usuario y sus proyectos
-            usuario_info = {
+            usuarios_data.append({
                 'id': usuario.id,
                 'nombre': usuario_serializado.get('nombre'),
                 'correo': usuario_serializado.get('correo'),
                 'role': usuario.role.name if usuario.role else None,
-                'proyectos': proyectos_data  # Añadir la lista de proyectos asociados
-            }
+                'proyectos': proyectos_data
+            })
 
-            usuarios_data.append(usuario_info)
-        
         paginated_response = paginator.get_paginated_response(usuarios_data)
-        
-        response_data = {
+        return Response({
             'success': True,
             'count': paginated_response.data['count'],
             'next': paginated_response.data['next'],
             'previous': paginated_response.data['previous'],
             'data': paginated_response.data['results']
-        }
-        return Response(response_data, status=status.HTTP_200_OK)
+        }, status=status.HTTP_200_OK)
+# class ListaUsuariosView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request, *args, **kwargs):
+#         nombre = request.query_params.get('nombre', None)
+#         proyecto_id = request.query_params.get('proyecto', None)
+#         all_users = request.query_params.get('all', 'false').lower() == 'true'
+#         paginator = ListaUsuariosPagination()
+
+#         # Base: excluir pacientes
+#         usuarios = Usuario.objects.exclude(role__name="Paciente")
+
+#         # Si no se pide all, filtrar por proyectos del usuario autenticado
+#         if not all_users:
+#             proyectos_usuario = UsuarioProyecto.objects.filter(usuario=request.user).values_list('proyecto_id', flat=True)
+#             usuarios = usuarios.filter(usuarioproyecto__proyecto__id__in=proyectos_usuario).distinct()
+
+#         # Filtro por nombre
+#         if nombre:
+#             usuarios = usuarios.filter(nombre__icontains=nombre)
+
+#         # Filtro por proyecto específico
+#         if proyecto_id:
+#             usuarios = usuarios.filter(usuarioproyecto__proyecto__id=proyecto_id).distinct()
+
+#         # Paginación
+#         result_page = paginator.paginate_queryset(usuarios, request)
+
+#         usuarios_data = []
+#         for usuario in result_page:
+#             usuario_serializado = UsuarioSerializer(usuario).data
+#             usuario_proyectos = UsuarioProyecto.objects.filter(usuario=usuario)
+#             proyectos_data = [{'id': up.proyecto.id, 'nombre': up.proyecto.nombre} for up in usuario_proyectos]
+
+#             usuarios_data.append({
+#                 'id': usuario.id,
+#                 'nombre': usuario_serializado.get('nombre'),
+#                 'correo': usuario_serializado.get('correo'),
+#                 'role': usuario.role.name if usuario.role else None,
+#                 'proyectos': proyectos_data
+#             })
+
+#         paginated_response = paginator.get_paginated_response(usuarios_data)
+#         return Response({
+#             'success': True,
+#             'count': paginated_response.data['count'],
+#             'next': paginated_response.data['next'],
+#             'previous': paginated_response.data['previous'],
+#             'data': paginated_response.data['results']
+#         }, status=status.HTTP_200_OK)
 
 
 class ListaPacientesPagination(PageNumberPagination):
@@ -177,58 +246,55 @@ class ListaPacientesPagination(PageNumberPagination):
     max_page_size = 100
 class ListaPacientesView(APIView):
     permission_classes = [IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
-        # Obtener parámetros de búsqueda y paginación
-        nombre = request.query_params.get('nombre', None)  # Parámetro para filtrar por nombre
-        proyecto_id = request.query_params.get('proyecto', None)  # Parámetro para filtrar por proyecto
-        paginator = ListaPacientesPagination()  # Instanciar el paginador
-        
-        # Filtrar todos los usuarios que tengan el rol 'Paciente'
+        nombre = request.query_params.get('nombre', None)
+        proyecto_id = request.query_params.get('proyecto', None)
+        all_patients = request.query_params.get('all', 'false').lower() == 'true'
+        paginator = ListaPacientesPagination()
+
+        # Base: solo usuarios con rol 'Paciente'
         pacientes = Usuario.objects.filter(role__name="Paciente")
 
-        # Filtrar por nombre si se proporciona
-        if nombre:
-            pacientes = pacientes.filter(nombre__icontains=nombre)  # Filtrar por nombre
+        # Si no se pide all, filtrar por proyectos relacionados al usuario autenticado
+        if not all_patients:
+            proyectos_usuario = UsuarioProyecto.objects.filter(usuario=request.user).values_list('proyecto_id', flat=True)
+            pacientes = pacientes.filter(usuarioproyecto__proyecto__id__in=proyectos_usuario).distinct()
 
-        # Filtrar por proyecto si se proporciona
+        # Filtro por nombre
+        if nombre:
+            pacientes = pacientes.filter(nombre__icontains=nombre)
+
+        # Filtro por proyecto específico
         if proyecto_id:
             pacientes = pacientes.filter(usuarioproyecto__proyecto__id=proyecto_id).distinct()
 
-        # Aplicar paginación
+        # Paginación
         result_page = paginator.paginate_queryset(pacientes.prefetch_related('usuarioproyecto_set'), request)
 
         pacientes_data = []
         for paciente in result_page:
-            # Serializar los datos del usuario
             paciente_serializado = UsuarioSerializer(paciente).data
-
-            # Obtener todos los nombres de los proyectos asociados al paciente mediante la tabla intermedia UsuarioProyecto
             usuario_proyectos = UsuarioProyecto.objects.filter(usuario=paciente)
             proyectos_nombres = [usuario_proyecto.proyecto.nombre for usuario_proyecto in usuario_proyectos]
 
-            # Armar la respuesta con la información del paciente y sus nombres de proyectos
-            paciente_info = {
+            pacientes_data.append({
                 'id': paciente.id,
                 'nombre': paciente_serializado.get('nombre'),
                 'correo': paciente_serializado.get('correo'),
                 'role': paciente.role.name if paciente.role else None,
-                'proyectos': proyectos_nombres  # Solo incluir los nombres de los proyectos
-            }
+                'proyectos': proyectos_nombres
+            })
 
-            pacientes_data.append(paciente_info)
-
-        # Crear la respuesta paginada
         paginated_response = paginator.get_paginated_response(pacientes_data)
 
-        response_data = {
+        return Response({
             'success': True,
             'count': paginated_response.data['count'],
             'next': paginated_response.data['next'],
             'previous': paginated_response.data['previous'],
             'data': paginated_response.data['results']
-        }
-
-        return Response(response_data, status=status.HTTP_200_OK)
+        }, status=status.HTTP_200_OK)
 
 class EditarPacienteView(APIView):
     permission_classes = [IsAuthenticated]

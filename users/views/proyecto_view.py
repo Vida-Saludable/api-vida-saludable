@@ -13,6 +13,7 @@ class ProyectoViewSet(viewsets.ModelViewSet):
     queryset = Proyecto.objects.all()
     serializer_class = ProyectoSerializer
     permission_classes = [IsAuthenticated]
+    # x
 
     def get_queryset(self):
         all_projects = self.request.query_params.get('all', 'false').lower() == 'true'

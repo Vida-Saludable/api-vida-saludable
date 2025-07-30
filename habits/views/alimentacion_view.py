@@ -65,58 +65,65 @@ class AlimentacionViewSet(viewsets.ModelViewSet):
             }, status=status.HTTP_201_CREATED, headers=headers)
         
     def list(self, request, *args, **kwargs):
-        # Obtener parámetros de búsqueda
         usuario = request.query_params.get('usuario', None)
-        proyecto_id = request.query_params.get('proyecto', None)
-
-        # Obtener el queryset base y ordenarlo
+        proyecto_param = request.query_params.get('proyecto', None)
+        
         queryset = self.get_queryset().order_by('fecha')
 
-        # Filtrar por usuario
+        # Filtrar por nombre de usuario si existe
         if usuario:
             queryset = queryset.filter(usuario__datospersonalesusuario__nombres_apellidos__icontains=usuario)
 
-        # Filtrar por proyecto
-        if proyecto_id:
-            queryset = queryset.filter(usuario__usuarioproyecto__proyecto__id=proyecto_id).distinct()
+        # Lógica para proyecto / filtro all
+        if proyecto_param:
+            if proyecto_param.lower() == 'all' or proyecto_param.lower() == 'true':
+                # Si piden "all", no filtramos por proyecto, devolvemos todo
+                pass
+            else:
+                # Si piden un proyecto específico o "todos" (pero sin all),
+                # solo devolver registros de usuarios que tengan proyectos relacionados
+                # Aquí se puede ajustar si quieres un filtro más específico
+                queryset = queryset.filter(usuario__usuarioproyecto__proyecto__id=proyecto_param).distinct()
+        else:
+            # Si no hay parámetro proyecto, opcionalmente podrías filtrar solo usuarios con proyectos
+            # Si quieres, descomenta esta línea para filtrar siempre por proyectos relacionados
+            # queryset = queryset.filter(usuario__usuarioproyecto__isnull=False).distinct()
+            pass
 
-        # Paginación
+        # Paginación y serialización
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             data = serializer.data
 
-            # Modificar los datos para agregar nombres_apellidos y telefono del usuario
+            # Agregar nombres y teléfono de usuario
             for item in data:
-                usuario_id = item['usuario']  # Obtener el id del usuario
+                usuario_id = item['usuario']
                 datos_personales = DatosPersonalesUsuario.objects.filter(usuario_id=usuario_id).first()
                 if datos_personales:
-                    item['usuario'] = datos_personales.nombres_apellidos  # Reemplazar el ID con nombres_apellidos
-                    item['telefono'] = datos_personales.telefono  # Agregar el telefono
+                    item['usuario'] = datos_personales.nombres_apellidos
+                    item['telefono'] = datos_personales.telefono
                 else:
                     item['usuario'] = None
                     item['telefono'] = None
 
-            # Retornar la respuesta paginada con 'data'
             return Response({
                 'success': True,
-                'count': self.paginator.page.paginator.count,  # Total de elementos
-                'next': self.paginator.get_next_link(),  # Enlace a la siguiente página
-                'previous': self.paginator.get_previous_link(),  # Enlace a la página anterior
-                'data': data  # Incluir los datos en 'data'
+                'count': self.paginator.page.paginator.count,
+                'next': self.paginator.get_next_link(),
+                'previous': self.paginator.get_previous_link(),
+                'data': data
             }, status=status.HTTP_200_OK)
 
-        # Si no hay paginación, serializar todos los elementos
         serializer = self.get_serializer(queryset, many=True)
         data = serializer.data
 
-        # Modificar los datos para agregar nombres_apellidos y telefono del usuario
         for item in data:
-            usuario_id = item['usuario']  # Obtener el id del usuario
+            usuario_id = item['usuario']
             datos_personales = DatosPersonalesUsuario.objects.filter(usuario_id=usuario_id).first()
             if datos_personales:
-                item['usuario'] = datos_personales.nombres_apellidos  # Reemplazar el ID con nombres_apellidos
-                item['telefono'] = datos_personales.telefono  # Agregar el telefono
+                item['usuario'] = datos_personales.nombres_apellidos
+                item['telefono'] = datos_personales.telefono
             else:
                 item['usuario'] = None
                 item['telefono'] = None
@@ -124,5 +131,5 @@ class AlimentacionViewSet(viewsets.ModelViewSet):
         return Response({
             'success': True,
             'message': 'Listado de registros de alimentación',
-            'data': data  # Incluir los datos en 'data'
+            'data': data
         }, status=status.HTTP_200_OK)

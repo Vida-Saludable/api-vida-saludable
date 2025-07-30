@@ -29,85 +29,80 @@ class DormirViewSet(viewsets.ModelViewSet):
             'data': serializer.data
         }, status=status.HTTP_201_CREATED, headers=headers)
 
-    def list(self, request, *args, **kwargs):
-        # Obtener parámetros de búsqueda
-        usuario = request.query_params.get('usuario', None)
-        proyecto_id = request.query_params.get('proyecto', None)
+def list(self, request, *args, **kwargs):
+    usuario = request.query_params.get('usuario', None)
+    proyecto_id = request.query_params.get('proyecto', None)
 
-        # Obtener el queryset base y ordenarlo
-        queryset = self.get_queryset().order_by('fecha')
+    queryset = self.get_queryset().order_by('fecha')
 
-        # Filtrar por usuario
-        if usuario:
-            queryset = queryset.filter(usuario__datospersonalesusuario__nombres_apellidos__icontains=usuario)
+    # Filtrar por usuario si se proporciona
+    if usuario:
+        queryset = queryset.filter(usuario__datospersonalesusuario__nombres_apellidos__icontains=usuario)
 
-        # Filtrar por proyecto
-        if proyecto_id:
+    # Filtrar por proyecto según criterio pedido
+    if proyecto_id:
+        if proyecto_id.lower() in ['all', 'todos']:
+            # No filtrar, devolver todos los registros
+            pass
+        else:
             queryset = queryset.filter(usuario__usuarioproyecto__proyecto__id=proyecto_id).distinct()
+    else:
+        # Sin parámetro proyecto, mostrar solo usuarios que tengan proyectos relacionados
+        queryset = queryset.filter(usuario__usuarioproyecto__isnull=False).distinct()
 
-        # Aplicar paginación al queryset base
-        paginated_queryset = self.paginate_queryset(queryset)
+    paginated_queryset = self.paginate_queryset(queryset)
 
-        # Procesar solo los datos paginados
-        usuario_info = []
-        for dormir in paginated_queryset:
-            usuario_id = dormir.usuario.id
-            datos_personales = DatosPersonalesUsuario.objects.filter(usuario_id=usuario_id).first()
+    usuario_info = []
+    for dormir in paginated_queryset:
+        usuario_id = dormir.usuario.id
+        datos_personales = DatosPersonalesUsuario.objects.filter(usuario_id=usuario_id).first()
 
-            # Construir los datos iniciales
-            item = {
-                "fecha": dormir.fecha.strftime("%Y-%m-%d"),
-                "usuario": datos_personales.nombres_apellidos if datos_personales else None,
-                "telefono": datos_personales.telefono if datos_personales else None,
-                "total_horas": 0,
-                "total_minutos": 0,
-                "hora_dormir": dormir.hora.strftime("%H:%M:%S"),
-                "hora_despertar": None,
-                "estado": None
-            }
+        item = {
+            "fecha": dormir.fecha.strftime("%Y-%m-%d"),
+            "usuario": datos_personales.nombres_apellidos if datos_personales else None,
+            "telefono": datos_personales.telefono if datos_personales else None,
+            "total_horas": 0,
+            "total_minutos": 0,
+            "hora_dormir": dormir.hora.strftime("%H:%M:%S"),
+            "hora_despertar": None,
+            "estado": None
+        }
 
-            # Obtener el primer registro de despertar posterior al dormir
-            registros_despertar = Despertar.objects.filter(
-                usuario_id=usuario_id,
-                fecha__gte=dormir.fecha
-            ).order_by('fecha', 'hora')
+        registros_despertar = Despertar.objects.filter(
+            usuario_id=usuario_id,
+            fecha__gte=dormir.fecha
+        ).order_by('fecha', 'hora')
 
-            for despertar in registros_despertar:
-                hora_dormir = datetime.combine(dormir.fecha, dormir.hora)
-                hora_despertar = datetime.combine(despertar.fecha, despertar.hora)
+        for despertar in registros_despertar:
+            hora_dormir = datetime.combine(dormir.fecha, dormir.hora)
+            hora_despertar = datetime.combine(despertar.fecha, despertar.hora)
 
-                # Ajustar si el despertar es al día siguiente
-                if hora_despertar < hora_dormir:
-                    hora_despertar += timedelta(days=1)
+            if hora_despertar < hora_dormir:
+                hora_despertar += timedelta(days=1)
 
-                # Calcular el tiempo dormido
-                tiempo_dormido = (hora_despertar - hora_dormir).total_seconds()
-                horas = int(tiempo_dormido // 3600)
-                minutos = int((tiempo_dormido % 3600) // 60)
+            tiempo_dormido = (hora_despertar - hora_dormir).total_seconds()
+            horas = int(tiempo_dormido // 3600)
+            minutos = int((tiempo_dormido % 3600) // 60)
 
-                item["total_horas"] += horas
-                item["total_minutos"] += minutos
+            item["total_horas"] += horas
+            item["total_minutos"] += minutos
 
-                # Ajustar minutos acumulados si exceden 60
-                if item["total_minutos"] >= 60:
-                    item["total_horas"] += item["total_minutos"] // 60
-                    item["total_minutos"] = item["total_minutos"] % 60
+            if item["total_minutos"] >= 60:
+                item["total_horas"] += item["total_minutos"] // 60
+                item["total_minutos"] = item["total_minutos"] % 60
 
-                # Actualizar otros datos relevantes
-                item["hora_despertar"] = despertar.hora.strftime("%H:%M:%S")
-                item["estado"] = despertar.estado
+            item["hora_despertar"] = despertar.hora.strftime("%H:%M:%S")
+            item["estado"] = despertar.estado
 
-                # Solo considerar el primer registro de despertar válido
-                break
+            break
 
-            usuario_info.append(item)
+        usuario_info.append(item)
 
-        # Devolver la respuesta personalizada
-        page = self.paginator
-        return Response({
-            "success": True,
-            "count": page.page.paginator.count,  # Total de elementos
-            "next": page.get_next_link(),  # Enlace a la siguiente página
-            "previous": page.get_previous_link(),  # Enlace a la página anterior
-            "data": usuario_info  # Datos procesados
-        }, status=status.HTTP_200_OK)
+    page = self.paginator
+    return Response({
+        "success": True,
+        "count": page.page.paginator.count,
+        "next": page.get_next_link(),
+        "previous": page.get_previous_link(),
+        "data": usuario_info
+    }, status=status.HTTP_200_OK)

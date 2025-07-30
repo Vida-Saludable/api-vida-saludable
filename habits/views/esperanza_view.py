@@ -30,31 +30,34 @@ class EsperanzaViewSet(viewsets.ModelViewSet):
         }, status=status.HTTP_201_CREATED, headers=headers)
 
     def list(self, request, *args, **kwargs):
-        # Obtener parámetros de búsqueda
         usuario = request.query_params.get('usuario', None)
         proyecto_id = request.query_params.get('proyecto', None)
 
-        # Obtener el queryset base y ordenarlo
         queryset = self.get_queryset().order_by('fecha')
 
-        # Filtrar por usuario
+        # Filtrar por usuario si existe parámetro
         if usuario:
             queryset = queryset.filter(usuario__datospersonalesusuario__nombres_apellidos__icontains=usuario)
 
-        # Filtrar por proyecto
+        # Lógica para filtrar por proyecto
         if proyecto_id:
-            queryset = queryset.filter(usuario__usuarioproyecto__proyecto__id=proyecto_id).distinct()
+            if proyecto_id.lower() in ['all', 'todos']:
+                # No filtrar, devolver todos los registros
+                pass
+            else:
+                # Filtrar por proyecto específico
+                queryset = queryset.filter(usuario__usuarioproyecto__proyecto__id=proyecto_id).distinct()
+        else:
+            # Si no hay parámetro, devolver solo los registros de usuarios que tengan proyecto relacionado
+            queryset = queryset.filter(usuario__usuarioproyecto__isnull=False).distinct()
 
-        # Aplicar paginación al queryset base
         paginated_queryset = self.paginate_queryset(queryset)
 
-        # Procesar solo los datos paginados
         usuario_info = []
         for esperanza in paginated_queryset:
             usuario_id = esperanza.usuario.id
             datos_personales = DatosPersonalesUsuario.objects.filter(usuario_id=usuario_id).first()
 
-            # Construir el objeto final por cada registro
             usuario_info.append({
                 "id": esperanza.id,
                 "fecha": esperanza.fecha.strftime("%Y-%m-%d"),
@@ -64,12 +67,11 @@ class EsperanzaViewSet(viewsets.ModelViewSet):
                 "leer_biblia": "leer biblia" if esperanza.tipo_practica == "leer biblia" else None,
             })
 
-        # Personalizar la respuesta de la paginación
         page = self.paginator
         return Response({
             'success': True,
-            'count': page.page.paginator.count,  # Total de elementos
-            'next': page.get_next_link(),  # Enlace a la siguiente página
-            'previous': page.get_previous_link(),  # Enlace a la página anterior
-            'data': usuario_info  # Datos procesados
+            'count': page.page.paginator.count,
+            'next': page.get_next_link(),
+            'previous': page.get_previous_link(),
+            'data': usuario_info
         }, status=status.HTTP_200_OK)

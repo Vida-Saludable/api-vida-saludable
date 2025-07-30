@@ -61,22 +61,26 @@ class AguaViewSet(viewsets.ModelViewSet):
         }, status=status.HTTP_201_CREATED, headers=headers)
 
     def list(self, request, *args, **kwargs):
-        # Obtener parámetros de búsqueda
         usuario = request.query_params.get('usuario', None)
         proyecto_id = request.query_params.get('proyecto', None)
 
-        # Obtener el queryset base y ordenarlo
         queryset = self.get_queryset().order_by('fecha')
 
-        # Filtrar por usuario
-        usuario = request.query_params.get('usuario', None)
+        # Filtrar por usuario si se pasa parámetro
         if usuario:
             queryset = queryset.filter(usuario__datospersonalesusuario__nombres_apellidos__icontains=usuario)
 
-        # Filtrar por proyecto
-        proyecto_id = request.query_params.get('proyecto', None)
+        # Lógica para filtrar por proyecto o no
         if proyecto_id:
-            queryset = queryset.filter(usuario__usuarioproyecto__proyecto__id=proyecto_id).distinct()
+            if proyecto_id.lower() in ['all', 'todos']:
+                # No filtrar por proyecto: devolver todos los registros
+                pass
+            else:
+                # Filtrar solo registros con el proyecto indicado
+                queryset = queryset.filter(usuario__usuarioproyecto__proyecto__id=proyecto_id).distinct()
+        else:
+            # Si no se pasa proyecto, devolver solo registros de usuarios que tengan proyectos relacionados
+            queryset = queryset.filter(usuario__usuarioproyecto__isnull=False).distinct()
 
         # Paginación
         page = self.paginate_queryset(queryset)
@@ -84,37 +88,33 @@ class AguaViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(page, many=True)
             data = serializer.data
 
-            # Modificar los datos para agregar nombres_apellidos y telefono del usuario
             for item in data:
-                usuario_id = item['usuario']  # Obtener el id del usuario
+                usuario_id = item['usuario']
                 datos_personales = DatosPersonalesUsuario.objects.filter(usuario_id=usuario_id).first()
                 if datos_personales:
-                    item['usuario'] = datos_personales.nombres_apellidos  # Reemplazar el ID con nombres_apellidos
-                    item['telefono'] = datos_personales.telefono  # Agregar el telefono
+                    item['usuario'] = datos_personales.nombres_apellidos
+                    item['telefono'] = datos_personales.telefono
                 else:
                     item['usuario'] = None
                     item['telefono'] = None
 
-            # Retornar la respuesta paginada con 'data'
             return Response({
                 'success': True,
-                'count': self.paginator.page.paginator.count,  # Total de elementos
-                'next': self.paginator.get_next_link(),  # Enlace a la siguiente página
-                'previous': self.paginator.get_previous_link(),  # Enlace a la página anterior
-                'data': data  # Incluir los datos en 'data'
+                'count': self.paginator.page.paginator.count,
+                'next': self.paginator.get_next_link(),
+                'previous': self.paginator.get_previous_link(),
+                'data': data
             }, status=status.HTTP_200_OK)
 
-        # Si no hay paginación, serializar todos los elementos
         serializer = self.get_serializer(queryset, many=True)
         data = serializer.data
 
-        # Modificar los datos para agregar nombres_apellidos y telefono del usuario
         for item in data:
-            usuario_id = item['usuario']  # Obtener el id del usuario
+            usuario_id = item['usuario']
             datos_personales = DatosPersonalesUsuario.objects.filter(usuario_id=usuario_id).first()
             if datos_personales:
-                item['usuario'] = datos_personales.nombres_apellidos  # Reemplazar el ID con nombres_apellidos
-                item['telefono'] = datos_personales.telefono  # Agregar el telefono
+                item['usuario'] = datos_personales.nombres_apellidos
+                item['telefono'] = datos_personales.telefono
             else:
                 item['usuario'] = None
                 item['telefono'] = None
@@ -122,5 +122,5 @@ class AguaViewSet(viewsets.ModelViewSet):
         return Response({
             'success': True,
             'message': 'Listado de registros de agua',
-            'data': data  # Incluir los datos en 'data'
+            'data': data
         }, status=status.HTTP_200_OK)
