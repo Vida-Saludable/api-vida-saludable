@@ -1,22 +1,25 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 
 from users.models.usuario_models import Usuario
+from users.models.datos_personales_usuario_model import DatosPersonalesUsuario
+from users.models.usuario_proyecto_model import UsuarioProyecto
 
 from ..models.agua_model import Agua
 from ..serializers.agua_serializer import AguaSerializer
-from users.models.datos_personales_usuario_model import DatosPersonalesUsuario
-    
+
 class CustomPagination(PageNumberPagination):
-    page_size = 7  # Número de elementos por página
-    page_size_query_param = 'page_size'  # Permite a los usuarios definir el tamaño de página en la solicitud
-    max_page_size = 100  # Tamaño máximo de la página
+    page_size = 7
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 class AguaViewSet(viewsets.ModelViewSet):
     queryset = Agua.objects.all()
     serializer_class = AguaSerializer
     pagination_class = CustomPagination
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         # Obtener el ID del usuario del cuerpo de la solicitud
@@ -63,24 +66,23 @@ class AguaViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         usuario = request.query_params.get('usuario', None)
         proyecto_id = request.query_params.get('proyecto', None)
+        usuario_autenticado = request.user
 
+        # Obtener proyectos del usuario autenticado
+        proyectos_usuario = UsuarioProyecto.objects.filter(usuario=usuario_autenticado).values_list('proyecto_id', flat=True)
+        
         queryset = self.get_queryset().order_by('fecha')
+        
+        # Filtrar solo registros de usuarios que estén en los proyectos del usuario autenticado
+        queryset = queryset.filter(usuario__usuarioproyecto__proyecto_id__in=proyectos_usuario).distinct()
 
-        # Filtrar por usuario si se pasa parámetro
+        # Filtrar por nombre de usuario si se pasa parámetro
         if usuario:
             queryset = queryset.filter(usuario__datospersonalesusuario__nombres_apellidos__icontains=usuario)
 
-        # Lógica para filtrar por proyecto o no
-        if proyecto_id:
-            if proyecto_id.lower() in ['all', 'todos']:
-                # No filtrar por proyecto: devolver todos los registros
-                pass
-            else:
-                # Filtrar solo registros con el proyecto indicado
-                queryset = queryset.filter(usuario__usuarioproyecto__proyecto__id=proyecto_id).distinct()
-        else:
-            # Si no se pasa proyecto, devolver solo registros de usuarios que tengan proyectos relacionados
-            queryset = queryset.filter(usuario__usuarioproyecto__isnull=False).distinct()
+        # Filtrar por proyecto específico si se indica
+        if proyecto_id and proyecto_id.lower() not in ['all', 'todos']:
+            queryset = queryset.filter(usuario__usuarioproyecto__proyecto__id=proyecto_id).distinct()
 
         # Paginación
         page = self.paginate_queryset(queryset)
@@ -91,12 +93,16 @@ class AguaViewSet(viewsets.ModelViewSet):
             for item in data:
                 usuario_id = item['usuario']
                 datos_personales = DatosPersonalesUsuario.objects.filter(usuario_id=usuario_id).first()
+                proyectos = UsuarioProyecto.objects.filter(usuario_id=usuario_id).values_list('proyecto__nombre', flat=True)
+                
                 if datos_personales:
                     item['usuario'] = datos_personales.nombres_apellidos
                     item['telefono'] = datos_personales.telefono
                 else:
                     item['usuario'] = None
                     item['telefono'] = None
+                
+                item['proyectos_usuario'] = list(proyectos)
 
             return Response({
                 'success': True,
@@ -112,12 +118,16 @@ class AguaViewSet(viewsets.ModelViewSet):
         for item in data:
             usuario_id = item['usuario']
             datos_personales = DatosPersonalesUsuario.objects.filter(usuario_id=usuario_id).first()
+            proyectos = UsuarioProyecto.objects.filter(usuario_id=usuario_id).values_list('proyecto__nombre', flat=True)
+            
             if datos_personales:
                 item['usuario'] = datos_personales.nombres_apellidos
                 item['telefono'] = datos_personales.telefono
             else:
                 item['usuario'] = None
                 item['telefono'] = None
+            
+            item['proyectos_usuario'] = list(proyectos)
 
         return Response({
             'success': True,

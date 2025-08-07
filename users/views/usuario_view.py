@@ -127,23 +127,27 @@ class ListaUsuariosView(APIView):
         paginator = ListaUsuariosPagination()
 
         # Base: excluir pacientes
-        usuarios = Usuario.objects.exclude(role__name="Paciente")
 
         # Obtener el rol del usuario autenticado
         rol_actual = request.user.role.name if request.user.role else None
+        usuarios = Usuario.objects.exclude(role__name="Paciente")
 
         # Filtrar usuarios según rol del usuario autenticado
         if rol_actual == "Administrador":
             # No filtramos, mostramos todos (menos Paciente ya excluidos)
             pass
 
-        elif rol_actual == "Supervisor de proyecto":
+        elif rol_actual == "Supervisor de Proyecto":
             # Excluir Administrador y Supervisor de proyecto
-            usuarios = usuarios.exclude(role__name__in=["Administrador", "Supervisor de proyecto"])
+            usuarios = usuarios.exclude(role__name="Administrador")
+            usuarios = usuarios.exclude(role__name="Supervisor de Proyecto")
+            print("USUARIOS",usuarios)
+
 
         elif rol_actual == "Responsable de Seguimiento":
-            # Excluir Administrador, Supervisor de proyecto y Responsable de Seguimiento
-            usuarios = usuarios.exclude(role__name__in=["Administrador", "Supervisor de proyecto", "Responsable de Seguimiento"])
+            usuarios = usuarios.exclude(role__name="Administrador")
+            usuarios = usuarios.exclude(role__name="Supervisor de Proyecto")
+            usuarios = usuarios.exclude(role__name="Responsable de Seguimiento")
 
         else:
             # Si el rol no está en las opciones, aplicar filtro por proyectos del usuario autenticado como default

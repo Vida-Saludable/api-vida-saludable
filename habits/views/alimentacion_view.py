@@ -2,20 +2,23 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from datetime import date
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 
 from ..models.alimentacion_model import Alimentacion
 from ..serializers.alimentacion_serializer import AlimentacionSerializer
 from users.models.datos_personales_usuario_model import DatosPersonalesUsuario
+from users.models.usuario_proyecto_model import UsuarioProyecto
 
 class CustomPagination(PageNumberPagination):
-    page_size = 7  # Número de elementos por página
-    page_size_query_param = 'page_size'  # Permite a los usuarios definir el tamaño de página en la solicitud
-    max_page_size = 100  # Tamaño máximo de la página
+    page_size = 7
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 class AlimentacionViewSet(viewsets.ModelViewSet):
     queryset = Alimentacion.objects.all()
     serializer_class = AlimentacionSerializer
     pagination_class = CustomPagination
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         usuario = request.data.get('usuario')  # Obtener el usuario del request
@@ -67,28 +70,23 @@ class AlimentacionViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         usuario = request.query_params.get('usuario', None)
         proyecto_param = request.query_params.get('proyecto', None)
+        usuario_autenticado = request.user
+        
+        # Obtener proyectos del usuario autenticado
+        proyectos_usuario = UsuarioProyecto.objects.filter(usuario=usuario_autenticado).values_list('proyecto_id', flat=True)
         
         queryset = self.get_queryset().order_by('fecha')
+        
+        # Filtrar solo registros de usuarios que estén en los proyectos del usuario autenticado
+        queryset = queryset.filter(usuario__usuarioproyecto__proyecto_id__in=proyectos_usuario).distinct()
 
         # Filtrar por nombre de usuario si existe
         if usuario:
             queryset = queryset.filter(usuario__datospersonalesusuario__nombres_apellidos__icontains=usuario)
 
-        # Lógica para proyecto / filtro all
-        if proyecto_param:
-            if proyecto_param.lower() == 'all' or proyecto_param.lower() == 'true':
-                # Si piden "all", no filtramos por proyecto, devolvemos todo
-                pass
-            else:
-                # Si piden un proyecto específico o "todos" (pero sin all),
-                # solo devolver registros de usuarios que tengan proyectos relacionados
-                # Aquí se puede ajustar si quieres un filtro más específico
-                queryset = queryset.filter(usuario__usuarioproyecto__proyecto__id=proyecto_param).distinct()
-        else:
-            # Si no hay parámetro proyecto, opcionalmente podrías filtrar solo usuarios con proyectos
-            # Si quieres, descomenta esta línea para filtrar siempre por proyectos relacionados
-            # queryset = queryset.filter(usuario__usuarioproyecto__isnull=False).distinct()
-            pass
+        # Filtrar por proyecto específico si se indica
+        if proyecto_param and proyecto_param.lower() not in ['all', 'true', 'todos']:
+            queryset = queryset.filter(usuario__usuarioproyecto__proyecto__id=proyecto_param).distinct()
 
         # Paginación y serialización
         page = self.paginate_queryset(queryset)
@@ -96,16 +94,20 @@ class AlimentacionViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(page, many=True)
             data = serializer.data
 
-            # Agregar nombres y teléfono de usuario
+            # Agregar nombres, teléfono y proyectos del usuario
             for item in data:
                 usuario_id = item['usuario']
                 datos_personales = DatosPersonalesUsuario.objects.filter(usuario_id=usuario_id).first()
+                proyectos = UsuarioProyecto.objects.filter(usuario_id=usuario_id).values_list('proyecto__nombre', flat=True)
+                
                 if datos_personales:
                     item['usuario'] = datos_personales.nombres_apellidos
                     item['telefono'] = datos_personales.telefono
                 else:
                     item['usuario'] = None
                     item['telefono'] = None
+                
+                item['proyectos_usuario'] = list(proyectos)
 
             return Response({
                 'success': True,
@@ -121,12 +123,16 @@ class AlimentacionViewSet(viewsets.ModelViewSet):
         for item in data:
             usuario_id = item['usuario']
             datos_personales = DatosPersonalesUsuario.objects.filter(usuario_id=usuario_id).first()
+            proyectos = UsuarioProyecto.objects.filter(usuario_id=usuario_id).values_list('proyecto__nombre', flat=True)
+            
             if datos_personales:
                 item['usuario'] = datos_personales.nombres_apellidos
                 item['telefono'] = datos_personales.telefono
             else:
                 item['usuario'] = None
                 item['telefono'] = None
+            
+            item['proyectos_usuario'] = list(proyectos)
 
         return Response({
             'success': True,
